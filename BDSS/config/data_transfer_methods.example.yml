@@ -1,0 +1,8 @@
+sequential_curl:
+    label: curl
+    description: >
+        Download files sequentially with curl.
+sequential_wget:
+    label: wget
+    description: >
+        Download files sequentially with wget.

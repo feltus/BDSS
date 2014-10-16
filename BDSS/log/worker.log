@@ -1,0 +1,156 @@
+2014-10-13 16:08:21,874 - root - INFO - Running
+2014-10-13 16:08:21,875 - root - INFO - Checking for jobs
+2014-10-13 16:13:30,249 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:13:30,250 - STDERR - ERROR -   File "worker.py", line 59, in <module>
+2014-10-13 16:13:30,250 - STDERR - ERROR - daemon_runner.daemon_context.files_preserve = [stdout_logger.handlers[0].stream.fileno(), stderr_logger.handlers[0].stream.fileno()]
+2014-10-13 16:13:30,250 - STDERR - ERROR - IndexError
+2014-10-13 16:13:30,250 - STDERR - ERROR - :
+2014-10-13 16:13:30,250 - STDERR - ERROR - list index out of range
+2014-10-13 16:14:20,436 - STDOUT - INFO - [<logging.FileHandler object at 0x10bc2f490>]
+2014-10-13 16:14:20,437 - STDOUT - INFO - []
+2014-10-13 16:14:20,437 - STDOUT - INFO - []
+2014-10-13 16:14:56,577 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:14:56,578 - STDERR - ERROR -   File "worker.py", line 60, in <module>
+2014-10-13 16:14:56,578 - STDERR - ERROR - daemon_runner.do_action()
+2014-10-13 16:14:56,581 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 189, in do_action
+2014-10-13 16:14:56,581 - STDERR - ERROR - func(self)
+2014-10-13 16:14:56,581 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 124, in _start
+2014-10-13 16:14:56,582 - STDERR - ERROR - self.daemon_context.open()
+2014-10-13 16:14:56,583 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 350, in open
+2014-10-13 16:14:56,583 - STDERR - ERROR - redirect_stream(sys.stdout, self.stdout)
+2014-10-13 16:14:56,583 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 745, in redirect_stream
+2014-10-13 16:14:56,583 - STDERR - ERROR - os.dup2(target_fd, system_stream.fileno())
+2014-10-13 16:14:56,584 - STDERR - ERROR - AttributeError
+2014-10-13 16:14:56,584 - STDERR - ERROR - :
+2014-10-13 16:14:56,584 - STDERR - ERROR - 'StreamToLogger' object has no attribute 'fileno'
+2014-10-13 16:15:37,266 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:15:37,267 - STDERR - ERROR -   File "worker.py", line 59, in <module>
+2014-10-13 16:15:37,267 - STDERR - ERROR - daemon_runner.daemon_context.files_preserve = [logging.root.handlers[0].stream.logger.handlers[0].stream.fileno()]
+2014-10-13 16:15:37,267 - STDERR - ERROR - AttributeError
+2014-10-13 16:15:37,267 - STDERR - ERROR - :
+2014-10-13 16:15:37,267 - STDERR - ERROR - 'file' object has no attribute 'logger'
+2014-10-13 16:15:55,226 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:15:55,227 - STDERR - ERROR -   File "worker.py", line 60, in <module>
+2014-10-13 16:15:55,227 - STDERR - ERROR - daemon_runner.do_action()
+2014-10-13 16:15:55,228 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 189, in do_action
+2014-10-13 16:15:55,228 - STDERR - ERROR - func(self)
+2014-10-13 16:15:55,228 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 124, in _start
+2014-10-13 16:15:55,229 - STDERR - ERROR - self.daemon_context.open()
+2014-10-13 16:15:55,229 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 350, in open
+2014-10-13 16:15:55,230 - STDERR - ERROR - redirect_stream(sys.stdout, self.stdout)
+2014-10-13 16:15:55,230 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 745, in redirect_stream
+2014-10-13 16:15:55,230 - STDERR - ERROR - os.dup2(target_fd, system_stream.fileno())
+2014-10-13 16:15:55,231 - STDERR - ERROR - AttributeError
+2014-10-13 16:15:55,231 - STDERR - ERROR - :
+2014-10-13 16:15:55,231 - STDERR - ERROR - 'StreamToLogger' object has no attribute 'fileno'
+2014-10-13 16:16:33,755 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:16:33,755 - STDERR - ERROR -   File "worker.py", line 59, in <module>
+2014-10-13 16:16:33,755 - STDERR - ERROR - daemon_runner.daemon_context.files_preserve = [logging.root.handlers[0].stream.logger.handlers[0]]
+2014-10-13 16:16:33,755 - STDERR - ERROR - AttributeError
+2014-10-13 16:16:33,756 - STDERR - ERROR - :
+2014-10-13 16:16:33,756 - STDERR - ERROR - 'file' object has no attribute 'logger'
+2014-10-13 16:17:33,960 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:17:33,960 - STDERR - ERROR -   File "worker.py", line 59, in <module>
+2014-10-13 16:17:33,960 - STDERR - ERROR - daemon_runner.daemon_context.files_preserve = [logging.root.handlers[0].stream.logger.handlers[0]]
+2014-10-13 16:17:33,960 - STDERR - ERROR - AttributeError
+2014-10-13 16:17:33,960 - STDERR - ERROR - :
+2014-10-13 16:17:33,960 - STDERR - ERROR - 'file' object has no attribute 'logger'
+2014-10-13 16:18:23,231 - STDOUT - INFO - <logging.FileHandler object at 0x105877490>
+2014-10-13 16:18:23,231 - STDOUT - INFO - <open file '/Users/nwatts/Projects/bdss/BDSS/log/worker.log', mode 'a' at 0x1057f6e40>
+2014-10-13 16:18:23,231 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:18:23,231 - STDERR - ERROR -   File "worker.py", line 62, in <module>
+2014-10-13 16:18:23,232 - STDERR - ERROR - daemon_runner.daemon_context.files_preserve = [logging.root.handlers[0].stream.logger.handlers[0]]
+2014-10-13 16:18:23,232 - STDERR - ERROR - AttributeError
+2014-10-13 16:18:23,232 - STDERR - ERROR - :
+2014-10-13 16:18:23,232 - STDERR - ERROR - 'file' object has no attribute 'logger'
+2014-10-13 16:18:39,678 - STDOUT - INFO - <logging.FileHandler object at 0x10d348490>
+2014-10-13 16:18:39,678 - STDOUT - INFO - <open file '/Users/nwatts/Projects/bdss/BDSS/log/worker.log', mode 'a' at 0x10d2c7e40>
+2014-10-13 16:18:39,697 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:18:39,698 - STDERR - ERROR -   File "worker.py", line 63, in <module>
+2014-10-13 16:18:39,698 - STDERR - ERROR - daemon_runner.do_action()
+2014-10-13 16:18:39,698 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 189, in do_action
+2014-10-13 16:18:39,699 - STDERR - ERROR - func(self)
+2014-10-13 16:18:39,699 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 124, in _start
+2014-10-13 16:18:39,699 - STDERR - ERROR - self.daemon_context.open()
+2014-10-13 16:18:39,700 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 350, in open
+2014-10-13 16:18:39,700 - STDERR - ERROR - redirect_stream(sys.stdout, self.stdout)
+2014-10-13 16:18:39,700 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 745, in redirect_stream
+2014-10-13 16:18:39,701 - STDERR - ERROR - os.dup2(target_fd, system_stream.fileno())
+2014-10-13 16:18:39,702 - STDERR - ERROR - AttributeError
+2014-10-13 16:18:39,702 - STDERR - ERROR - :
+2014-10-13 16:18:39,703 - STDERR - ERROR - 'StreamToLogger' object has no attribute 'fileno'
+2014-10-13 16:18:48,178 - STDOUT - INFO - <logging.FileHandler object at 0x10ac9f490>
+2014-10-13 16:18:48,178 - STDOUT - INFO - <open file '/Users/nwatts/Projects/bdss/BDSS/log/worker.log', mode 'a' at 0x10ac1de40>
+2014-10-13 16:18:48,200 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:18:48,201 - STDERR - ERROR -   File "worker.py", line 63, in <module>
+2014-10-13 16:18:48,201 - STDERR - ERROR - daemon_runner.do_action()
+2014-10-13 16:18:48,202 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 189, in do_action
+2014-10-13 16:18:48,202 - STDERR - ERROR - func(self)
+2014-10-13 16:18:48,202 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 124, in _start
+2014-10-13 16:18:48,203 - STDERR - ERROR - self.daemon_context.open()
+2014-10-13 16:18:48,203 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 350, in open
+2014-10-13 16:18:48,204 - STDERR - ERROR - redirect_stream(sys.stdout, self.stdout)
+2014-10-13 16:18:48,204 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 745, in redirect_stream
+2014-10-13 16:18:48,205 - STDERR - ERROR - os.dup2(target_fd, system_stream.fileno())
+2014-10-13 16:18:48,205 - STDERR - ERROR - AttributeError
+2014-10-13 16:18:48,205 - STDERR - ERROR - :
+2014-10-13 16:18:48,206 - STDERR - ERROR - 'StreamToLogger' object has no attribute 'fileno'
+2014-10-13 16:20:24,719 - STDOUT - INFO - <logging.FileHandler object at 0x110dc9510>
+2014-10-13 16:20:24,719 - STDOUT - INFO - <open file '/Users/nwatts/Projects/bdss/BDSS/log/worker.log', mode 'a' at 0x110d49e40>
+2014-10-13 16:20:24,741 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:20:24,742 - STDERR - ERROR -   File "worker.py", line 67, in <module>
+2014-10-13 16:20:24,743 - STDERR - ERROR - daemon_runner.do_action()
+2014-10-13 16:20:24,744 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 189, in do_action
+2014-10-13 16:20:24,744 - STDERR - ERROR - func(self)
+2014-10-13 16:20:24,745 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/runner.py", line 124, in _start
+2014-10-13 16:20:24,745 - STDERR - ERROR - self.daemon_context.open()
+2014-10-13 16:20:24,746 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 350, in open
+2014-10-13 16:20:24,746 - STDERR - ERROR - redirect_stream(sys.stdout, self.stdout)
+2014-10-13 16:20:24,747 - STDERR - ERROR -   File "/Users/nwatts/.virtualenvs/gdss/lib/python2.7/site-packages/daemon/daemon.py", line 745, in redirect_stream
+2014-10-13 16:20:24,747 - STDERR - ERROR - os.dup2(target_fd, system_stream.fileno())
+2014-10-13 16:20:24,748 - STDERR - ERROR -   File "worker.py", line 30, in fileno
+2014-10-13 16:20:24,748 - STDERR - ERROR - return self.logger.handlers[0].stream.fileno()
+2014-10-13 16:20:24,749 - STDERR - ERROR - IndexError
+2014-10-13 16:20:24,749 - STDERR - ERROR - :
+2014-10-13 16:20:24,750 - STDERR - ERROR - list index out of range
+2014-10-13 16:20:54,387 - STDOUT - INFO - <logging.FileHandler object at 0x105be4510>
+2014-10-13 16:20:54,388 - STDOUT - INFO - <open file '/Users/nwatts/Projects/bdss/BDSS/log/worker.log', mode 'a' at 0x105b64e40>
+2014-10-13 16:22:59,177 - STDOUT - INFO - <logging.FileHandler object at 0x110bbe5d0>
+2014-10-13 16:22:59,177 - STDOUT - INFO - <open file '/Users/nwatts/Projects/bdss/BDSS/log/worker.log', mode 'a' at 0x110b40e40>
+2014-10-13 16:22:59,177 - STDOUT - INFO - []
+2014-10-13 16:23:05,451 - STDOUT - INFO - []
+2014-10-13 16:23:22,323 - STDOUT - INFO - []
+2014-10-13 16:23:25,251 - STDOUT - INFO - <logging.RootLogger object at 0x10f9fba50>
+2014-10-13 16:23:28,227 - STDOUT - INFO - [<logging.FileHandler object at 0x110bbe5d0>]
+2014-10-13 16:23:39,099 - STDOUT - INFO - <logging.FileHandler object at 0x110bbe5d0>
+2014-10-13 16:23:40,923 - STDOUT - INFO - <open file '/Users/nwatts/Projects/bdss/BDSS/log/worker.log', mode 'a' at 0x110b40e40>
+2014-10-13 16:23:58,779 - STDOUT - INFO - []
+2014-10-13 16:24:00,827 - STDOUT - INFO - []
+2014-10-13 16:24:39,394 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:24:39,394 - STDERR - ERROR -   File "<stdin>", line 1, in <module>
+2014-10-13 16:24:39,395 - STDERR - ERROR - NameError
+2014-10-13 16:24:39,395 - STDERR - ERROR - :
+2014-10-13 16:24:39,395 - STDERR - ERROR - name 's1' is not defined
+2014-10-13 16:24:46,610 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:24:46,610 - STDERR - ERROR -   File "<stdin>", line 1, in <module>
+2014-10-13 16:24:46,610 - STDERR - ERROR - ImportError
+2014-10-13 16:24:46,611 - STDERR - ERROR - :
+2014-10-13 16:24:46,611 - STDERR - ERROR - cannot import name s1
+2014-10-13 16:24:52,496 - STDOUT - INFO - <worker.StreamToLogger object at 0x110bbe750>
+2014-10-13 16:24:56,503 - STDERR - ERROR - Traceback (most recent call last):
+2014-10-13 16:24:56,503 - STDERR - ERROR -   File "<stdin>", line 1, in <module>
+2014-10-13 16:24:56,504 - STDERR - ERROR - AttributeError
+2014-10-13 16:24:56,504 - STDERR - ERROR - :
+2014-10-13 16:24:56,504 - STDERR - ERROR - 'StreamToLogger' object has no attribute 'handlers'
+2014-10-13 16:25:06,908 - STDOUT - INFO - <logging.Logger object at 0x110bbe690>
+2014-10-13 16:25:15,990 - STDOUT - INFO - <logging.Logger object at 0x110bbe690>
+2014-10-13 16:25:20,429 - STDOUT - INFO - []
+2014-10-13 17:10:26,449 - STDOUT - INFO - Hello
+2014-10-13 17:10:29,452 - STDOUT - INFO - Hello
+2014-10-13 17:10:32,453 - STDOUT - INFO - Hello
+2014-10-13 17:10:35,455 - STDOUT - INFO - Hello
+2014-10-13 17:10:36,538 - STDERR - ERROR - Terminating on signal 15
+2014-10-14 14:03:57,111 - STDOUT - INFO - Hello
+2014-10-14 14:04:00,113 - STDOUT - INFO - Hello
+2014-10-14 14:04:03,113 - STDOUT - INFO - Hello
+2014-10-14 14:04:04,301 - STDERR - ERROR - Terminating on signal 15

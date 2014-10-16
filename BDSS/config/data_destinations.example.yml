@@ -1,0 +1,16 @@
+destination1:
+    label: Destination 1
+    description:
+    base_dir: /tmp/bdss
+    file_transfer:
+        module: sftp
+        args:
+            host: remote1.example.com
+            user: bdss
+            password: asdf
+    job_execution:
+        module: ssh
+        args:
+            host: remote1.example.com
+            user: bdss
+            password: asdf

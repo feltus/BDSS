@@ -1,0 +1,12 @@
+# Compiled Python files
+**/*.pyc
+
+BDSS/config/app.yml
+BDSS/config/data_destinations.yml
+BDSS/config/data_transfer_methods.yml
+
+# Development database
+BDSS/development.sqlite
+
+# oh-my-zsh virtualenvwrapper plugin
+.venv
