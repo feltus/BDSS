@@ -8,6 +8,23 @@
     padding-bottom: 10px;
 }
 
+.striped {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.striped li {
+    padding: 8px;
+}
+
+.striped li h4 {
+    margin-top: 0;
+}
+
+.striped li:nth-child(odd) {
+    background: #f9f9f9;
+}
+
 #jobs-list .label {
     margin-left: 5px;
 }
