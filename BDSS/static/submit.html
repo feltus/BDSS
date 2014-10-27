@@ -57,23 +57,11 @@
                         <div class="form-group">
                             <label for="url-manifest">URL Manifest:</label>
                             <input type="file" id="url-manifest">
-                            <p class="help-block">Upload a text file containing one URL per line.</p>
+                            <p class="help-block">Upload a text file containing one URL per line. HTTP and FTP URLs are supported.</p>
                         </div>
                     </div>
 
-                    <div class="form-group url-input-group">
-                        <div class="input-group">
-                            <input type="text" class="url-input form-control" id="url1">
-                            <span class="input-group-btn">
-                                <button class="btn btn-danger remove-url-btn" disabled type="button">&times;</button>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="form-group" id="add-url-group" style="overflow:hidden;">
-                        <button class="btn btn-primary pull-right" type="button" id="add-url-btn">Add</button>
-                        <p class="help-block">HTTP and FTP URLs are supported.</p>
-                    </div>
+                    <ul id="url-list"></ul>
                 </form>
             </div>
 

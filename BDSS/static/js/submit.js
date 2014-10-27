@@ -123,7 +123,7 @@ $(document).ready(function() {
 
                 fileInput.attr('disabled', true);
 
-                $('.url-input-group').remove();
+                $('#url-list li').remove();
 
                 var f = e.target.files[0];
                 var reader = new FileReader();
@@ -136,18 +136,12 @@ $(document).ready(function() {
                     var data = e.target.result;
                     console.log(data);
 
-                    var inputs = [];
-                    data.split('\n')
+                    $('#url-list').html(data.split('\n')
                         .map($.trim)
                         .filter(function(line) { return line.length > 0; })
-                        .forEach(function(url) {
-                            var inputGroup = buildUrlInput();
-                            inputGroup.find('input').val(url);
-                            inputs.push(inputGroup);
-                        });
-
-                    $('#add-url-group').before(inputs);
-                    bindRemoveUrlButtonHandler();
+                        .map(function(url) {
+                            return '<li><input type="hidden" class="url-input" value="' + url + '">' + url + '</li>';
+                        }));
 
                     fileInput.removeAttr('disabled');
                 };
