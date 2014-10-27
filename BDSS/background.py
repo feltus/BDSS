@@ -6,6 +6,7 @@ import sys
 
 from datetime import datetime
 from os import path
+from sqlalchemy.orm.session import Session
 from time import sleep
 
 from .common import config, db_engine, DBSession
@@ -24,6 +25,9 @@ def import_class(subpackage, module, suffix):
         raise ImportError()
 
 def start_job(job):
+
+    job.started_at = datetime.utcnow()
+    Session.object_session(job).commit()
 
     destination_config = config['data_destinations'][job.data_destination]
 
@@ -108,8 +112,6 @@ def start_job_loop():
             try:
                 print 'Starting job %d' % job.job_id
                 start_job(job)
-                job.started_at = datetime.now()
-                db_session.commit()
             except Exception as e:
                 print >> sys.stderr, 'Failed to start job %d: %s' % (job.job_id, str(e))
         else:
