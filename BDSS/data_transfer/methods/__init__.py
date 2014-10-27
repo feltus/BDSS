@@ -1,10 +1,10 @@
 import json
+import os
 import sys
 import time
 import urllib2
 
 from datetime import datetime
-from os import path
 
 from abc import ABCMeta, abstractmethod
 
@@ -23,7 +23,10 @@ class BaseTransferMethod():
     #  this function.
     #  @param url
     def output_path(self, data_url):
-        return path.join('output', data_url.split('/')[-1])
+        return os.path.join('output', data_url.split('/')[-1])
+
+    def get_downloaded_file_size(self, data_url):
+        return os.stat(self.output_path(data_url)).st_size
 
     def report_status(self, data):
         url = self.app_url + '/api/jobs/' + str(self.job_id) + '/data/status'
@@ -53,6 +56,8 @@ class BaseTransferMethod():
         }
         if error != None:
             data['error'] = error
+        else:
+            data['transfer_size'] = self.get_downloaded_file_size(data_url)
         self.report_status(data)
 
     @abstractmethod

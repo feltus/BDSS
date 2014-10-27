@@ -3,7 +3,7 @@ import re
 
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
-from sqlalchemy.types import DateTime, Enum, Float, Integer, String, Text
+from sqlalchemy.types import BigInteger, DateTime, Enum, Float, Integer, String, Text
 from sqlalchemy.orm import backref, relationship, validates
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -174,6 +174,10 @@ class DataItem(BaseModel):
     ## @var measured_transfer_time
     #  Time required for transfer of this data item (in seconds).
     measured_transfer_time = Column(Float())
+
+    ## @var transfer_size
+    #  The size of the downloaded file (in bytes).
+    transfer_size = Column(BigInteger())
 
     ## @var status
     #  The status of this fragment.

@@ -112,6 +112,7 @@ def update_transfer_status(job_id):
             data_item.error_message = params['error']
             data_item.status = 'failed'
         except KeyError:
+            data_item.transfer_size = params['transfer_size']
             data_item.status = 'completed'
     else:
         return json_response({'errors': ['Invalid status']}, status=400)
