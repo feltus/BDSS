@@ -3,6 +3,8 @@
 import json
 import string
 import sys
+import time
+import urllib2
 import logging
 
 from os import path
@@ -44,4 +46,16 @@ class_path = 'methods.' + \
 method_class = import_class(class_path)
 method = method_class(config['app_url'], config['job_id'], **config['init_args'])
 
+start_time = time.time()
 method.transfer_data(urls)
+elapsed_time = time.time() - start_time
+
+# Report job duration to BDSS server.
+url = config['app_url'] + '/api/jobs/' + str(config['job_id'])
+request = urllib2.Request(url, json.dumps({'measured_time': elapsed_time}), {'Content-Type': 'application/json'})
+try:
+    f = urllib2.urlopen(request)
+    response = f.read()
+    f.close()
+except urllib2.HTTPError as e:
+    print >> sys.stderr, 'Failed to report job time: ' + json.dumps(data)

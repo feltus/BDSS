@@ -67,6 +67,27 @@ def show_job(job_id):
     else:
         return json_response({}, status=404)
 
+@app.route('/jobs/<job_id>', methods=['POST'])
+def update_job(job_id):
+    job = g.db_session.query(Job).filter_by(job_id=job_id).first()
+    params = request.get_json()
+
+    if job != None:
+        job.measured_time = params['measured_time']
+        g.db_session.commit()
+        return json_response({'job': job.serialize()})
+    else:
+        return json_response({}, status=404)
+
+
+def show_job(job_id):
+    job = g.db_session.query(Job).filter_by(job_id=job_id).first()
+
+    if job != None:
+        return json_response({'job': job.serialize()})
+    else:
+        return json_response({}, status=404)
+
 @app.route('/jobs/<job_id>/data/status', methods=['POST'])
 def update_transfer_status(job_id):
     params = request.get_json()

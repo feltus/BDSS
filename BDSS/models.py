@@ -80,6 +80,10 @@ class Job(BaseModel):
     #  The time this job was sent to its destination and started.
     started_at = Column(DateTime())
 
+    ## @var measured_time
+    #  Time this job required to complete, from when it was started on the destination.
+    measured_time = Column(Float())
+
     ## Get status of this job based on status of its transfer script fragments.
     def status(self):
         if len([d for d in self.required_data if d.status != 'pending']) == 0:

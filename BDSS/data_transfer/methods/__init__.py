@@ -43,10 +43,6 @@ class BaseTransferMethod():
             'url': data_url
         })
 
-    def report_job_transfer_time(self, measured_time):
-        # TODO: Implement this
-        pass
-
     def report_transfer_finished(self, data_url, time_finished=None, measured_time=None, error=None):
         time_finished = time_finished or int(time.time())
         data = {
