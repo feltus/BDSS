@@ -5,6 +5,7 @@ import signal
 import sys
 import time
 
+from BDSS.background import start_job_loop
 from daemon import daemon, pidfile
 
 containing_dir = os.path.dirname(os.path.realpath(__file__))
@@ -68,9 +69,9 @@ class WorkerDaemon():
         sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
         sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
 
-        while True:
-            time.sleep(3)
-            print 'Hello'
+        os.umask(022)
+
+        start_job_loop()
 
     def stop(self):
         if not self.ctx.pidfile.is_locked():
