@@ -105,7 +105,9 @@ class Job(BaseModel):
             'email': self.email,
             'status': self.status(),
             'required_data': [item.serialize() for item in self.required_data],
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat(),
+            'started_at': self.started_at and self.started_at.isoformat(),
+            'measured_time': self.measured_time
         }
 
 class DataItem(BaseModel):
@@ -190,5 +192,6 @@ class DataItem(BaseModel):
         return {
             'item_id': self.item_id,
             'data_url': self.data_url,
-            'status': self.status
+            'status': self.status,
+            'transfer_size': self.transfer_size
         }
