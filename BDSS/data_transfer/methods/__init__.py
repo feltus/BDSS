@@ -1,4 +1,7 @@
-import md5
+import json
+import sys
+import time
+import urllib2
 
 from datetime import datetime
 from os import path
@@ -20,21 +23,41 @@ class BaseTransferMethod():
     #  this function.
     #  @param url
     def output_path(self, data_url):
-        return path.join('output', md5.new(data_url).hexdigest() + '.data')
+        return path.join('output', data_url.split('/')[-1])
+
+    def report_status(self, data):
+        url = self.app_url + '/api/jobs/' + str(self.job_id) + '/data/status'
+        request = urllib2.Request(url, json.dumps(data), {'Content-Type': 'application/json'})
+        try:
+            f = urllib2.urlopen(request)
+            response = f.read()
+            f.close()
+        except urllib2.HTTPError as e:
+            print >> sys.stderr, 'Failed to report status: ' + json.dumps(data)
 
     def report_transfer_started(self, data_url, time_started=None):
-        time = time or datetime.now()
+        time_started = time_started or int(time.time())
+        self.report_status({
+            'status': 'started',
+            'current_time': time_started,
+            'url': data_url
+        })
+
+    def report_job_transfer_time(self, measured_time):
         # TODO: Implement this
         pass
 
-    def report_transfer_time(self, data_url, measured_time):
-        # TODO: Implement this
-        pass
-
-    def report_transfer_finished(self, data_url, error=None, time_started=None):
-        time = time or datetime.now()
-        # TODO: Implement this
-        pass
+    def report_transfer_finished(self, data_url, time_finished=None, measured_time=None, error=None):
+        time_finished = time_finished or int(time.time())
+        data = {
+            'status': 'finished',
+            'measured_transfer_time': measured_time,
+            'current_time': time_finished,
+            'url': data_url
+        }
+        if error != None:
+            data['error'] = error
+        self.report_status(data)
 
     @abstractmethod
     def transfer_data(self, data_urls):

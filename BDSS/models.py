@@ -37,7 +37,7 @@ class Job(BaseModel):
     email = Column(String(50), nullable=False)
     # TODO: Validate the format.
 
-    ## @var require_data
+    ## @var required_data
     #  The data necessary for running this job.
     required_data = relationship('DataItem', backref='job')
 
@@ -84,9 +84,9 @@ class Job(BaseModel):
     def status(self):
         if len([d for d in self.required_data if d.status != 'pending']) == 0:
             return 'pending'
-        elif len([d for d in self.require_data if d.status == 'pending' or d.status == 'in_progress']) != 0:
+        elif len([d for d in self.required_data if d.status == 'pending' or d.status == 'in_progress']) != 0:
             return 'in_progress'
-        elif len([d for d in self.require_data if d.status == 'failed']) == 0:
+        elif len([d for d in self.required_data if d.status == 'failed']) == 0:
             return 'completed'
         else:
             return 'failed'

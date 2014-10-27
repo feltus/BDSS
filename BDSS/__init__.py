@@ -68,7 +68,8 @@ def show_job(job_id):
         return json_response({}, status=404)
 
 @app.route('/jobs/<job_id>/data/status', methods=['POST'])
-def update_transfer_status(job_id, data_item_id, field):
+def update_transfer_status(job_id):
+    params = request.get_json()
 
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
     if job == None:
@@ -80,11 +81,12 @@ def update_transfer_status(job_id, data_item_id, field):
 
     if params['status'] == 'started':
         params = request.get_json()
-        data_item.transfer_started_at = datetime.strptime(params['time'], '%a %b %d %H:%M:%S %Z %Y')
+        data_item.transfer_started_at = datetime.fromtimestamp(params['current_time'])
         data_item.status = 'in_progress'
     elif params['status'] == 'finished':
         params = request.get_json()
-        data_item.transfer_finished_at = datetime.strptime(params['time'], '%a %b %d %H:%M:%S %Z %Y')
+        data_item.transfer_finished_at = datetime.fromtimestamp(params['current_time'])
+        data_item.measured_transfer_time = params['measured_transfer_time']
         try:
             data_item.error_message = params['error']
             data_item.status = 'failed'
