@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from BDSS.common import db_engine, DBSession
 from BDSS.models import BaseModel, Job, DataItem
-from BDSS.start import start_job
+from BDSS.background import start_job
 
 class RunJobTestCase(TestCase):
 
@@ -20,8 +20,11 @@ class RunJobTestCase(TestCase):
             'data_destination': 'localhost'
         }
         urls = [
-            'http://www.clemson.edu',
-            'http://www.google.com'
+            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR039/SRR039884/SRR039884.sra',
+            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR039/SRR039885/SRR039885.sra',
+            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058526/SRR058526.sra',
+            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058527/SRR058527.sra',
+            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058528/SRR058528.sra'
         ]
 
         job = Job(**job_params)
@@ -36,4 +39,9 @@ class RunJobTestCase(TestCase):
         connection.close()
 
     def runTest(self):
-        start_job(1)
+        connection = db_engine.connect()
+        session = DBSession(bind=connection)
+        job = session.query(Job).first()
+        start_job(job)
+        session.close()
+        connection.close()
