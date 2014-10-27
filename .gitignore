@@ -8,5 +8,8 @@ BDSS/config/data_transfer_methods.yml
 # Development database
 BDSS/development.sqlite
 
+# Log files
+BDSS/log/*.log
+
 # oh-my-zsh virtualenvwrapper plugin
 .venv
