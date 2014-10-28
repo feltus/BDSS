@@ -193,5 +193,9 @@ class DataItem(BaseModel):
             'item_id': self.item_id,
             'data_url': self.data_url,
             'status': self.status,
-            'transfer_size': self.transfer_size
+            'transfer_size': self.transfer_size,
+            'transfer_time': self.measured_transfer_time,
+            'started_at': self.transfer_started_at and self.transfer_started_at.isoformat(),
+            'finished_at': self.transfer_finished_at and self.transfer_finished_at.isoformat(),
+            'error': self.error_message
         }

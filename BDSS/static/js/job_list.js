@@ -29,7 +29,7 @@ $(document).ready(function() {
                     status_url_count[status] = job.required_data.filter(function(d) { return (d.status == status); }).length;
                 });
                 var li_html = '<li>' +
-                    '<h4>' + job.name + '</h4>' +
+                    '<h4><a href="show.html#' + job.job_id + '">' + job.name + '</a></h4>' +
                     'Status: ' + statusLabel(job.status) + '<br>';
 
                     if (job.status == 'in_progress') {
