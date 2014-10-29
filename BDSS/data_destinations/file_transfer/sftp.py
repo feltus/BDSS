@@ -1,6 +1,6 @@
 from . import BaseFileTransferMethod
 
-from BDSS.util import SSHClient
+from ..util import SSHClient
 
 ## Transfer job files to the destination via Sftp.
 class SftpFileTransferMethod(BaseFileTransferMethod):
