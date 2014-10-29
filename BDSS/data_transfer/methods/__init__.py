@@ -46,18 +46,26 @@ class BaseTransferMethod():
             'url': data_url
         })
 
-    def report_transfer_finished(self, data_url, time_finished=None, measured_time=None, error=None):
+    def report_transfer_finished(self, data_url, time_finished=None, measured_time=None):
         time_finished = time_finished or int(time.time())
         data = {
+            'status': 'finished',
+            'measured_transfer_time': measured_time,
+            'transfer_size': self.get_downloaded_file_size(data_url),
+            'current_time': time_finished,
+            'url': data_url
+        }
+        self.report_status(data)
+
+    def report_transfer_failed(self, data_url, time_finished=None, measured_time=None, error=None):
+        time_finished = time_finished or int(time.time())
+        data = {
+            'error': error,
             'status': 'finished',
             'measured_transfer_time': measured_time,
             'current_time': time_finished,
             'url': data_url
         }
-        if error != None:
-            data['error'] = error
-        else:
-            data['transfer_size'] = self.get_downloaded_file_size(data_url)
         self.report_status(data)
 
     @abstractmethod

@@ -13,8 +13,9 @@ class SequentialWgetTransferMethod(BaseTransferMethod):
             start_time = time.time()
             try:
                 subprocess.check_output("wget --output-document=\"%s\" \"%s\"" % (self.output_path(url), url), stderr=subprocess.STDOUT, shell=True)
-            except subprocess.CalledProcessError as e:
-                error_msg = e.output
-            finally:
                 elapsed_time = time.time() - start_time
-                self.report_transfer_finished(url, time.time(), elapsed_time, error_msg)
+                self.report_transfer_finished(url, time.time(), elapsed_time)
+            except subprocess.CalledProcessError as e:
+                elapsed_time = time.time() - start_time
+                error_msg = e.output
+                self.report_transfer_failed(url, time.time(), elapsed_time, error_msg)
