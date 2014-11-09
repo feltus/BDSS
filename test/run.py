@@ -17,14 +17,15 @@ class RunJobTestCase(TestCase):
             'name': 'test job',
             'email': 'watts4@clemson.edu',
             'data_transfer_method': 'sequential_curl',
-            'data_destination': 'localhost'
+            'data_destination': 'localhost',
+            'destination_directory': '/Users/nwatts/Desktop'
         }
         urls = [
             'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR039/SRR039884/SRR039884.sra',
             'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR039/SRR039885/SRR039885.sra',
-            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058526/SRR058526.sra',
-            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058527/SRR058527.sra',
-            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058528/SRR058528.sra'
+            'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058526/SRR058526.sra'#,
+            #'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058527/SRR058527.sra',
+            #'ftp://130.14.250.7/sra/sra-instant/reads/ByRun/sra/SRR/SRR058/SRR058528/SRR058528.sra'
         ]
 
         job = Job(**job_params)

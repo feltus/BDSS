@@ -185,6 +185,8 @@ $(document).ready(function() {
             }
         }
 
+        requireValue($('#destination-directory'), 'A directory is required.');
+
         var inputValid = ($('.err-msg').length === 0);
         if (!inputValid) {
             spinner.remove();
@@ -206,6 +208,7 @@ $(document).ready(function() {
                 data_transfer_method: $('#data-transfer-method').val(),
                 data_transfer_method_options: transferMethodOptions,
                 data_destination: $('#data-destination').val(),
+                destination_directory: $('#destination-directory').val(),
                 required_data: $('.url-input').map(function() { return { data_url: $(this).val() }; }).get()
             }
         };

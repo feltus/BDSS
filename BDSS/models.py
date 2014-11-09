@@ -72,6 +72,10 @@ class Job(BaseModel):
     data_destination = Column(String(30), nullable=False)
     # TODO: Validate that this matches an available destination.
 
+    ## @var destination_directory
+    #  The directory on the destination machine to save downloaded data into.
+    destination_directory = Column(Text(), nullable=False)
+
     ## @var created_at
     #  The time this job was submitted.
     created_at = Column(DateTime(), nullable=False, default=datetime.utcnow)

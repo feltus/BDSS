@@ -51,7 +51,7 @@ def start_job(job):
         file_transfer_method_init_args = {}
     file_transfer_method = file_transfer_method_class(**file_transfer_method_init_args)
 
-    job_directory = path.join(destination_config['base_dir'], 'job_%d' % job.job_id)
+    job_directory = path.join(job.destination_directory, 'bdss', 'job_%d' % job.job_id)
 
     file_transfer_method.connect()
     file_transfer_method.mkdir_p(job_directory)

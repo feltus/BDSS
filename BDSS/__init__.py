@@ -42,7 +42,7 @@ def list_jobs():
 def create_job():
     params = request.get_json()
 
-    job_params = filter_params(params['job'], ['name', 'email', 'data_transfer_method', 'data_transfer_method_options', 'data_destination'])
+    job_params = filter_params(params['job'], ['name', 'email', 'data_transfer_method', 'data_transfer_method_options', 'data_destination', 'destination_directory'])
 
     data_params = [filter_params(p, ['data_url', 'checksum', 'checksum_method']) for p in params['job']['required_data']]
 
