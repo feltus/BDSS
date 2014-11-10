@@ -224,7 +224,7 @@ $(document).ready(function() {
                 spinner.remove();
                 submitButton.removeAttr('disabled');
                 console.log(response);
-                window.location = 'index.html';
+                window.location = '/';
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 spinner.remove();

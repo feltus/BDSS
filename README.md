@@ -35,20 +35,18 @@ cp data_destinations.example.yml data_destinations.yml
 ```ApacheConf
 Listen 80
 <VirtualHost *:80>
-	DocumentRoot "/path/to/bdss/BDSS/static"
 
 	<Directory "/path/to/bdss">
 		Require all granted
 	</Directory>
 
+	Alias /static/ /path/to/bdss/BDSS/static/
+
 	WSGIDaemonProcess bdss user=user group=group processes=1 threads=5 \
 		python-path=/path/to/virtualenvs/bdss/lib/python2.7/site-packages:/path/to/bdss/BDSS
 	WSGIScriptAlias /api /path/to/bdss/bdss.wsgi
-
-	<Location /api/>
-		WSGIProcessGroup bdss
-		WSGIApplicationGroup %{GLOBAL}
-	</Location>
+	WSGIProcessGroup bdss
+	WSGIApplicationGroup %{GLOBAL}
 
 </VirtualHost>
 ```

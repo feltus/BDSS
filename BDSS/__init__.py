@@ -1,7 +1,7 @@
 import json
 
 from datetime import datetime
-from flask import Flask, g, request, Response
+from flask import Flask, g, render_template, request, Response
 
 from .common import config, db_engine, DBSession
 from .models import Job, DataItem
@@ -33,12 +33,23 @@ def close_db_connection(exception):
     g.db_session.close()
     g.db_connection.close()
 
+@app.route('/')
+def index_page():
+    return render_template('index.html')
 
-@app.route('/jobs', methods=['GET'])
+@app.route('/job/<job_id>')
+def show_job_page(job_id):
+    return render_template('show.html', job_id=job_id)
+
+@app.route('/submit')
+def submit_page():
+    return render_template('submit.html')
+
+@app.route('/api/jobs', methods=['GET'])
 def list_jobs():
     return json_response({'jobs': [job.serialize() for job in g.db_session.query(Job).all()]})
 
-@app.route('/jobs', methods=['POST'])
+@app.route('/api/jobs', methods=['POST'])
 def create_job():
     params = request.get_json()
 
@@ -58,7 +69,7 @@ def create_job():
         g.db_session.rollback()
         return json_response({'errors': [str(e)]}, status=400)
 
-@app.route('/jobs/<job_id>')
+@app.route('/api/jobs/<job_id>')
 def show_job(job_id):
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
 
@@ -67,7 +78,7 @@ def show_job(job_id):
     else:
         return json_response({}, status=404)
 
-@app.route('/jobs/<job_id>', methods=['POST'])
+@app.route('/api/jobs/<job_id>', methods=['POST'])
 def update_job(job_id):
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
     params = request.get_json()
@@ -79,16 +90,7 @@ def update_job(job_id):
     else:
         return json_response({}, status=404)
 
-
-def show_job(job_id):
-    job = g.db_session.query(Job).filter_by(job_id=job_id).first()
-
-    if job != None:
-        return json_response({'job': job.serialize()})
-    else:
-        return json_response({}, status=404)
-
-@app.route('/jobs/<job_id>/data/status', methods=['POST'])
+@app.route('/api/jobs/<job_id>/data/status', methods=['POST'])
 def update_transfer_status(job_id):
     params = request.get_json()
 
@@ -123,13 +125,13 @@ def update_transfer_status(job_id):
     except ValueError as e:
         return json_response({'errors': [str(e)]}, status=400)
 
-@app.route('/data_transfer_methods')
+@app.route('/api/data_transfer_methods')
 def list_data_transfer_methods():
     methods = [dict(method.iteritems(), id=id) for (id, method) in config['data_transfer_methods'].iteritems()]
 
     return json_response({'methods': sorted(methods, lambda m1,m2: cmp(m1['id'], m2['id']))})
 
-@app.route('/data_destinations')
+@app.route('/api/data_destinations')
 def list_data_destinations():
     destinations = [{'id': id, 'label': dest['label'], 'description': dest['description']} for (id, dest) in config['data_destinations'].iteritems()]
     return json_response({'destinations': sorted(destinations, lambda d1, d2: cmp(d1['id'], d2['id']))})

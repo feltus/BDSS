@@ -62,16 +62,7 @@ var loadJobInfo = function(job_id) {
 };
 
 $(document).ready(function() {
-    var job_id = parseInt(window.location.hash.slice(1));
-    if (!isNaN(job_id)) {
-        loadJobInfo(job_id);
-    } else {
-        alert('Invalid job ID');
-    }
-});
-
-$(window).on('hashchange', function() {
-    var job_id = parseInt(window.location.hash.slice(1));
+    var job_id = parseInt(window.location.href.split('/')[4]);
     if (!isNaN(job_id)) {
         loadJobInfo(job_id);
     } else {
