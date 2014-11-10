@@ -52,3 +52,10 @@ Listen 80
 
 </VirtualHost>
 ```
+
+### Start job processing daemon
+
+```Shell
+cd /path/to/bdss
+python worker.py start
+```
