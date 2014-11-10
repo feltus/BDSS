@@ -12,15 +12,6 @@ workon bdss
 pip install -r requirements.txt
 ```
 
-### Create database
-
-Set `database_url` option in config/app.yml.
-See [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#database-urls) for URL format.
-
-```Shell
-python create_db.py
-```
-
 ### Configuration files
 
 ```Shell
@@ -28,6 +19,23 @@ cd BDSS/config
 cp app.example.yml app.yml
 cp data_transfer_methods.example.yml data_transfer_methods.yml
 cp data_destinations.example.yml data_destinations.yml
+```
+
+### Create database
+
+Set `database_url` option in BDSS/config/app.yml.
+See [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#database-urls) for URL format.
+
+```Shell
+python create_db.py
+```
+
+### Generate secret key
+
+Generate a random secret key for [Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions). This will be saved in BDSS/config/app.yml.
+
+```Shell
+python gen_key.py
 ```
 
 ### Apache VirtualHost configuration:

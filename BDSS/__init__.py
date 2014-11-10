@@ -1,10 +1,13 @@
 import json
+import re
 
 from datetime import datetime
-from flask import Flask, g, render_template, request, Response
+from flask import Flask, g, redirect, render_template, request, Response, url_for
+from flask.ext.login import LoginManager, login_required, login_user, logout_user
+from passlib.context import CryptContext
 
 from .common import config, db_engine, DBSession
-from .models import Job, DataItem
+from .models import User, Job, DataItem
 
 
 ## Filter request params to prevent mass assignment.
@@ -21,7 +24,24 @@ def json_response(obj, status=200):
 
 
 app = Flask(__name__)
+app.secret_key = config['app']['secret_key']
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'signin'
+
+@login_manager.user_loader
+def load_user(userid):
+    return g.db_session.query(User).filter_by(id=int(userid)).first()
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    if 'content-type' in request.headers.keys() and request.headers['content-type'] == 'application/json':
+        return json_response({}, 401)
+    else:
+        return redirect('/signin')
+
+pwd_context = CryptContext(schemes='bcrypt_sha256')
 
 @app.before_request
 def open_db_connection():
@@ -34,22 +54,94 @@ def close_db_connection(exception):
     g.db_connection.close()
 
 @app.route('/')
+@login_required
 def index_page():
     return render_template('index.html')
 
+@app.route('/signin', methods=['GET'])
+def signin_page():
+    return render_template('signin.html')
+
+@app.route('/signin', methods=['POST'])
+def signin():
+    params = request.get_json()
+
+    errors = {}
+
+    if 'email' not in params.keys() or len(params['email']) == 0:
+        errors['email'] = 'A valid email address is required'
+
+    if 'password' not in params.keys() or len(params['password']) == 0:
+        errors['password'] = 'A password is required'
+
+    if len(errors) > 0:
+        return json_response({'errors': errors}, status=400)
+    else:
+        user = g.db_session.query(User).filter_by(email=params['email']).first()
+        if user and pwd_context.verify(params['password'], user.password_hash):
+            login_user(user)
+            return json_response({})
+        else:
+            return json_response({'errors': {'password': 'Invalid username/password combination'}}, status=401)
+
+@app.route('/signup', methods=['GET'])
+def signup_page():
+    return render_template('signup.html')
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    params = request.get_json()
+
+    errors = {}
+
+    if 'name' not in params.keys() or len(params['name']) == 0:
+        errors['name'] = 'A name is required'
+
+    if 'email' not in params.keys() or len(params['email']) == 0 or not re.compile(r'^\S+@.+\.\S+$').match(params['email']):
+        errors['email'] = 'A valid email address is required'
+
+    if 'password' not in params.keys() or len(params['password']) == 0:
+        errors['password'] = 'A password is required'
+    elif len(params['password']) < 6:
+        errors['password'] = 'Your password must be at least 6 characters long'
+    elif 'password_confirmation' not in params.keys() or len(params['password_confirmation']) == 0:
+        errors['password_confirmation'] = 'You must confirm your password'
+    elif params['password'] != params['password_confirmation']:
+        errors['password_confirmation'] = 'Password confirmation does not match password'
+
+    if len(errors) > 0:
+        return json_response({'errors': errors}, status=400)
+    else:
+        pwd_hash = pwd_context.encrypt(params['password'])
+        user = User(name=params['name'], email=params['email'], password_hash=pwd_hash)
+        g.db_session.add(user)
+        g.db_session.commit()
+        login_user(user)
+        return json_response({})
+
+@app.route('/signout')
+@login_required
+def signout():
+    logout_user()
+    return ('', 204)
+
 @app.route('/job/<job_id>')
+@login_required
 def show_job_page(job_id):
     return render_template('show.html', job_id=job_id)
 
 @app.route('/submit')
+@login_required
 def submit_page():
     return render_template('submit.html')
 
 @app.route('/api/jobs', methods=['GET'])
+@login_required
 def list_jobs():
     return json_response({'jobs': [job.serialize() for job in g.db_session.query(Job).all()]})
 
 @app.route('/api/jobs', methods=['POST'])
+@login_required
 def create_job():
     params = request.get_json()
 
@@ -70,6 +162,7 @@ def create_job():
         return json_response({'errors': [str(e)]}, status=400)
 
 @app.route('/api/jobs/<job_id>')
+@login_required
 def show_job(job_id):
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
 
@@ -79,6 +172,7 @@ def show_job(job_id):
         return json_response({}, status=404)
 
 @app.route('/api/jobs/<job_id>', methods=['POST'])
+@login_required
 def update_job(job_id):
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
     params = request.get_json()
@@ -91,6 +185,7 @@ def update_job(job_id):
         return json_response({}, status=404)
 
 @app.route('/api/jobs/<job_id>/data/status', methods=['POST'])
+@login_required
 def update_transfer_status(job_id):
     params = request.get_json()
 
@@ -126,12 +221,14 @@ def update_transfer_status(job_id):
         return json_response({'errors': [str(e)]}, status=400)
 
 @app.route('/api/data_transfer_methods')
+@login_required
 def list_data_transfer_methods():
     methods = [dict(method.iteritems(), id=id) for (id, method) in config['data_transfer_methods'].iteritems()]
 
     return json_response({'methods': sorted(methods, lambda m1,m2: cmp(m1['id'], m2['id']))})
 
 @app.route('/api/data_destinations')
+@login_required
 def list_data_destinations():
     destinations = [{'id': id, 'label': dest['label'], 'description': dest['description']} for (id, dest) in config['data_destinations'].iteritems()]
     return json_response({'destinations': sorted(destinations, lambda d1, d2: cmp(d1['id'], d2['id']))})

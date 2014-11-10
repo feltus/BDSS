@@ -2,6 +2,7 @@ import json
 import re
 
 from datetime import datetime
+from flask.ext.login import UserMixin
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy.types import BigInteger, DateTime, Enum, Float, Integer, String, Text
 from sqlalchemy.orm import backref, relationship, validates
@@ -19,6 +20,26 @@ _url_regex = re.compile(
     r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 _checksum_regex = re.compile('^[0-9a-f]+', re.IGNORECASE)
+
+class User(BaseModel, UserMixin):
+
+    __tablename__ = 'users'
+
+    ## @var id
+    #  Unique ID for this user.
+    id = Column(Integer(), primary_key=True, nullable=False)
+
+    ## @var name
+    #  User's full name.
+    name = Column(String(100), nullable=False)
+
+    ## @var email
+    #  User's email address.
+    email = Column(String(50), nullable=False, unique=True)
+
+    ## @var password_hash
+    password_hash = Column(String(80), nullable=False)
+
 
 class Job(BaseModel):
 
