@@ -3,7 +3,7 @@ import re
 
 from datetime import datetime
 from flask import Flask, g, redirect, render_template, request, Response, url_for
-from flask.ext.login import LoginManager, login_required, login_user, logout_user
+from flask.ext.login import current_user, LoginManager, login_required, login_user, logout_user
 from passlib.context import CryptContext
 
 from .common import config, db_engine, DBSession
@@ -123,7 +123,7 @@ def signup():
 @login_required
 def signout():
     logout_user()
-    return ('', 204)
+    return redirect('/signin')
 
 @app.route('/job/<job_id>')
 @login_required
