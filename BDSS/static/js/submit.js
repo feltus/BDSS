@@ -1,33 +1,3 @@
-var NUM_URLS = 1;
-var buildUrlInput = function() {
-    NUM_URLS += 1;
-
-    return $('<div class="form-group url-input-group">' +
-            '<div class="input-group">' +
-                '<label class="sr-only" for="url' + NUM_URLS + '">Data URL</label>' +
-                '<input type="text" class="url-input form-control" id="url' + NUM_URLS + '">' +
-                '<span class="input-group-btn">' +
-                    '<button class="btn btn-danger remove-url-btn" type="button">&times;</button>' +
-                '</span>' +
-            '</div>' +
-        '</div>');
-};
-
-var bindRemoveUrlButtonHandler = function() {
-    $('.remove-url-btn').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        $(this).closest('.form-group').remove();
-
-        if ($('.url-input').length === 1) {
-            $('.remove-url-btn').attr('disabled', true);
-        } else {
-            $('.remove-url-btn').removeAttr('disabled');
-        }
-    });
-};
-
 $(document).ready(function() {
 
     var transferMethods = null;
@@ -65,15 +35,6 @@ $(document).ready(function() {
         }, error: function() {
             console.warn('Unable to retrieve data destinations');
         }
-    });
-
-    $('#add-url-btn').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var inputGroup = buildUrlInput();
-        inputGroup.insertBefore($('#add-url-group'));
-        $('.remove-url-btn').removeAttr('disabled');
-        bindRemoveUrlButtonHandler();
     });
 
     $('#url-manifest')
