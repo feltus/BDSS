@@ -1,0 +1,16 @@
+{% extends 'layout.html.jinja' %}
+
+{% block nav %}
+<li class="active"><a href="#">View All Jobs</a></li>
+<li><a href="/submit">Start New Job</a></li>
+{% endblock %}
+
+{% block content %}
+<div id="placeholder"><p>Loading jobs...</p></div>
+
+<ul id="jobs-list" class="hidden striped"></ul>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/job_list.js"></script>
+{% endblock %}

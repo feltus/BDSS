@@ -1,0 +1,85 @@
+{% extends 'layout.html.jinja' %}
+
+{% block nav %}
+<li><a href="/">View All Jobs</a></li>
+<li class="active"><a href="#">Start New Job</a></li>
+{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#job-info-tab" role="tab" data-toggle="tab">Info</a></li>
+    <li><a href="#data-tab" role="tab" data-toggle="tab">Data</a></li>
+    <li><a href="#transfer-method-tab" role="tab" data-toggle="tab">Data Transfer</a></li>
+    <li><a href="#destination-tab" role="tab" data-toggle="tab">Destination</a></li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane active" id="job-info-tab">
+        <form id="job-info-form" role="form">
+            <div class="form-group">
+                <label for="job-name">Job Name:</label>
+                <input type="text" class="form-control" id="job-name">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" class="form-control" id="email">
+                <p class="help-block">Notifications about job status will be sent to this address.</p>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-pane" id="data-tab">
+        <form id="data-form" role="form">
+            <label>Data URLs:</label>
+
+            <div class="well">
+                <div class="form-group">
+                    <label for="url-manifest">URL Manifest:</label>
+                    <input type="file" id="url-manifest">
+                    <p class="help-block">Upload a text file containing one URL per line. HTTP and FTP URLs are supported.</p>
+                </div>
+            </div>
+
+            <ul id="url-list" class="striped"></ul>
+        </form>
+    </div>
+
+    <div class="tab-pane" id="transfer-method-tab">
+        <form id="transfer-method-form" role="form">
+            <div class="form-group">
+                <label for="data-transfer-method">Transfer Method:</label>
+                <select class="form-control" id="data-transfer-method"></select>
+                <p class="help-block"></p>
+            </div>
+        </form>
+        <div id="transfer-method-options"></div>
+    </div>
+
+    <div class="tab-pane" id="destination-tab">
+        <form id="destination-form" role="form">
+            <div class="form-group">
+                <label for="data-destination">Destination Host:</label>
+                <select class="form-control" id="data-destination"></select>
+                <p class="help-block"></p>
+            </div>
+            <div class="form-group">
+                <label for="destination-directory">Destination Directory:</label>
+                <input type="text" class="form-control" id="destination-directory"></select>
+            </div>
+        </form>
+    </div>
+
+    <div class="form-group" style="text-align:right;">
+        <button class="btn btn-primary btn-lg" type="submit" id="submit-request-btn">Submit</button>
+    </div>
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/form-utils.js"></script>
+<script src="/static/js/form.js"></script>
+<script src="/static/js/submit.js"></script>
+{% endblock %}

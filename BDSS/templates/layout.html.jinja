@@ -13,32 +13,28 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <title>BDSS</title>
+    <title>{% block title %}BDSS{% endblock %}</title>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
             <ul class="nav nav-pills pull-right">
-                <li><a href="/">View All Jobs</a></li>
-                <li><a href="/submit">Start New Job</a></li>
+                {% block nav %}
+                {% endblock %}
             </ul>
             <h3 class="text-muted">Big Data Smart Socket</h3>
         </div>
 
-        <a href="/"><i class="glyphicon glyphicon-chevron-left"></i> All jobs</a>
-
-        <div id="placeholder"><p>Loading job...</p></div>
-
-        <h3 id="job-title" class="hidden"></h3>
-        <div id="job-info" class="hidden"></div>
-        <ul id="data-list" class="hidden striped" style="margin-top: 15px;"></ul>
+        {% block content %}
+        {% endblock %}
 
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="/static/js/show.js"></script>
+    {% block scripts %}
+    {% endblock %}
 
 </body>
 </html>

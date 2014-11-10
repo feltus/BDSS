@@ -56,11 +56,11 @@ def close_db_connection(exception):
 @app.route('/')
 @login_required
 def index_page():
-    return render_template('index.html')
+    return render_template('index.html.jinja')
 
 @app.route('/signin', methods=['GET'])
 def signin_page():
-    return render_template('signin.html')
+    return render_template('signin.html.jinja')
 
 @app.route('/signin', methods=['POST'])
 def signin():
@@ -86,7 +86,7 @@ def signin():
 
 @app.route('/signup', methods=['GET'])
 def signup_page():
-    return render_template('signup.html')
+    return render_template('signup.html.jinja')
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -128,12 +128,12 @@ def signout():
 @app.route('/job/<job_id>')
 @login_required
 def show_job_page(job_id):
-    return render_template('show.html', job_id=job_id)
+    return render_template('show.html.jinja', job_id=job_id)
 
 @app.route('/submit')
 @login_required
 def submit_page():
-    return render_template('submit.html')
+    return render_template('submit.html.jinja')
 
 @app.route('/api/jobs', methods=['GET'])
 @login_required
