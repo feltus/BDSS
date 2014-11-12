@@ -1,40 +1,32 @@
+/*global buildForm*/
 $(document).ready(function() {
 
-    var transferMethods = null;
-    $.ajax('/api/data_transfer_methods', {
-        dataType: 'json',
-        success: function(response) {
-            transferMethods = response.methods;
-            var select = $('#data-transfer-method');
-            select
-                .html(response.methods.map(function(m) { return '<option value="' + m.id + '" data-description="' + m.description + '">' + m.label + '</option>'; }))
-                .on('change', function() {
-                    var selectedMethod = transferMethods.filter(function(m) { return m.id == select.find('option:selected').val(); })[0];
-                    $(this).siblings('.help-block').html(selectedMethod.description);
-                    $('#transfer-method-options').empty().append(buildForm(selectedMethod.options));
-                });
-            var selectedMethod = transferMethods.filter(function(m) { return m.id == select.find('option:selected').val(); })[0];
-            select.siblings('.help-block').html(selectedMethod.description);
-            $('#transfer-method-options').empty().append(buildForm(selectedMethod.options));
-        }, error: function() {
-            console.warn('Unable to retrieve data transfer methods');
-        }
+    // Show description and build options form for initial transfer method.
+    var transferMethodSelect = $('#data-transfer-method');
+    var selectedMethod = transferMethodSelect.val();
+    var methodOption = transferMethodSelect.find('option[value="' + selectedMethod + '"]');
+    transferMethodSelect.siblings('.help-block').html(methodOption.data('method').description);
+    $('#transfer-method-options').empty().append(buildForm(methodOption.data('method').options));
+
+    // Show new description and rebuild options form when the transfer method is changed.
+    transferMethodSelect.on('change', function() {
+        var selectedMethod = $(this).val();
+        var methodOption = $(this).find('option[value="' + selectedMethod + '"]');
+        $(this).siblings('.help-block').html(methodOption.data('method').description);
+        $('#transfer-method-options').empty().append(buildForm(methodOption.data('method').options));
     });
 
+    // Show description for initial destination.
+    var destinationSelect = $('#data-destination');
+    var selectedDestination = destinationSelect.val();
+    var destinationOption = destinationSelect.find('option[value="' + selectedDestination + '"]');
+    destinationSelect.siblings('.help-block').html(destinationOption.data('destination').description);
 
-    $.ajax('/api/data_destinations', {
-        dataType: 'json',
-        success: function(response) {
-            var select = $('#data-destination');
-            select
-                .html(response.destinations.map(function(m) { return '<option value="' + m.id + '" data-description="' + m.description + '">' + m.label + '</option>'; }))
-                .on('change', function() {
-                    $(this).siblings('.help-block').html($(this).find('option:selected').data('description'));
-                })
-                .siblings('.help-block').html(select.find('option:selected').data('description'));
-        }, error: function() {
-            console.warn('Unable to retrieve data destinations');
-        }
+    // Show new description when the destination is changed.
+    destinationSelect.on('change', function() {
+        var selectedDestination = $(this).val();
+        var destinationOption = $(this).find('option[value="' + selectedDestination + '"]');
+        $(this).siblings('.help-block').html(destinationOption.data('destination').description);
     });
 
     $('#url-manifest')

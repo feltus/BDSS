@@ -2,7 +2,7 @@ import json
 import re
 
 from datetime import datetime
-from flask import Flask, g, redirect, render_template, request, Response, url_for
+from flask import abort, Flask, g, redirect, render_template, request, Response, url_for
 from flask.ext.login import current_user, LoginManager, login_required, login_user, logout_user
 from passlib.context import CryptContext
 
@@ -133,7 +133,11 @@ def show_job_page(job_id):
 @app.route('/submit')
 @login_required
 def submit_page():
-    return render_template('submit.html.jinja')
+    transfer_methods = [{'id': id, 'label': method.get('label', id), 'description': method.get('description', None), 'options': method.get('options', None)} for (id, method) in config['data_transfer_methods'].iteritems()]
+
+    destinations = [{'id': id, 'label': dest.get('label', id), 'description': dest.get('description', None)} for (id, dest) in config['data_destinations'].iteritems()]
+
+    return render_template('submit.html.jinja', transfer_methods=transfer_methods, destinations=destinations)
 
 @app.route('/api/jobs', methods=['GET'])
 @login_required
@@ -219,16 +223,3 @@ def update_transfer_status(job_id):
         return json_response(True)
     except ValueError as e:
         return json_response({'errors': [str(e)]}, status=400)
-
-@app.route('/api/data_transfer_methods')
-@login_required
-def list_data_transfer_methods():
-    methods = [dict(method.iteritems(), id=id) for (id, method) in config['data_transfer_methods'].iteritems()]
-
-    return json_response({'methods': sorted(methods, lambda m1,m2: cmp(m1['id'], m2['id']))})
-
-@app.route('/api/data_destinations')
-@login_required
-def list_data_destinations():
-    destinations = [{'id': id, 'label': dest['label'], 'description': dest['description']} for (id, dest) in config['data_destinations'].iteritems()]
-    return json_response({'destinations': sorted(destinations, lambda d1, d2: cmp(d1['id'], d2['id']))})
