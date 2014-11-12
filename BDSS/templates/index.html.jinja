@@ -6,11 +6,30 @@
 {% endblock %}
 
 {% block content %}
-<div id="placeholder"><p>Loading jobs...</p></div>
+<h3 class="page-header">All Jobs</h3>
 
-<ul id="jobs-list" class="hidden striped"></ul>
-{% endblock %}
+{% if jobs|length > 0 %}
+    <ul class="striped">
+        {% for job in jobs %}
+            <li>
+                <h4><a href="/jobs/{{ job.job_id }}">{{ job.name }}</a></h4>
+                <p>Status: {{ job.status()|status_label }}</p>
+                {% if job.status() == 'in_progress' %}
+                    <p>Started: {{ job.started_at.isoformat() }}</p>
+                {% elif job.status() == 'completed' or job.status() == 'failed' %}
+                    <p>{{ job.status()|capitalize }} in {{ job.measured_time|round(2) }} seconds</p>
+                {% endif %}
+                <p>{{ job.required_data|length }} data files (
+                    {%- for status, count in job.data_status_summary().iteritems() -%}
+                        {{ count }} {{ status.split('_')|map('capitalize')|join(' ') }}
+                        {%- if not loop.last %}, {% endif -%}
+                    {%- endfor -%}
+                )</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not submitted any jobs.</p>
+{% endif %}
 
-{% block scripts %}
-<script src="/static/js/job_list.js"></script>
 {% endblock %}

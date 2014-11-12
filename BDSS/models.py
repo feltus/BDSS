@@ -120,6 +120,10 @@ class Job(BaseModel):
         else:
             return 'failed'
 
+    def data_status_summary(self):
+        statuses = ['pending', 'in_progress', 'completed', 'failed']
+        return dict([(status, len([d for d in self.required_data if d.status == status])) for status in statuses])
+
     def __repr__(self):
         return '<Job (job_id=%d, name="%s")>' % (self.job_id, self.name)
 

@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from flask import abort, Flask, g, redirect, render_template, request, Response, url_for
 from flask.ext.login import current_user, LoginManager, login_required, login_user, logout_user
+from jinja2 import Markup
 from passlib.context import CryptContext
 
 from .common import config, db_engine, DBSession
@@ -25,6 +26,16 @@ def json_response(obj, status=200):
 
 app = Flask(__name__)
 app.secret_key = config['app']['secret_key']
+
+@app.template_filter('status_label')
+def status_label_filter(status):
+    label_classes = {
+        'pending': 'default',
+        'in_progress': 'primary',
+        'completed': 'success',
+        'failed': 'danger'
+    }
+    return Markup(u'<span class="label label-%s">%s</span>' % (label_classes[status.lower()], status.capitalize()))
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -55,8 +66,8 @@ def close_db_connection(exception):
 
 @app.route('/')
 @login_required
-def index_page():
-    return render_template('index.html.jinja')
+def index():
+    return redirect('/jobs')
 
 @app.route('/signin', methods=['GET'])
 def signin_page():
@@ -124,6 +135,12 @@ def signup():
 def signout():
     logout_user()
     return redirect('/signin')
+
+@app.route('/jobs')
+@login_required
+def jobs_index():
+    jobs = g.db_session.query(Job).all()
+    return render_template('index.html.jinja', jobs=jobs)
 
 @app.route('/job/<job_id>')
 @login_required
