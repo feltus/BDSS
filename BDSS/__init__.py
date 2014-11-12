@@ -142,10 +142,14 @@ def jobs_index():
     jobs = g.db_session.query(Job).all()
     return render_template('index.html.jinja', jobs=jobs)
 
-@app.route('/job/<job_id>')
+@app.route('/jobs/<job_id>')
 @login_required
 def show_job_page(job_id):
-    return render_template('show.html.jinja', job_id=job_id)
+    job = g.db_session.query(Job).filter_by(job_id=job_id).first()
+    if job == None:
+        abort(404)
+    else:
+        return render_template('show.html.jinja', job=job)
 
 @app.route('/submit')
 @login_required
