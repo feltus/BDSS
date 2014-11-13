@@ -139,7 +139,7 @@ def signout():
 @app.route('/jobs')
 @login_required
 def jobs_index():
-    jobs = g.db_session.query(Job).all()
+    jobs = g.db_session.query(Job).filter_by(owner=current_user).all()
     return render_template('index.html.jinja', jobs=jobs)
 
 @app.route('/jobs/<job_id>')
@@ -148,6 +148,8 @@ def show_job_page(job_id):
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
     if job == None:
         abort(404)
+    elif job.owner != current_user:
+        abort(403)
     else:
         return render_template('show.html.jinja', job=job)
 
@@ -163,7 +165,8 @@ def submit_page():
 @app.route('/api/jobs', methods=['GET'])
 @login_required
 def list_jobs():
-    return json_response({'jobs': [job.serialize() for job in g.db_session.query(Job).all()]})
+    jobs = g.db_session.query(Job).filter_by(owner=current_user).all()
+    return json_response({'jobs': [job.serialize() for job in jobs]})
 
 @app.route('/api/jobs', methods=['POST'])
 @login_required
@@ -175,6 +178,7 @@ def create_job():
     data_params = [filter_params(p, ['data_url', 'checksum', 'checksum_method']) for p in params['job']['required_data']]
 
     job = Job(**job_params)
+    job.owner = current_user
     for p in data_params:
         job.required_data.append(DataItem(**p))
 
@@ -191,10 +195,12 @@ def create_job():
 def show_job(job_id):
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
 
-    if job != None:
-        return json_response({'job': job.serialize()})
+    if job == None:
+        abort(404)
+    elif job.owner != current_user:
+        abort(403)
     else:
-        return json_response({}, status=404)
+        return json_response({'job': job.serialize()})
 
 @app.route('/api/jobs/<job_id>', methods=['POST'])
 @login_required
@@ -202,12 +208,14 @@ def update_job(job_id):
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
     params = request.get_json()
 
-    if job != None:
+    if job == None:
+        abort(404)
+    elif job.owner != current_user:
+        abort(403)
+    else:
         job.measured_time = params['measured_time']
         g.db_session.commit()
         return json_response({'job': job.serialize()})
-    else:
-        return json_response({}, status=404)
 
 @app.route('/api/jobs/<job_id>/data/status', methods=['POST'])
 @login_required
@@ -216,7 +224,9 @@ def update_transfer_status(job_id):
 
     job = g.db_session.query(Job).filter_by(job_id=job_id).first()
     if job == None:
-        return json_response({'errors': ['Job not found']}, status=404)
+        abort(404)
+    elif job.owner != current_user:
+        abort(403)
 
     data_item = g.db_session.query(DataItem).filter_by(job_id=job_id, data_url=params['url']).first()
     if data_item == None:

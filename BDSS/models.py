@@ -40,6 +40,10 @@ class User(BaseModel, UserMixin):
     ## @var password_hash
     password_hash = Column(String(80), nullable=False)
 
+    ## @var jobs
+    #  Jobs this user has submitted.
+    jobs = relationship('Job', backref='owner')
+
 
 class Job(BaseModel):
 
@@ -48,6 +52,10 @@ class Job(BaseModel):
     ## @var job_id
     #  Unique ID for this job.
     job_id = Column(Integer(), primary_key=True, nullable=False)
+
+    ## @var owner_id
+    #  The ID of the user who submitted this job.
+    owner_id = Column(Integer(), ForeignKey('users.id'), nullable=False)
 
     ## @var name
     #  User supplied name for the job.
