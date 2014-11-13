@@ -56,8 +56,10 @@ class WorkerDaemon():
         except pidfile.AlreadyLocked:
             raise WorkerDaemonError('PID file %s already locked' % self.pidfile_path)
 
+
+
         logging.basicConfig(
-            filename=os.path.join(containing_dir, 'BDSS', 'log', 'worker.log'),
+            filename=os.path.join(containing_dir, 'BDSS', 'worker.log'),
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             level=logging.DEBUG,
             filemode='a'

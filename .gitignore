@@ -9,7 +9,7 @@ BDSS/config/data_transfer_methods.yml
 BDSS/development.sqlite
 
 # Log files
-BDSS/log/*.log
+BDSS/*.log
 
 # oh-my-zsh virtualenvwrapper plugin
 .venv
