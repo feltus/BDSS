@@ -58,7 +58,7 @@ Listen 80
 
 	WSGIDaemonProcess bdss user=user group=group processes=1 threads=5 \
 		python-path=/path/to/virtualenvs/bdss/lib/python2.7/site-packages:/path/to/bdss/BDSS
-	WSGIScriptAlias /api /path/to/bdss/bdss.wsgi
+	WSGIScriptAlias / /path/to/bdss/bdss.wsgi
 	WSGIProcessGroup bdss
 	WSGIApplicationGroup %{GLOBAL}
 
