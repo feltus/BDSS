@@ -99,17 +99,6 @@ $(document).ready(function() {
 
         requireValue($('#job-name'), 'A job name is required.');
 
-        // Validate email address
-        var emailInput = $('#email');
-        var email = emailInput.val();
-        if (requireValue(emailInput, 'A valid email address is required.')) {
-            if (!email.match(/.+@.+\..+/)) {
-                showError(emailInput, 'Invalid email address');
-            } else {
-                hideError(emailInput);
-            }
-        }
-
         requireValue($('#destination-directory'), 'A directory is required.');
 
         var inputValid = ($('.err-msg').length === 0);
@@ -129,7 +118,6 @@ $(document).ready(function() {
         var request = {
             job: {
                 name: $('#job-name').val(),
-                email: email,
                 data_transfer_method: $('#data-transfer-method').val(),
                 data_transfer_method_options: transferMethodOptions,
                 data_destination: $('#data-destination').val(),

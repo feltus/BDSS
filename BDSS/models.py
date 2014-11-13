@@ -61,11 +61,6 @@ class Job(BaseModel):
     #  User supplied name for the job.
     name = Column(String(100), nullable=False)
 
-    ## @var email
-    #  Email address to send notifications to.
-    email = Column(String(50), nullable=False)
-    # TODO: Validate the format.
-
     ## @var required_data
     #  The data necessary for running this job.
     required_data = relationship('DataItem', backref='job')
@@ -139,7 +134,6 @@ class Job(BaseModel):
         return {
             'job_id': self.job_id,
             'name': self.name,
-            'email': self.email,
             'status': self.status(),
             'required_data': [item.serialize() for item in self.required_data],
             'created_at': self.created_at.isoformat(),
