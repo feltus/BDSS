@@ -44,7 +44,7 @@ class_path = 'methods.' + \
     method_name + '.' + \
     ''.join([s.capitalize() for s in method_name.split('_')]) + 'TransferMethod'
 method_class = import_class(class_path)
-method = method_class(config['app_url'], config['job_id'], **config['init_args'])
+method = method_class(config['app_url'], config['job_id'], config['owner'], config['signature'], **config['init_args'])
 
 start_time = time.time()
 method.transfer_data(urls)
@@ -52,7 +52,13 @@ elapsed_time = time.time() - start_time
 
 # Report job duration to BDSS server.
 url = config['app_url'] + '/api/jobs/' + str(config['job_id'])
-request = urllib2.Request(url, json.dumps({'measured_time': elapsed_time}), {'Content-Type': 'application/json'})
+request_data = {
+    'measured_time': elapsed_time,
+    'owner': config['owner'],
+    'job_id': config['job_id'],
+    'signature': config['signature']
+}
+request = urllib2.Request(url, json.dumps(request_data), {'Content-Type': 'application/json'})
 try:
     f = urllib2.urlopen(request)
     response = f.read()

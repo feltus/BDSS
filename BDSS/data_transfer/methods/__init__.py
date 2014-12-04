@@ -12,9 +12,11 @@ class BaseTransferMethod():
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, app_url, job_id, **kwargs):
+    def __init__(self, app_url, job_id, owner, signature, **kwargs):
         self.app_url = app_url
         self.job_id = job_id
+        self.owner = owner
+        self.signature = signature
         for option, value in kwargs.iteritems():
             setattr(self, option, value)
 
@@ -30,6 +32,9 @@ class BaseTransferMethod():
 
     def report_status(self, data):
         url = self.app_url + '/api/jobs/' + str(self.job_id) + '/data/status'
+        data['owner'] = self.owner
+        data['job_id'] = self.job_id
+        data['signature'] = self.signature
         request = urllib2.Request(url, json.dumps(data), {'Content-Type': 'application/json'})
         try:
             f = urllib2.urlopen(request)
@@ -43,7 +48,10 @@ class BaseTransferMethod():
         self.report_status({
             'status': 'started',
             'current_time': time_started,
-            'url': data_url
+            'url': data_url,
+            'owner': self.owner,
+            'job_id': self.job_id,
+            'signature': self.signature
         })
 
     def report_transfer_finished(self, data_url, time_finished=None, measured_time=None):
@@ -53,7 +61,10 @@ class BaseTransferMethod():
             'measured_transfer_time': measured_time,
             'transfer_size': self.get_downloaded_file_size(data_url),
             'current_time': time_finished,
-            'url': data_url
+            'url': data_url,
+            'owner': self.owner,
+            'job_id': self.job_id,
+            'signature': self.signature
         }
         self.report_status(data)
 
@@ -64,7 +75,10 @@ class BaseTransferMethod():
             'status': 'finished',
             'measured_transfer_time': measured_time,
             'current_time': time_finished,
-            'url': data_url
+            'url': data_url,
+            'owner': self.owner,
+            'job_id': self.job_id,
+            'signature': self.signature
         }
         self.report_status(data)
 

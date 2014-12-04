@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from flask import abort, Flask, g, redirect, render_template, request, Response, url_for
 from flask.ext.login import current_user, LoginManager, login_required, login_user, logout_user
+from itsdangerous import Signer
 from jinja2 import Markup
 from passlib.context import CryptContext
 
@@ -44,6 +45,21 @@ login_manager.login_view = 'signin'
 @login_manager.user_loader
 def load_user(userid):
     return g.db_session.query(User).filter_by(id=int(userid)).first()
+
+@login_manager.request_loader
+def load_user_from_request(self):
+    params = request.get_json()
+
+    if params is None:
+        return None
+
+    if 'owner' in params.keys() and 'job_id' in params.keys() and 'signature' in params.keys():
+        signer = Signer(config['app']['secret_key'])
+        s = '{0},{1}'.format(params['owner'], params['job_id'])
+        if signer.unsign('{0}.{1}'.format(s, params['signature'])) == s:
+            return g.db_session.query(User).filter_by(email=params['owner']).first()
+
+    return None
 
 @login_manager.unauthorized_handler
 def unauthorized():
