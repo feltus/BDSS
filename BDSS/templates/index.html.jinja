@@ -17,7 +17,7 @@
                 {% if job.status() == 'in_progress' %}
                     <p>Started: {{ job.started_at.isoformat() }}</p>
                 {% elif job.status() == 'completed' or job.status() == 'failed' %}
-                    <p>{{ job.status()|capitalize }} in {{ job.measured_time|round(2) }} seconds</p>
+                    <p>{{ job.status()|capitalize }} in {{ job.measured_time|float(0)|round(2)|default('?', true) }} seconds</p>
                 {% endif %}
                 <p>{{ job.required_data|length }} data files (
                     {%- for status, count in job.data_status_summary().iteritems() -%}

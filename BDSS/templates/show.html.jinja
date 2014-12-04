@@ -16,7 +16,7 @@
 {% if job.status() == 'in_progress' %}
     <p>Started: {{ job.started_at.isoformat() }}</p>
 {% elif job.status() == 'completed' or job.status() == 'failed' %}
-    <p>{{ job.status()|capitalize }} in {{ job.measured_time|round(2) }} seconds</p>
+    <p>{{ job.status()|capitalize }} in {{ job.measured_time|float(0)|round(2)|default('?', true) }} seconds</p>
 {% endif %}
 
 <ul id="data-list" class="striped" style="margin-top: 15px;">
