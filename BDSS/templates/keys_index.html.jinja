@@ -1,0 +1,46 @@
+{% extends 'authenticated.html.jinja' %}
+
+{% block nav %}
+<li><a href="/">View All Jobs</a></li>
+<li><a href="/submit">Start New Job</a></li>
+{% endblock %}
+
+{% block content %}
+
+<h3 class="page-header">SSH Keys</h3>
+
+{% if keys|length > 0 %}
+    <ul class="striped">
+        {% for k in keys %}
+            <li style="overflow:hidden;line-height:34px;">
+                <a class="btn btn-default pull-right" href="/keys/{{ k.id }}">Download</a>
+                {{ k.username }}@{{ k.destination }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You do not currently have any SSH keys.</p>
+{% endif %}
+
+<hr style="margin-top:35px;">
+
+<h4>Generate New Key</h4>
+<form action="/keys" method="post" role="form">
+    <div class="form-group">
+        <label for="destination">Destination</label>
+        <select class="form-control" name="destination" id="destination">
+            {% for dest in destinations %}
+            <option value="{{ dest.id }}" data-destination='{{ dest|tojson|safe }}'>{{ dest.label }}</option>
+            {% endfor %}
+        </select>
+        <p class="help-block"></p>
+    </div>
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" name="username" id="username">
+        <p class="help-block">Your username on the selected destination.</p>
+    </div>
+    <button type="submit" class="btn btn-primary pull-right">Generate</button>
+</form>
+
+{% endblock %}
