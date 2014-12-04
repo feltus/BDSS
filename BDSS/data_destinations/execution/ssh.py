@@ -1,3 +1,5 @@
+from paramiko.rsakey import RSAKey
+from StringIO import StringIO
 from . import BaseExecutionMethod
 from ..util import SSHClient
 
@@ -10,7 +12,7 @@ class SshExecutionMethod(BaseExecutionMethod):
     def connect(self):
         self._ssh = SSHClient()
         self._ssh.load_system_host_keys()
-        self._ssh.connect(self.host, 22, self.user, self.password, None, None, None, True, False)
+        self._ssh.connect(self.host, 22, self.user, None, RSAKey.from_private_key(StringIO(self.key)), None, None, True, False)
 
     def execute_job(self, working_directory):
         self._ssh.exec_sync_command('cd "%s"; %s' % (working_directory, self.command))

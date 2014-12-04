@@ -3,6 +3,7 @@ import logging
 import json
 import string
 import sys
+import traceback
 
 from datetime import datetime
 from itsdangerous import Signer
@@ -50,6 +51,10 @@ def start_job(job):
         file_transfer_method_init_args = destination_config['file_transfer']['args'] or {}
     except KeyError:
         file_transfer_method_init_args = {}
+    if destination_config['file_transfer']['module'] == 'sftp':
+        keys = [k for k in job.owner.keys if k.destination == job.data_destination]
+        file_transfer_method_init_args['user'] = keys[0].username
+        file_transfer_method_init_args['key'] = keys[0].private
     file_transfer_method = file_transfer_method_class(**file_transfer_method_init_args)
 
     job_directory = path.join(job.destination_directory, 'bdss', 'job_%d' % job.job_id)
@@ -101,6 +106,10 @@ def start_job(job):
         execution_method_init_args = destination_config['job_execution']['args'] or {}
     except KeyError:
         execution_method_init_args = {}
+    if destination_config['job_execution']['module'] == 'ssh':
+        keys = [k for k in job.owner.keys if k.destination == job.data_destination]
+        execution_method_init_args['user'] = keys[0].username
+        execution_method_init_args['key'] = keys[0].private
     execution_method = execution_method_class(**execution_method_init_args)
 
     execution_method.connect()
@@ -122,6 +131,7 @@ def start_job_loop():
                 start_job(job)
             except Exception as e:
                 print >> sys.stderr, 'Failed to start job %d: %s' % (job.job_id, str(e))
+                print >> sys.stderr, traceback.format_exc()
         else:
             print 'Sleeping'
             sleep(60)

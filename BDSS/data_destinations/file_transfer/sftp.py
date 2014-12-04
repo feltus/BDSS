@@ -1,5 +1,6 @@
+from paramiko.rsakey import RSAKey
+from StringIO import StringIO
 from . import BaseFileTransferMethod
-
 from ..util import SSHClient
 
 ## Transfer job files to the destination via Sftp.
@@ -8,7 +9,7 @@ class SftpFileTransferMethod(BaseFileTransferMethod):
     def connect(self):
         self._ssh = SSHClient()
         self._ssh.load_system_host_keys()
-        self._ssh.connect(self.host, 22, self.user, self.password, None, None, None, True, False)
+        self._ssh.connect(self.host, 22, self.user, None, RSAKey.from_private_key(StringIO(self.key)), None, None, True, False)
         self._sftp = self._ssh.open_sftp()
 
     def mkdir_p(self, dir_path):
