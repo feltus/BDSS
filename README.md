@@ -38,13 +38,21 @@ Generate a random secret key for [Flask sessions](http://flask.pocoo.org/docs/0.
 python gen_key.py
 ```
 
-### Flask development server
+### Start web server
+
+#### Flask development server
 
 ```Shell
 python serve.py
 ```
 
-### Apache VirtualHost configuration:
+For an externally visible server:
+
+```Shell
+python serve.py --public
+```
+
+#### Apache VirtualHost configuration:
 
 ```ApacheConf
 Listen 80
