@@ -6,7 +6,7 @@ from ..util import SSHClient
 class SshExecutionMethod(BaseExecutionMethod):
 
     def __init__(self, **kwargs):
-        self.command = "for f in urls/group*.txt; do nohup python ./scripts/transfer.py $f &; done"
+        self.command = "for f in urls/group*.txt; do nohup python ./scripts/transfer.py $f & done"
         super(SshExecutionMethod, self).__init__(**kwargs)
 
     def connect(self):
