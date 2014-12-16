@@ -3,29 +3,17 @@ import re
 
 from datetime import datetime
 from flask import abort, Flask, g, make_response, redirect, render_template, request, Response, url_for
-from flask.ext.login import current_user, LoginManager, login_required, login_user, logout_user
+from flask.ext.login import current_user, LoginManager, login_required
 from itsdangerous import Signer
 from jinja2 import Markup
 from paramiko.rsakey import RSAKey
-from passlib.context import CryptContext
 from StringIO import StringIO
 
 from .common import config, db_engine, DBSession
 from .models import User, Job, DataItem, SSHKey
+from .routes.util import filter_params, json_response
 
-
-## Filter request params to prevent mass assignment.
-#  @param params Dictionary containing request params.
-#  @param allowed_keys Collection of keys.
-#  @return Dictionary containing only the values of params whose keys are
-#   present in allowed_keys.
-def filter_params(params, allowed_keys):
-    return {k:v for (k, v) in params.iteritems() if k in allowed_keys}
-
-## Create a Flask response containing JSON output.
-def json_response(obj, status=200):
-    return Response(json.dumps(obj), status=status, mimetype='application/json')
-
+from .routes.auth import auth_routes
 
 app = Flask(__name__)
 app.secret_key = config['app']['secret_key']
@@ -70,8 +58,6 @@ def unauthorized():
     else:
         return redirect('/signin')
 
-pwd_context = CryptContext(schemes='bcrypt_sha256')
-
 @app.before_request
 def open_db_connection():
     g.db_connection = db_engine.connect()
@@ -82,77 +68,12 @@ def close_db_connection(exception):
     g.db_session.close()
     g.db_connection.close()
 
+app.register_blueprint(auth_routes)
+
 @app.route('/')
 @login_required
 def index():
     return redirect('/jobs')
-
-@app.route('/signin', methods=['GET'])
-def signin_page():
-    return render_template('signin.html.jinja')
-
-@app.route('/signin', methods=['POST'])
-def signin():
-    params = request.get_json()
-
-    errors = {}
-
-    if 'email' not in params.keys() or len(params['email']) == 0:
-        errors['email'] = 'A valid email address is required'
-
-    if 'password' not in params.keys() or len(params['password']) == 0:
-        errors['password'] = 'A password is required'
-
-    if len(errors) > 0:
-        return json_response({'errors': errors}, status=400)
-    else:
-        user = g.db_session.query(User).filter_by(email=params['email']).first()
-        if user and pwd_context.verify(params['password'], user.password_hash):
-            login_user(user)
-            return json_response({})
-        else:
-            return json_response({'errors': {'password': 'Invalid username/password combination'}}, status=401)
-
-@app.route('/signup', methods=['GET'])
-def signup_page():
-    return render_template('signup.html.jinja')
-
-@app.route('/signup', methods=['POST'])
-def signup():
-    params = request.get_json()
-
-    errors = {}
-
-    if 'name' not in params.keys() or len(params['name']) == 0:
-        errors['name'] = 'A name is required'
-
-    if 'email' not in params.keys() or len(params['email']) == 0 or not re.compile(r'^\S+@.+\.\S+$').match(params['email']):
-        errors['email'] = 'A valid email address is required'
-
-    if 'password' not in params.keys() or len(params['password']) == 0:
-        errors['password'] = 'A password is required'
-    elif len(params['password']) < 6:
-        errors['password'] = 'Your password must be at least 6 characters long'
-    elif 'password_confirmation' not in params.keys() or len(params['password_confirmation']) == 0:
-        errors['password_confirmation'] = 'You must confirm your password'
-    elif params['password'] != params['password_confirmation']:
-        errors['password_confirmation'] = 'Password confirmation does not match password'
-
-    if len(errors) > 0:
-        return json_response({'errors': errors}, status=400)
-    else:
-        pwd_hash = pwd_context.encrypt(params['password'])
-        user = User(name=params['name'], email=params['email'], password_hash=pwd_hash)
-        g.db_session.add(user)
-        g.db_session.commit()
-        login_user(user)
-        return json_response({})
-
-@app.route('/signout')
-@login_required
-def signout():
-    logout_user()
-    return redirect('/signin')
 
 @app.route('/jobs')
 @login_required
