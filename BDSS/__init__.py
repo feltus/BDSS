@@ -2,18 +2,17 @@ import json
 import re
 
 from datetime import datetime
-from flask import abort, Flask, g, make_response, redirect, render_template, request, Response, url_for
+from flask import abort, Flask, g, redirect, render_template, request, url_for
 from flask.ext.login import current_user, LoginManager, login_required
 from itsdangerous import Signer
 from jinja2 import Markup
-from paramiko.rsakey import RSAKey
-from StringIO import StringIO
 
 from .common import config, db_engine, DBSession
-from .models import User, Job, DataItem, SSHKey
+from .models import User, Job, DataItem
 from .routes.util import filter_params, json_response
 
 from .routes.auth import auth_routes
+from .routes.keys import key_routes
 
 app = Flask(__name__)
 app.secret_key = config['app']['secret_key']
@@ -69,6 +68,7 @@ def close_db_connection(exception):
     g.db_connection.close()
 
 app.register_blueprint(auth_routes)
+app.register_blueprint(key_routes, url_prefix='/keys')
 
 @app.route('/')
 @login_required
@@ -193,54 +193,3 @@ def update_transfer_status(job_id):
         return json_response(True)
     except ValueError as e:
         return json_response({'errors': [str(e)]}, status=400)
-
-# ========================================================================
-# SSH Keys
-# ========================================================================
-
-@app.route('/keys', methods=['GET'])
-@login_required
-def list_keys():
-    keys = g.db_session.query(SSHKey).filter_by(owner=current_user).all()
-    destinations = [{'id': id, 'label': dest.get('label', id), 'description': dest.get('description', None)} for (id, dest) in config['data_destinations'].iteritems()]
-    return render_template('keys_index.html.jinja', keys=keys, destinations=destinations)
-
-@app.route('/keys', methods=['POST'])
-@login_required
-def create_key():
-
-    username = request.form.get('username')
-    destination = request.form.get('destination')
-
-    if not username or not destination:
-        return list_keys()
-
-    k = RSAKey.generate(2048)
-    out = StringIO()
-    k.write_private_key(out)
-
-    key = SSHKey(owner=current_user, username=username, destination=destination)
-    comment = "bdss_{email}_{destination}".format(email=current_user.email, destination=destination)
-    key.public = "{type} {key} {comment}\n".format(type=k.get_name(), key=k.get_base64(), comment=comment)
-    key.private = out.getvalue()
-
-    g.db_session.add(key)
-    g.db_session.commit()
-
-    return list_keys()
-
-@app.route('/keys/<key_id>', methods=['GET'])
-@login_required
-def get_key(key_id):
-
-    key = g.db_session.query(SSHKey).filter_by(owner=current_user, id=key_id).first()
-
-    if key is None:
-        app.abort(404)
-
-    response = make_response(key.public)
-
-    filename = 'bdss_' + key.destination + '_id_rsa.pub'
-    response.headers['Content-Disposition'] = 'attachment; filename=' + filename
-
-    return response
