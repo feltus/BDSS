@@ -51,7 +51,7 @@ method.transfer_data(urls)
 elapsed_time = time.time() - start_time
 
 # Report job duration to BDSS server.
-url = config['app_url'] + '/api/jobs/' + str(config['job_id'])
+url = config['app_url'] + '/jobs/' + str(config['job_id'])
 request_data = {
     'measured_time': elapsed_time,
     'owner': config['owner'],

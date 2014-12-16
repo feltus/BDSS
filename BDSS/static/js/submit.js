@@ -128,7 +128,7 @@ $(document).ready(function() {
 
         console.log(request);
 
-        $.ajax('/api/jobs', {
+        $.ajax('/jobs', {
             type: 'POST',
             data: JSON.stringify(request),
             contentType: 'application/json; charset=UTF-8',

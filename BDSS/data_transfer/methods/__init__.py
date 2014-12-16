@@ -31,7 +31,7 @@ class BaseTransferMethod():
         return os.stat(self.output_path(data_url)).st_size
 
     def report_status(self, data):
-        url = self.app_url + '/api/jobs/' + str(self.job_id) + '/data/status'
+        url = self.app_url + '/jobs/' + str(self.job_id) + '/data/status'
         data['owner'] = self.owner
         data['job_id'] = self.job_id
         data['signature'] = self.signature
