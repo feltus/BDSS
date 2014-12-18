@@ -1,12 +1,15 @@
+import inspect
 import json
 import re
 
 from datetime import datetime
 from flask.ext.login import UserMixin
-from sqlalchemy import Column, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, event, ForeignKey, UniqueConstraint
 from sqlalchemy.types import BigInteger, DateTime, Enum, Float, Integer, String, Text
-from sqlalchemy.orm import backref, relationship, validates
+from sqlalchemy.orm import backref, mapper, relationship
 from sqlalchemy.ext.declarative import declarative_base
+
+from .common import DBSession
 
 BaseModel = declarative_base()
 
@@ -20,6 +23,74 @@ _url_regex = re.compile(
     r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 _checksum_regex = re.compile('^[0-9a-f]+', re.IGNORECASE)
+
+
+def validates(attribute_name):
+    def validates_decorator(fn):
+        fn.__validates_attribute__ = attribute_name
+        return fn
+
+    return validates_decorator
+
+class ValidationError(Exception):
+
+    def __init__(self, invalid_obj):
+        if not isinstance(invalid_obj, list):
+            self.invalid_objects = [invalid_obj]
+        else:
+            self.invalid_objects = invalid_objects
+
+
+@event.listens_for(DBSession, 'before_flush')
+def before_flush(session, flush_context, instances):
+
+    flushed_objects = session.new or session.dirty
+    if instances:
+        flushed_objects = flushed_objects or instances
+
+    invalid_objects = []
+    for obj in flushed_objects:
+        if hasattr(obj, 'validate') and callable(getattr(obj, 'validate')):
+            if not obj.validate():
+                invalid_objects.append(obj)
+
+    if invalid_objects:
+        raise ValidationError(invalid_objects)
+
+
+@event.listens_for(mapper, 'mapper_configured')
+def mapper_configured(mapper, cls):
+    if hasattr(cls, '_init_validation') and callable(getattr(cls, '_init_validation')):
+        cls._init_validation()
+
+class ValidationMixin:
+
+    _validation_methods = None
+
+    @classmethod
+    def _init_validation(cls):
+        for method_name, method in inspect.getmembers(cls, predicate=inspect.ismethod):
+            if hasattr(method, '__validates_attribute__'):
+                if cls._validation_methods is None:
+                    cls._validation_methods = {}
+                cls._validation_methods[method.__validates_attribute__] = method_name
+
+    def validate(self):
+        self.validation_errors = {}
+
+        if self.__class__._validation_methods is None:
+            return True
+
+        for attribute_name, method_name in self.__class__._validation_methods.iteritems():
+            method = getattr(self, method_name)
+            try:
+                method(attribute_name, getattr(self, attribute_name))
+            except ValueError as e:
+                self.validation_errors[attribute_name] = [e.message]
+
+        if self.validation_errors:
+            return False
+
 
 class User(BaseModel, UserMixin):
 
@@ -83,7 +154,7 @@ class SSHKey(BaseModel):
     private = Column(Text(), nullable=False)
 
 
-class Job(BaseModel):
+class Job(BaseModel, ValidationMixin):
 
     __tablename__ = 'jobs'
 
@@ -98,6 +169,11 @@ class Job(BaseModel):
     ## @var name
     #  User supplied name for the job.
     name = Column(String(100), nullable=False)
+
+    @validates('name')
+    def validate_name(self, attribute_name, value):
+        if not value:
+            raise ValueError('A job name is required')
 
     ## @var required_data
     #  The data necessary for running this job.
@@ -138,6 +214,11 @@ class Job(BaseModel):
     #  The directory on the destination machine to save downloaded data into.
     destination_directory = Column(Text(), nullable=False)
 
+    @validates('destination_directory')
+    def validate_destination_directory(self, attribute_name, value):
+        if not value:
+            raise ValueError('A destination directory is required')
+
     ## @var created_at
     #  The time this job was submitted.
     created_at = Column(DateTime(), nullable=False, default=datetime.utcnow)
@@ -166,7 +247,7 @@ class Job(BaseModel):
         return dict([(status, len([d for d in self.required_data if d.status == status])) for status in statuses])
 
     def __repr__(self):
-        return '<Job (job_id=%d, name="%s")>' % (self.job_id, self.name)
+        return '<Job (job_id=%s, name="%s")>' % (self.job_id, self.name)
 
     def serialize(self):
         return {
@@ -179,7 +260,7 @@ class Job(BaseModel):
             'measured_time': self.measured_time
         }
 
-class DataItem(BaseModel):
+class DataItem(BaseModel, ValidationMixin):
 
     __tablename__ = 'data_items'
 
@@ -201,26 +282,26 @@ class DataItem(BaseModel):
     data_url = Column(String(200), nullable=False)
 
     @validates('data_url')
-    def validate_url(self, key, url):
-        if not _url_regex.match(url):
-            raise ValueError(url + ' is not a valid URL')
-        return url
+    def validate_url(self, attribute_name, value):
+        if not value:
+            raise ValueError('A URL is required')
+        if not _url_regex.match(value):
+            raise ValueError(value + ' is not a valid URL')
 
     ## @var checksum
     #  Optional checksum to verify the data file against.
     checksum = Column(String(64))
 
     @validates('checksum')
-    def validate_checksum(self, key, checksum):
-        if checksum != None:
-            if not _checksum_regex.match(checksum):
-                raise ValueError('Checksums must contain only hex characters.')
+    def validate_checksum(self, attribute_name, value):
+        if value != None:
+            if not _checksum_regex.match(value):
+                raise ValueError('Checksums must contain only hex characters')
 
             # Validate that checksum if the correct length for the selected
             # checksum method.
-            elif self.checksum_method == 'md5' and len(checksum) != 32:
-                raise ValueError('MD5 checksums must be 32 characters long.')
-        return checksum
+        elif self.checksum_method == 'md5' and len(value) != 32:
+                raise ValueError('MD5 checksums must be 32 characters long')
 
     ## @var checksum_method
     #  The method used to generate the checksum.
@@ -255,7 +336,7 @@ class DataItem(BaseModel):
     status = Column(Enum('pending', 'in_progress', 'completed', 'failed', name='data_transfer_statuses'), default='pending', nullable=False)
 
     def __repr__(self):
-        return '<DataItem (id=%d, job_id=%d, url=%s)>' % (self.item_id, self.job_id, self.url)
+        return '<DataItem (id=%s, job_id=%s, data_url=%s)>' % (self.item_id, self.job_id, self.data_url)
 
     def serialize(self):
         return {

@@ -2,7 +2,7 @@
 $(document).ready(function() {
 
     // Show description and build options form for initial transfer method.
-    var transferMethodSelect = $('#data-transfer-method');
+    var transferMethodSelect = $('#data_transfer_method');
     var selectedMethod = transferMethodSelect.val();
     var methodOption = transferMethodSelect.find('option[value="' + selectedMethod + '"]');
     transferMethodSelect.siblings('.help-block').html(methodOption.data('method').description);
@@ -17,7 +17,7 @@ $(document).ready(function() {
     });
 
     // Show description for initial destination.
-    var destinationSelect = $('#data-destination');
+    var destinationSelect = $('#data_destination');
     var selectedDestination = destinationSelect.val();
     var destinationOption = destinationSelect.find('option[value="' + selectedDestination + '"]');
     destinationSelect.siblings('.help-block').html(destinationOption.data('destination').description);
@@ -29,7 +29,7 @@ $(document).ready(function() {
         $(this).siblings('.help-block').html(destinationOption.data('destination').description);
     });
 
-    $('#url-manifest')
+    $('#url_manifest')
         // Set value to null on click so that selecting the same file will
         // still trigger the change event.
         .on('click', function() { $(this).val(null); })
@@ -65,7 +65,7 @@ $(document).ready(function() {
                         .map($.trim)
                         .filter(function(line) { return line.length > 0; })
                         .map(function(url) {
-                            return '<li><input type="hidden" class="url-input" value="' + url + '">' + url + '</li>';
+                            return '<li><input type="hidden" class="url-input" name="required_data[]" value="' + url + '">' + url + '</li>';
                         }));
 
                     fileInput.removeAttr('disabled');
@@ -75,77 +75,15 @@ $(document).ready(function() {
             }
         });
 
-    $('#submit-request-btn').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var submitButton = $(this);
-        submitButton.attr('disabled', 'disabled');
-        var spinner = $('<span class="glyphicon glyphicon-refresh spin"></span>');
-        spinner.prependTo(submitButton);
-
-        // Validate URLs
-        $('.url-input').each(function() {
-            var url = $(this).val().toLowerCase();
-            if (url.length === 0) {
-                showError(this, 'A valid URL is required.');
+    $('#job-form').initForm('/jobs', {
+        build_request: function(form_value) {
+            console.log(form_value);
+            if (!form_value.hasOwnProperty('required_data')) {
+                form_value.required_data = [];
             }
-            else if (!url.match(/^(http|ftp)s?:\/\//)) {
-                showError(this, 'Invalid URL. URLs must be either HTTP or FTP.');
-            } else {
-                hideError(this);
-            }
-        });
-
-        requireValue($('#job-name'), 'A job name is required.');
-
-        requireValue($('#destination-directory'), 'A directory is required.');
-
-        var inputValid = ($('.err-msg').length === 0);
-        if (!inputValid) {
-            spinner.remove();
-            submitButton.removeAttr('disabled');
-            return;
+            form_value.required_data = form_value.required_data.map(function(d) { return { data_url: d }; });
+            delete form_value.url_manifest;
+            return { job: form_value };
         }
-
-        var transferMethodOptions = {};
-        $('#transfer-method-options').find('input, textarea').each(function() {
-            console.log($(this).attr('id') + ' => ' + $(this).val());
-            transferMethodOptions[$(this).attr('id')] = $(this).val();
-        });
-
-        // Build request
-        var request = {
-            job: {
-                name: $('#job-name').val(),
-                data_transfer_method: $('#data-transfer-method').val(),
-                data_transfer_method_options: transferMethodOptions,
-                data_destination: $('#data-destination').val(),
-                destination_directory: $('#destination-directory').val(),
-                required_data: $('.url-input').map(function() { return { data_url: $(this).val() }; }).get()
-            }
-        };
-
-        console.log(request);
-
-        $.ajax('/jobs', {
-            type: 'POST',
-            data: JSON.stringify(request),
-            contentType: 'application/json; charset=UTF-8',
-            dataType: 'json',
-            success: function(response) {
-                spinner.remove();
-                submitButton.removeAttr('disabled');
-                console.log(response);
-                window.location = '/';
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                spinner.remove();
-                submitButton.removeAttr('disabled');
-                console.warn(errorThrown);
-            }
-        });
-
-        console.log(request);
     });
 });

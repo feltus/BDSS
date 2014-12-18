@@ -3,7 +3,7 @@ from flask import abort, Blueprint, g, render_template, request
 from flask.ext.login import current_user, login_required
 
 from ..common import config
-from ..models import Job, DataItem
+from ..models import Job, DataItem, ValidationError
 from ..routes.util import filter_params, json_response
 
 job_routes = Blueprint('jobs', __name__)
@@ -48,13 +48,26 @@ def create_job():
     for p in data_params:
         job.required_data.append(DataItem(**p))
 
+    job.validate()
+    for d in job.required_data:
+        if not d.validate():
+            if not 'required_data' in job.validation_errors:
+                job.validation_errors['required_data'] = []
+            job.validation_errors['required_data'] += [err for attr,errs in d.validation_errors.iteritems() for err in errs]
+
+    if job.validation_errors:
+        return json_response({'field_errors': job.validation_errors}, status=400)
+
     try:
         g.db_session.add(job)
         g.db_session.commit()
         return json_response({'job': job.serialize()}, status=201)
+    except ValidationError as e:
+        g.db_session.rollback()
+        return json_response({'form_errors': ['Invalid input']}, status=400)
     except ValueError as e:
         g.db_session.rollback()
-        return json_response({'errors': [str(e)]}, status=400)
+        return json_response({'form_errors': [str(e)]}, status=400)
 
 @job_routes.route('/<job_id>', methods=['POST'])
 @login_required

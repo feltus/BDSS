@@ -8,6 +8,10 @@
 {% block content %}
 <h3 class="page-header">Submit New Job</h3>
 
+
+
+<form id="job-form" role="form">
+
 <ul class="nav nav-tabs" role="tablist">
     <li class="active"><a href="#job-info-tab" role="tab" data-toggle="tab">Info</a></li>
     <li><a href="#data-tab" role="tab" data-toggle="tab">Data</a></li>
@@ -17,65 +21,63 @@
 
 <div class="tab-content">
     <div class="tab-pane active" id="job-info-tab">
-        <form id="job-info-form" role="form">
-            <div class="form-group">
-                <label for="job-name">Job Name:</label>
-                <input type="text" class="form-control" id="job-name">
-            </div>
+        <div class="form-group">
+            <label for="name">Job Name:</label>
+            <input type="text" class="form-control" id="name" name="name">
+        </div>
     </div>
 
     <div class="tab-pane" id="data-tab">
-        <form id="data-form" role="form">
-            <label>Data URLs:</label>
+        <label>Data URLs:</label>
 
-            <div class="well">
-                <div class="form-group">
-                    <label for="url-manifest">URL Manifest:</label>
-                    <input type="file" id="url-manifest">
-                    <p class="help-block">Upload a text file containing one URL per line. HTTP and FTP URLs are supported.</p>
-                </div>
+        <div class="well">
+            <div class="form-group">
+                <label for="url_manifest">URL Manifest:</label>
+                <input type="file" id="url_manifest" name="url_manifest">
+                <p class="help-block">Upload a text file containing one URL per line. HTTP and FTP URLs are supported.</p>
             </div>
+        </div>
 
+        <div class="form-group">
             <ul id="url-list" class="striped"></ul>
-        </form>
+        </div>
     </div>
 
     <div class="tab-pane" id="transfer-method-tab">
-        <form id="transfer-method-form" role="form">
-            <div class="form-group">
-                <label for="data-transfer-method">Transfer Method:</label>
-                <select class="form-control" id="data-transfer-method">
-                    {% for method in transfer_methods %}
-                        <option value="{{ method.id }}" data-method='{{ method|tojson|safe }}'>{{ method.label }}</option>
-                    {% endfor %}
-                </select>
-                <p class="help-block"></p>
-            </div>
-        </form>
-        <div id="transfer-method-options"></div>
+        <div class="form-group">
+            <label for="data_transfer_method">Transfer Method:</label>
+            <select class="form-control" id="data_transfer_method" name="data_transfer_method">
+                {% for method in transfer_methods %}
+                    <option value="{{ method.id }}" data-method='{{ method|tojson|safe }}'>{{ method.label }}</option>
+                {% endfor %}
+            </select>
+            <p class="help-block"></p>
+        </div>
+        <div>
+            <form id="transfer_method_options" role="form"></form>
+        </div>
     </div>
 
     <div class="tab-pane" id="destination-tab">
-        <form id="destination-form" role="form">
-            <div class="form-group">
-                <label for="data-destination">Destination Host:</label>
-                <select class="form-control" id="data-destination">
-                    {% for dest in destinations %}
-                        <option value="{{ dest.id }}" data-destination='{{ dest|tojson|safe }}'>{{ dest.label }}</option>
-                    {% endfor %}
-                </select>
-                <p class="help-block"></p>
-            </div>
-            <div class="form-group">
-                <label for="destination-directory">Destination Directory:</label>
-                <input type="text" class="form-control" id="destination-directory"></select>
-            </div>
-        </form>
+        <div class="form-group">
+            <label for="data_destination">Destination Host:</label>
+            <select class="form-control" id="data_destination" name="data_destination">
+                {% for dest in destinations %}
+                    <option value="{{ dest.id }}" data-destination='{{ dest|tojson|safe }}'>{{ dest.label }}</option>
+                {% endfor %}
+            </select>
+            <p class="help-block"></p>
+        </div>
+        <div class="form-group">
+            <label for="destination_directory">Destination Directory:</label>
+            <input type="text" class="form-control" id="destination_directory" name="destination_directory"></select>
+        </div>
     </div>
 
     <div class="form-group" style="text-align:right;">
         <button class="btn btn-primary btn-lg" type="submit" id="submit-request-btn">Submit</button>
     </div>
+</div>
 
 </form>
 

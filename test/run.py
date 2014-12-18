@@ -45,6 +45,7 @@ class RunJobTestCase(TestCase):
         session.add(job)
         session.commit()
 
+        print('Close')
         session.close()
         connection.close()
 
@@ -52,6 +53,6 @@ class RunJobTestCase(TestCase):
         connection = db_engine.connect()
         session = DBSession(bind=connection)
         job = session.query(Job).first()
-        start_job(job)
+        #start_job(job)
         session.close()
         connection.close()
