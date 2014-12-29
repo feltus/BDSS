@@ -37,7 +37,7 @@ $(document).ready(function() {
             console.log(e);
 
             // Confirm replacing current URL inputs
-            var numUrlsEntered = $('.url-input').filter(function() { return $(this).val().length > 0; }).length;
+            var numUrlsEntered = $('fieldset[name="required_data[]"]').length
             if (numUrlsEntered > 0 && !confirm('Replace current URLs with those from file?')) {
                 return;
             }
@@ -68,7 +68,8 @@ $(document).ready(function() {
                             return '<li>' +
                                     '<fieldset name="required_data[]">' +
                                         '<div class="form-group">' +
-                                        '<input type="hidden" class="url-input" name="data_url" value="' + url + '">' + url +
+                                        '<input type="hidden" name="data_url" value="' + url + '">' +
+                                        '<p class="control-label">' + url + '</p>' +
                                         '</div>' +
                                     '</fieldset>' +
                                 '</li>';
