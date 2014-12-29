@@ -1,5 +1,7 @@
-var buildForm = function(inputs) {
-    var form = $('<form role="form"></form>');
+(function($) {
+
+
+$.fn.populate = function(inputs) {
     var buildFunction;
     var input;
 
@@ -13,10 +15,9 @@ var buildForm = function(inputs) {
                 id.split('_').map(capitalize).join(' '),
                 inputs[id].description,
                 inputs[id].default);
-            form.append(input);
+            $(this).append(input);
         }
     }
-    return form;
 };
 
 var wrapInput = function(input, label, description) {
@@ -53,3 +54,5 @@ var buildIntegerInput = function(name, label, description, defaultValue) {
     }
     return wrapInput(input, label, description);
 };
+
+})(jQuery);

@@ -6,14 +6,14 @@ $(document).ready(function() {
     var selectedMethod = transferMethodSelect.val();
     var methodOption = transferMethodSelect.find('option[value="' + selectedMethod + '"]');
     transferMethodSelect.siblings('.help-block').html(methodOption.data('method').description);
-    $('#transfer-method-options').empty().append(buildForm(methodOption.data('method').options));
+    $('#transfer_method_options').empty().populate(methodOption.data('method').options);
 
     // Show new description and rebuild options form when the transfer method is changed.
     transferMethodSelect.on('change', function() {
         var selectedMethod = $(this).val();
         var methodOption = $(this).find('option[value="' + selectedMethod + '"]');
         $(this).siblings('.help-block').html(methodOption.data('method').description);
-        $('#transfer-method-options').empty().append(buildForm(methodOption.data('method').options));
+        $('#transfer_method_options').empty().populate(methodOption.data('method').options);
     });
 
     // Show description for initial destination.
