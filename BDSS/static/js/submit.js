@@ -65,7 +65,7 @@ $(document).ready(function() {
                         .map($.trim)
                         .filter(function(line) { return line.length > 0; })
                         .map(function(url) {
-                            return '<li><input type="hidden" class="url-input" name="required_data[]" value="' + url + '">' + url + '</li>';
+                            return '<li><div class="form-group"><input type="hidden" class="url-input" name="required_data[]" value="' + url + '">' + url + '</div></li>';
                         }));
 
                     fileInput.removeAttr('disabled');

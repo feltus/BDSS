@@ -9,15 +9,31 @@
     };
 
     $.fn.showFieldErrors = function(errors) {
-        for (var field in errors) {
-            if (errors.hasOwnProperty(field) && errors[field].length > 0) {
-                var input = $(this).find('[name="' + field + '"]');
-                if (input.length === 0) {
-                    input = $(this).find('[name="' + field + '[]"]');
-                }
-                var group = input.closest('.form-group');
+        if (typeof errors === 'string') {
+            errors = [errors];
+        }
+
+        if (errors instanceof Array) {
+            if (errors.length > 0) {
+                var group = $(this).closest('.form-group');
                 group.addClass('has-error');
-                group.append($('<p class="help-block err-msg">' + errors[field].join('<br>') + '</p>'));
+                group.append($('<p class="help-block err-msg">' + errors.join('<br>') + '</p>'));
+            }
+        } else {
+            for (var field in errors) {
+                if (errors.hasOwnProperty(field)) {
+                    var input = $(this).find('[name="' + field + '"]');
+                    if (input.length !== 0) {
+                        input.showFieldErrors(errors[field]);
+                    } else {
+                        input = $(this).find('[name="' + field + '[]"]');
+                        for (var index in errors[field]) {
+                            if (errors[field].hasOwnProperty(index)) {
+                                input.eq(index).showFieldErrors(errors[field][index]);
+                            }
+                        }
+                    }
+                }
             }
         }
     };

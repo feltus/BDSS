@@ -49,11 +49,11 @@ def create_job():
         job.required_data.append(DataItem(**p))
 
     job.validate()
-    for d in job.required_data:
-        if not d.validate():
+    for index, data_item in enumerate(job.required_data):
+        if not data_item.validate():
             if not 'required_data' in job.validation_errors:
-                job.validation_errors['required_data'] = []
-            job.validation_errors['required_data'] += [err for attr,errs in d.validation_errors.iteritems() for err in errs]
+                job.validation_errors['required_data'] = {}
+            job.validation_errors['required_data'][index] = [err for attr,errs in data_item.validation_errors.iteritems() for err in errs]
 
     if job.validation_errors:
         return json_response({'field_errors': job.validation_errors}, status=400)
