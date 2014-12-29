@@ -49,56 +49,57 @@
     var getInputElmValue = function(elm) {
         var type = null;
         var tag = elm.prop('tagName');
-        if (tag === 'SELECT') {
-            type = 'select';
-        } else if (tag === 'TEXTAREA') {
-            type = 'text';
-        } else if (tag === 'BUTTON') {
-            type = 'button';
-        } else {
+        if (tag === 'input') {
             type = elm.attr('type').toLowerCase();
+        } else {
+            type = tag.toLowerCase();
         }
 
-        if (['text', 'select', 'hidden'].indexOf(type) !== -1) {
-            return elm.val();
+        if (type === 'fieldset' || type === 'form') {
+            var value = {};
+
+            var inputs = elm.find('input, button, select, textarea, fieldset');
+            for (var i = 0; i < inputs.length; i++) {
+                var child_elm = inputs.eq(i);
+
+                var field_name = child_elm.attr('name');
+
+                if (child_elm.prop('tagName') === 'BUTTON' ||
+                    child_elm.attr('type') === 'submit' ||
+                    child_elm.attr('type') === 'button')
+                {
+                    continue;
+                }
+
+                if (value.hasOwnProperty(field_name)) {
+                    continue;
+                }
+
+                var is_array = field_name.slice(-2) === '[]';
+                field_name = field_name.replace(/\[\]$/, '');
+
+                if (is_array) {
+                    value[field_name] = elm.find('[name="' + field_name + '[]"]').map(function() {
+                        return getInputElmValue($(this));
+                    }).get();
+                } else {
+                    value[field_name] = getInputElmValue(child_elm);
+                }
+            }
+
+            return value;
+
         } else if (type === 'checkbox') {
             return elm[0].checked;
         } else if (type === 'radio') {
             return elm.closest('form').find('input:radio[name="' + elm.attr('name') + '"]:checked').val();
+        } else {
+            return elm.val();
         }
     };
 
     $.fn.getValue = function() {
-        var value = {};
-        for (var i = 0; i < this[0].length; i++) {
-            var elm = $(this[0][i]);
-
-            var field_name = elm.attr('name');
-
-            if (elm.prop('tagName') === 'BUTTON' ||
-                elm.attr('type') === 'submit' ||
-                elm.attr('type') === 'button')
-            {
-                continue;
-            }
-
-            if (value.hasOwnProperty(field_name)) {
-                continue;
-            }
-
-            var is_array = field_name.slice(-2) === '[]';
-            field_name = field_name.replace(/\[\]$/, '');
-
-            if (is_array) {
-                value[field_name] = this.find('[name="' + field_name + '[]"]').map(function() {
-                    return getInputElmValue($(this));
-                }).get();
-            } else {
-                value[field_name] = getInputElmValue(elm);
-            }
-        }
-
-        return value;
+        return getInputElmValue($(this));
     };
 
     $.fn.setLoadingState = function(loading) {

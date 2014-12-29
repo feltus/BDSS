@@ -65,7 +65,13 @@ $(document).ready(function() {
                         .map($.trim)
                         .filter(function(line) { return line.length > 0; })
                         .map(function(url) {
-                            return '<li><div class="form-group"><input type="hidden" class="url-input" name="required_data[]" value="' + url + '">' + url + '</div></li>';
+                            return '<li>' +
+                                    '<fieldset name="required_data[]">' +
+                                        '<div class="form-group">' +
+                                        '<input type="hidden" class="url-input" name="data_url" value="' + url + '">' + url +
+                                        '</div>' +
+                                    '</fieldset>' +
+                                '</li>';
                         }));
 
                     fileInput.removeAttr('disabled');
@@ -81,7 +87,6 @@ $(document).ready(function() {
             if (!form_value.hasOwnProperty('required_data')) {
                 form_value.required_data = [];
             }
-            form_value.required_data = form_value.required_data.map(function(d) { return { data_url: d }; });
             delete form_value.url_manifest;
             return { job: form_value };
         }
