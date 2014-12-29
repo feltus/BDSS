@@ -91,6 +91,8 @@ class ValidationMixin:
         if self.validation_errors:
             return False
 
+        return True
+
 
 class User(BaseModel, UserMixin):
 
