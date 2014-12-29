@@ -1,33 +1,27 @@
 /*global buildForm*/
 $(document).ready(function() {
 
-    // Show description and build options form for initial transfer method.
-    var transferMethodSelect = $('#data_transfer_method');
-    var selectedMethod = transferMethodSelect.val();
-    var methodOption = transferMethodSelect.find('option[value="' + selectedMethod + '"]');
-    transferMethodSelect.siblings('.help-block').html(methodOption.data('method').description);
-    $('#transfer_method_options').empty().populate(methodOption.data('method').options);
-
     // Show new description and rebuild options form when the transfer method is changed.
-    transferMethodSelect.on('change', function() {
-        var selectedMethod = $(this).val();
-        var methodOption = $(this).find('option[value="' + selectedMethod + '"]');
-        $(this).siblings('.help-block').html(methodOption.data('method').description);
+    var transferMethodSelect = $('#data_transfer_method');
+    var updateTransferMethod = function() {
+        var selectedMethod = transferMethodSelect.val();
+        var methodOption = transferMethodSelect.find('option[value="' + selectedMethod + '"]');
+        transferMethodSelect.siblings('.help-block').html(methodOption.data('method').description);
         $('#transfer_method_options').empty().populate(methodOption.data('method').options);
-    });
-
-    // Show description for initial destination.
-    var destinationSelect = $('#data_destination');
-    var selectedDestination = destinationSelect.val();
-    var destinationOption = destinationSelect.find('option[value="' + selectedDestination + '"]');
-    destinationSelect.siblings('.help-block').html(destinationOption.data('destination').description);
+    };
+    transferMethodSelect.on('change', updateTransferMethod);
+    updateTransferMethod();
 
     // Show new description when the destination is changed.
-    destinationSelect.on('change', function() {
-        var selectedDestination = $(this).val();
-        var destinationOption = $(this).find('option[value="' + selectedDestination + '"]');
-        $(this).siblings('.help-block').html(destinationOption.data('destination').description);
-    });
+    var destinationSelect = $('#data_destination');
+    var updateDestination = function() {
+        var selectedDestination = destinationSelect.val();
+        var destinationOption = destinationSelect.find('option[value="' + selectedDestination + '"]');
+        destinationSelect.siblings('.help-block').html(destinationOption.data('destination').description);
+    };
+    destinationSelect.on('change', updateDestination);
+    updateDestination();
+
 
     $('#url_manifest')
         // Set value to null on click so that selecting the same file will
