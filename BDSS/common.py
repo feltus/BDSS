@@ -1,3 +1,4 @@
+import importlib
 import yaml
 
 from os import listdir, path
@@ -16,3 +17,15 @@ for config_file in listdir(config_dir):
 ## Database object for app.
 db_engine = create_engine(config['app']['database_url'])
 DBSession = sessionmaker(bind=db_engine)
+
+## Dynamically import a class.
+#  @param class_path
+def import_class(package, module, suffix):
+    module_path = package + '.' + module
+    class_name =  ''.join([s.capitalize() for s in module.split('_')]) + suffix
+    module = importlib.import_module(module_path, __package__)
+
+    try:
+        return getattr(module, class_name)
+    except AttributeError:
+        raise ImportError()

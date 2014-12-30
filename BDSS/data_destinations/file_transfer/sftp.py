@@ -6,6 +6,8 @@ from ..util import SSHClient
 ## Transfer job files to the destination via Sftp.
 class SftpFileTransferMethod(BaseFileTransferMethod):
 
+    requires_ssh_key = True
+
     def connect(self):
         self._ssh = SSHClient()
         self._ssh.load_system_host_keys()

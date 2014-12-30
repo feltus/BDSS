@@ -1,4 +1,3 @@
-import importlib
 import logging
 import json
 import string
@@ -11,20 +10,8 @@ from os import path
 from sqlalchemy.orm.session import Session
 from time import sleep
 
-from .common import config, db_engine, DBSession
+from .common import config, db_engine, DBSession, import_class
 from .models import Job, DataItem
-
-## Dynamically import a class.
-#  @param class_path
-def import_class(subpackage, module, suffix):
-    module_path = '.' + subpackage + '.' + module
-    class_name =  ''.join([s.capitalize() for s in module.split('_')]) + suffix
-    module = importlib.import_module(module_path, __package__)
-
-    try:
-        return getattr(module, class_name)
-    except AttributeError:
-        raise ImportError()
 
 def start_job(job):
 
@@ -40,13 +27,13 @@ def start_job(job):
         grouping_module = destination_config['url_grouping'] or default_grouping_module
     except KeyError:
         grouping_module = default_grouping_module
-    grouping_class = import_class('data_transfer.grouping', grouping_module, 'Grouping')
+    grouping_class = import_class('.data_transfer.grouping', grouping_module, 'Grouping')
     grouping = grouping_class()
 
     url_groups = grouping.group_urls(data_urls)
 
     # Copy job files to destination.
-    file_transfer_method_class = import_class('data_destinations.file_transfer', destination_config['file_transfer']['module'], 'FileTransferMethod')
+    file_transfer_method_class = import_class('.data_destinations.file_transfer', destination_config['file_transfer']['module'], 'FileTransferMethod')
     try:
         file_transfer_method_init_args = destination_config['file_transfer']['args'] or {}
     except KeyError:
@@ -101,7 +88,7 @@ def start_job(job):
     file_transfer_method.disconnect()
 
     # Start job
-    execution_method_class = import_class('data_destinations.execution', destination_config['job_execution']['module'], 'ExecutionMethod')
+    execution_method_class = import_class('.data_destinations.execution', destination_config['job_execution']['module'], 'ExecutionMethod')
     try:
         execution_method_init_args = destination_config['job_execution']['args'] or {}
     except KeyError:

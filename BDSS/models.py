@@ -6,10 +6,10 @@ from datetime import datetime
 from flask.ext.login import UserMixin
 from sqlalchemy import Column, event, ForeignKey, UniqueConstraint
 from sqlalchemy.types import BigInteger, DateTime, Enum, Float, Integer, String, Text
-from sqlalchemy.orm import backref, mapper, relationship
+from sqlalchemy.orm import backref, mapper, relationship, Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from .common import DBSession
+from .common import config, DBSession, import_class
 
 BaseModel = declarative_base()
 
@@ -38,25 +38,27 @@ class ValidationError(Exception):
         if not isinstance(invalid_obj, list):
             self.invalid_objects = [invalid_obj]
         else:
-            self.invalid_objects = invalid_objects
+            self.invalid_objects = invalid_obj
 
+@event.listens_for(mapper, 'before_insert')
+@event.listens_for(mapper, 'before_update')
+def before_exec(mapper, connection, target):
+    session = Session.object_session(target)
 
-@event.listens_for(DBSession, 'before_flush')
-def before_flush(session, flush_context, instances):
+    if not hasattr(session, '_objs_to_validate') or not session._objs_to_validate:
+        session._objs_to_validate = []
 
-    flushed_objects = session.new or session.dirty
-    if instances:
-        flushed_objects = flushed_objects or instances
+    session._objs_to_validate.append(target)
 
-    invalid_objects = []
-    for obj in flushed_objects:
+@event.listens_for(Session, 'before_commit')
+def before_commit(session):
+    if not hasattr(session, '_objs_to_validate') or not session._objs_to_validate:
+        session._objs_to_validate = []
+
+    for obj in session._objs_to_validate:
         if hasattr(obj, 'validate') and callable(getattr(obj, 'validate')):
             if not obj.validate():
-                invalid_objects.append(obj)
-
-    if invalid_objects:
-        raise ValidationError(invalid_objects)
-
+                raise ValidationError(obj)
 
 @event.listens_for(mapper, 'mapper_configured')
 def mapper_configured(mapper, cls):
@@ -210,7 +212,28 @@ class Job(BaseModel, ValidationMixin):
     #  The destination selected by the user. Corresponds to an ID in
     #  config/data_destinations.yml.
     data_destination = Column(String(30), nullable=False)
-    # TODO: Validate that this matches an available destination.
+
+    @validates('data_destination')
+    def validate_data_destination(self, attribute_name, value):
+        if not value:
+            raise ValueError('A destination is required')
+
+        available_destinations = [id for id, dest in config['data_destinations'].iteritems()]
+        if value not in available_destinations:
+            raise ValueError(value + ' is not an available destination')
+
+        # Check if the specified destination requires an SSH key for file
+        # transfer or job execution.
+        file_transfer_module = config['data_destinations'][value]['file_transfer']['module']
+        file_transfer_class = import_class('.data_destinations.file_transfer', file_transfer_module, 'FileTransferMethod')
+
+        job_execution_module = config['data_destinations'][value]['job_execution']['module']
+        job_execution_class = import_class('.data_destinations.execution', job_execution_module, 'ExecutionMethod')
+
+        destination_requires_ssh_key = file_transfer_class.requires_ssh_key or job_execution_class.requires_ssh_key
+
+        if destination_requires_ssh_key and not [key for key in self.owner.keys if key.destination == value]:
+            raise ValueError(config['data_destinations'][value]['label'] + ' requires an SSH key')
 
     ## @var destination_directory
     #  The directory on the destination machine to save downloaded data into.

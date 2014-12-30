@@ -8,6 +8,8 @@ class BaseExecutionMethod():
         for option, value in kwargs.iteritems():
             setattr(self, option, value)
 
+    requires_ssh_key = False
+
     ## Open connection to destination.
     @abstractmethod
     def connect(self):

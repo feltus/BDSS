@@ -4,6 +4,8 @@ class BaseFileTransferMethod():
 
     __metaclass__ = ABCMeta
 
+    requires_ssh_key = False
+
     def __init__(self, **kwargs):
         for option, value in kwargs.iteritems():
             setattr(self, option, value)
