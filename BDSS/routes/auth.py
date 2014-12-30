@@ -52,6 +52,10 @@ def signup():
 
     if 'email' not in params.keys() or len(params['email']) == 0 or not re.compile(r'^\S+@.+\.\S+$').match(params['email']):
         errors['email'] = 'A valid email address is required'
+    else:
+        user = g.db_session.query(User).filter_by(email=params['email']).first()
+        if user:
+            errors['email'] = 'This email address is already in use'
 
     if 'password' not in params.keys() or len(params['password']) == 0:
         errors['password'] = 'A password is required'
