@@ -1,7 +1,7 @@
 (function($) {
 
     $.fn.clearFieldErrors = function() {
-        this.find('form-group.has-error').each(function() {
+        this.find('.form-group.has-error').each(function() {
             $(this).removeClass('has-error');
             $(this).find('.help-block.err-msg').remove();
         });
