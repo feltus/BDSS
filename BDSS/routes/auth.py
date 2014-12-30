@@ -28,14 +28,14 @@ def signin():
         errors['password'] = 'A password is required'
 
     if len(errors) > 0:
-        return json_response({'errors': errors}, status=400)
+        return json_response({'field_errors': errors}, status=400)
     else:
         user = g.db_session.query(User).filter_by(email=params['email']).first()
         if user and pwd_context.verify(params['password'], user.password_hash):
             login_user(user)
             return json_response({})
         else:
-            return json_response({'errors': {'password': 'Invalid username/password combination'}}, status=401)
+            return json_response({'field_errors': {'password': 'Invalid username/password combination'}}, status=401)
 
 @auth_routes.route('/signup', methods=['GET'])
 def signup_page():

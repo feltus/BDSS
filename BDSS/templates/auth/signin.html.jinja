@@ -3,14 +3,14 @@
 {% block content %}
 <h3 class="page-header">Sign In</h3>
 
-<form role="form">
+<form id="signin-form" role="form">
     <div class="form-group">
         <label for="email">Email Address:</label>
-        <input type="email" class="form-control" id="email">
+        <input type="email" class="form-control" id="email" name="email">
     </div>
     <div class="form-group">
         <label for="password">Password:</label>
-        <input type="password" class="form-control" id="password">
+        <input type="password" class="form-control" id="password" name="password">
     </div>
 
     <div class="form-group" style="text-align:right;">
@@ -23,5 +23,13 @@
 
 {% block scripts %}
 <script src="/static/js/form-utils.js"></script>
-<script src="/static/js/signin.js"></script>
+<script>
+$(document).ready(function() {
+    $('#signin-form').initForm('/signin', {
+        onsuccess: function() {
+            window.location = '/';
+        }
+    });
+});
+</script>
 {% endblock %}
