@@ -302,7 +302,7 @@ class DataItem(BaseModel, ValidationMixin):
 
             # Validate that checksum if the correct length for the selected
             # checksum method.
-        elif self.checksum_method == 'md5' and len(value) != 32:
+            if self.checksum_method == 'md5' and len(value) != 32:
                 raise ValueError('MD5 checksums must be 32 characters long')
 
     ## @var checksum_method
