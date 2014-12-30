@@ -22,7 +22,9 @@
     <p>You do not currently have any SSH keys.</p>
 {% endif %}
 
-<hr style="margin-top:35px;">
+<div class="alert alert-warning">After generating an SSH key, you must <a class="alert-link" href="javascript:$('#help-modal').modal();">authorize it to access the destination machine</a>.</div>
+
+<hr style="margin-top:25px;">
 
 <h4>Generate New Key</h4>
 <form id="gen-key-form" role="form">
@@ -42,6 +44,40 @@
     </div>
     <button type="submit" class="btn btn-primary pull-right">Generate</button>
 </form>
+
+<div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="help-modal-title">Authorizing SSH Keys</h4>
+            </div>
+            <div class="modal-body">
+                <p>After generating an SSH keypair, you must place the public key on the
+                    destination machine to allow BDSS SSH access to that machine.</p>
+                <ol>
+                    <li>Click the "Download" button to download a keypair's public key.</li>
+                    <li>Copy the public key to the destination machine.</li>
+                    <li>On the destination machine:
+                        <ol style="padding-left:20px;">
+                            <li>Create a .ssh folder in your home directory if it does not already exist.
+                                <pre style="margin-right:60px;">mkdir -p ~/.ssh</pre>
+                            </li>
+                            <li>Add the key to your authorized keys.
+                                <pre style="margin-right:60px;">cat /path/to/key.pub >> ~/.ssh/authorized_keys</pre>
+                            </li>
+                            <li>Make sure permissions are set correctly.
+                                <pre style="margin-right:60px;">chmod 700 ~/.ssh; chmod 600 ~/.ssh/authorized_keys</pre>
+                            </li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
