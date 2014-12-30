@@ -25,7 +25,7 @@
 <hr style="margin-top:35px;">
 
 <h4>Generate New Key</h4>
-<form action="/keys" method="post" role="form">
+<form id="gen-key-form" role="form">
     <div class="form-group">
         <label for="destination">Destination</label>
         <select class="form-control" name="destination" id="destination">
@@ -43,4 +43,17 @@
     <button type="submit" class="btn btn-primary pull-right">Generate</button>
 </form>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/form-utils.js"></script>
+<script>
+$(document).ready(function() {
+    $('#gen-key-form').initForm('/keys', {
+        onsuccess: function() {
+            window.location.reload();
+        }
+    });
+});
+</script>
 {% endblock %}
