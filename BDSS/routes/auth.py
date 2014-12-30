@@ -63,7 +63,7 @@ def signup():
         errors['password_confirmation'] = 'Password confirmation does not match password'
 
     if len(errors) > 0:
-        return json_response({'errors': errors}, status=400)
+        return json_response({'field_errors': errors}, status=400)
     else:
         pwd_hash = pwd_context.encrypt(params['password'])
         user = User(name=params['name'], email=params['email'], password_hash=pwd_hash)
