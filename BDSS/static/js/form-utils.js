@@ -153,7 +153,7 @@
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     submitButton.setLoadingState(false);
-                    if (jqXHR.status === 400) {
+                    if (jqXHR.status >= 400 && jqXHR.status < 600) {
                         try {
                             var response = JSON.parse(jqXHR.responseText);
                             if (response.hasOwnProperty('field_errors')) {
