@@ -20,6 +20,8 @@ class SftpFileTransferMethod(BaseFileTransferMethod):
             raise FileTransferError('SSH unable to authenticate with destination')
         except socket.error:
             raise FileTransferError('SSH unable to connect to destination')
+        except IOError:
+            raise FileTransferError('Unable to write files')
 
     def mkdir_p(self, dir_path):
         self._ssh.exec_sync_command('mkdir -p "%s"' % dir_path)
