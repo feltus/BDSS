@@ -13,7 +13,8 @@
     <ul class="striped">
         {% for k in keys %}
             <li style="overflow:hidden;line-height:34px;">
-                <a class="btn btn-default pull-right" href="/keys/{{ k.id }}">Download</a>
+                <a class="btn btn-primary pull-right" href="/keys/{{ k.id }}">Download</a>
+                <a class="btn btn-default pull-right test-key-btn" data-key-id="{{ k.id }}" href="#" style="margin-right:10px;">Test</a>
                 {{ destinations[k.destination].label }}: {{ k.username }}@{{ destinations[k.destination].host }}
             </li>
         {% endfor %}
@@ -71,6 +72,8 @@
                         </ol>
                     </li>
                 </ol>
+                <p>Click the "Test" button to verify that BDSS can connect to the destination machine
+                    using the key.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -83,13 +86,5 @@
 
 {% block scripts %}
 <script src="/static/js/form-utils.js"></script>
-<script>
-$(document).ready(function() {
-    $('#gen-key-form').initForm('/keys', {
-        onsuccess: function() {
-            window.location.reload();
-        }
-    });
-});
-</script>
+<script src="/static/js/keys.js"></script>
 {% endblock %}

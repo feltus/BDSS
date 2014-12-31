@@ -65,3 +65,15 @@ li p {
         transform: rotate(360deg);
     }
 }
+
+.alert-inline {
+    line-height: 32px;
+    margin-bottom:0;
+    margin-right:10px;
+    padding:0 20px 0 8px;
+}
+
+.alert-inline button.close {
+    right: -11px;
+    top: 4px;
+}

@@ -1,9 +1,13 @@
+import socket
+
 from flask import abort, Blueprint, g, make_response, render_template, request
 from flask.ext.login import current_user, login_required
 from paramiko.rsakey import RSAKey
+from paramiko.ssh_exception import AuthenticationException
 from StringIO import StringIO
 
 from ..common import config
+from ..data_destinations.util import SSHClient
 from ..models import SSHKey
 from .util import filter_params, json_response
 
@@ -76,3 +80,33 @@ def get_key(key_id):
     response.headers['Content-Disposition'] = 'attachment; filename=' + filename
 
     return response
+
+@key_routes.route('/<key_id>/test', methods=['GET'])
+@login_required
+def test_key(key_id):
+
+    key = g.db_session.query(SSHKey).filter_by(owner=current_user, id=key_id).first()
+
+    if key is None:
+        app.abort(404)
+
+    destination_host = None
+    try:
+        destination_host = config['data_destinations'][key.destination]['host']
+    except KeyError:
+        return json_response({'error': 'No host configured for destination'}, status=500)
+
+    ssh = SSHClient()
+    ssh.load_system_host_keys()
+
+    try:
+        ssh.connect(destination_host, 22, key.username, None, RSAKey.from_private_key(StringIO(key.private)), None, None, True, False)
+        ssh.close()
+    except AuthenticationException:
+        return json_response({'error': 'Unable to authenticate'}, status=500)
+    except socket.error:
+        return json_response({'error': 'Unable to connect'}, status=500)
+    except Exception as e:
+        return json_response({'error': 'Unknown error'}, status=500)
+
+    return json_response({}, status=200)
