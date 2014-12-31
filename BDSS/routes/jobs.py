@@ -23,7 +23,10 @@ def show_job_page(job_id):
     elif job.owner != current_user:
         abort(403)
     else:
-        return render_template('jobs/show.html.jinja', job=job)
+        transfer_method = config['data_transfer_methods'][job.data_transfer_method]
+        destination = config['data_destinations'][job.data_destination]
+
+        return render_template('jobs/show.html.jinja', job=job, destination=destination, transfer_method=transfer_method)
 
 @job_routes.route('/submit', methods=['GET'])
 @login_required

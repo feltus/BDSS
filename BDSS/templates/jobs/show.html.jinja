@@ -11,13 +11,21 @@
 
 <h3 class="page-header">{{ job.name }}</h3>
 
-<p>Status: {{ job.status()|status_label }}</p>
+<p><strong>Status:</strong> {{ job.status()|status_label }}</p>
 
 {% if job.status() == 'in_progress' %}
     <p>Started: {{ job.started_at.isoformat() }}</p>
 {% elif job.status() == 'completed' or job.status() == 'failed' %}
-    <p>{{ job.status()|capitalize }} in {{ job.measured_time|float(0)|round(2)|default('?', true) }} seconds</p>
+    <p>
+        {{ job.status()|capitalize }} after {{ job.measured_time|float(0)|round(2) if job.measured_time != None else '?' }} seconds.
+        {% if job.error_message %}<br>{{ job.error_message }}{% endif %}
+    </p>
 {% endif %}
+
+<p><strong>Destination:</strong> {{ destination.label }}</p>
+<p><strong>Destination Directory:</strong> {{ job.destination_directory }}</p>
+
+<p><strong>Transfer Method:</strong> {{ transfer_method.label }}</p>
 
 <ul id="data-list" class="striped" style="margin-top: 15px;">
     {% for d in job.required_data %}
