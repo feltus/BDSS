@@ -1,6 +1,9 @@
+import socket
+
+from paramiko.ssh_exception import AuthenticationException
 from paramiko.rsakey import RSAKey
 from StringIO import StringIO
-from . import BaseExecutionMethod
+from . import BaseExecutionMethod, JobExecutionError
 from ..util import SSHClient
 
 class SshExecutionMethod(BaseExecutionMethod):
@@ -13,7 +16,12 @@ class SshExecutionMethod(BaseExecutionMethod):
 
     def connect(self):
         self._ssh = SSHClient()
-        self._ssh.connect(self.destination_host, 22, self.user, None, RSAKey.from_private_key(StringIO(self.key)), None, None, True, False)
+        try:
+            self._ssh.connect(self.destination_host, 22, self.user, None, RSAKey.from_private_key(StringIO(self.key)), None, None, True, False)
+        except AuthenticationException:
+            raise JobExecutionError('SSH unable to authenticate with destination')
+        except socket.error:
+            raise JobExecutionError('SSH unable to connect to destination')
 
     def execute_job(self, working_directory):
         self._ssh.exec_sync_command('cd "%s"; %s' % (working_directory, self.command))

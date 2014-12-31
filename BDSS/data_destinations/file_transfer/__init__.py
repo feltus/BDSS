@@ -1,5 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
+class FileTransferError(Exception):
+    pass
+
 class BaseFileTransferMethod():
 
     __metaclass__ = ABCMeta

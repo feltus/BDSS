@@ -1,5 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
+class JobExecutionError(Exception):
+    pass
+
 class BaseExecutionMethod():
 
     __metaclass__ = ABCMeta
