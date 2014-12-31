@@ -13,7 +13,16 @@ key_routes = Blueprint('keys', __name__)
 @login_required
 def list_keys():
     keys = g.db_session.query(SSHKey).filter_by(owner=current_user).all()
-    destinations = [{'id': id, 'label': dest.get('label', id), 'description': dest.get('description', None)} for (id, dest) in config['data_destinations'].iteritems() if dest['requires_ssh_key']]
+
+    destinations = {}
+    for id, dest in config['data_destinations'].iteritems():
+        if dest['requires_ssh_key']:
+            destinations[id] = {
+                'label': dest.get('label', id),
+                'description': dest.get('description', None),
+                'host': dest.get('host', None)
+            }
+
     return render_template('keys/index.html.jinja', keys=keys, destinations=destinations)
 
 @key_routes.route('', methods=['POST'])

@@ -14,7 +14,7 @@
         {% for k in keys %}
             <li style="overflow:hidden;line-height:34px;">
                 <a class="btn btn-default pull-right" href="/keys/{{ k.id }}">Download</a>
-                {{ k.username }}@{{ k.destination }}
+                {{ destinations[k.destination].label }}: {{ k.username }}@{{ destinations[k.destination].host }}
             </li>
         {% endfor %}
     </ul>
@@ -31,8 +31,8 @@
     <div class="form-group">
         <label for="destination">Destination</label>
         <select class="form-control" name="destination" id="destination">
-            {% for dest in destinations %}
-            <option value="{{ dest.id }}" data-destination='{{ dest|tojson|safe }}'>{{ dest.label }}</option>
+            {% for id, dest in destinations.iteritems() %}
+            <option value="{{ id }}" data-destination='{{ dest|tojson|safe }}'>{{ dest.label }} ({{ dest.host }})</option>
             {% endfor %}
         </select>
         <p class="help-block"></p>
