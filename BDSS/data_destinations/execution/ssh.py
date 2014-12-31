@@ -13,7 +13,6 @@ class SshExecutionMethod(BaseExecutionMethod):
 
     def connect(self):
         self._ssh = SSHClient()
-        self._ssh.load_system_host_keys()
         self._ssh.connect(self.destination_host, 22, self.user, None, RSAKey.from_private_key(StringIO(self.key)), None, None, True, False)
 
     def execute_job(self, working_directory):

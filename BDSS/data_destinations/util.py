@@ -1,10 +1,16 @@
 import time
 
 from paramiko import SSHClient as ParamikoSSHClient
+from paramiko.client import AutoAddPolicy
 from socket import timeout
 
 ## Add method for running synchronous commands to Paramiko's SSH client.
 class SSHClient(ParamikoSSHClient):
+
+    def __init__(self):
+        super(SSHClient, self).__init__()
+        self.load_system_host_keys()
+        self.set_missing_host_key_policy(AutoAddPolicy())
 
     ## Execute a command on the remote host, but block until it finishes
     #  or until the given timeout expires.
