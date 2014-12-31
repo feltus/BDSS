@@ -4,7 +4,8 @@ class BaseExecutionMethod():
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, **kwargs):
+    def __init__(self, destination_host, **kwargs):
+        self.destination_host = destination_host
         for option, value in kwargs.iteritems():
             setattr(self, option, value)
 

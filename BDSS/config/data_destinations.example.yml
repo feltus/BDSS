@@ -1,15 +1,8 @@
 destination1:
     label: Destination 1
     description:
+    host: remote1.example.com
     file_transfer:
         module: sftp
-        args:
-            host: remote1.example.com
-            user: bdss
-            password: asdf
     job_execution:
         module: ssh
-        args:
-            host: remote1.example.com
-            user: bdss
-            password: asdf

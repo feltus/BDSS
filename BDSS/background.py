@@ -19,6 +19,11 @@ def start_job(job):
     Session.object_session(job).commit()
 
     destination_config = config['data_destinations'][job.data_destination]
+    destination_host = None
+    try:
+        destination_host = destination_config['host']
+    except KeyError:
+        pass
 
     # Group URLs
     data_urls = [d.data_url for d in job.required_data]
@@ -42,7 +47,7 @@ def start_job(job):
         keys = [k for k in job.owner.keys if k.destination == job.data_destination]
         file_transfer_method_init_args['user'] = keys[0].username
         file_transfer_method_init_args['key'] = keys[0].private
-    file_transfer_method = file_transfer_method_class(**file_transfer_method_init_args)
+    file_transfer_method = file_transfer_method_class(destination_host, **file_transfer_method_init_args)
 
     job_directory = path.join(job.destination_directory, 'bdss', 'job_%d' % job.job_id)
 
@@ -97,7 +102,7 @@ def start_job(job):
         keys = [k for k in job.owner.keys if k.destination == job.data_destination]
         execution_method_init_args['user'] = keys[0].username
         execution_method_init_args['key'] = keys[0].private
-    execution_method = execution_method_class(**execution_method_init_args)
+    execution_method = execution_method_class(destination_host, **execution_method_init_args)
 
     execution_method.connect()
     execution_method.execute_job(job_directory)
