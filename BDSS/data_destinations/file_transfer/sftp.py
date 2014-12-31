@@ -14,7 +14,7 @@ class SftpFileTransferMethod(BaseFileTransferMethod):
     def connect(self):
         self._ssh = SSHClient()
         try:
-            self._ssh.connect(self.destination_host, 22, self.user, None, RSAKey.from_private_key(StringIO(self.key)), None, None, True, False)
+            self._ssh.connect(self.destination_host, 22, self.key.username, None, RSAKey.from_private_key(StringIO(self.key.private)), None, None, True, False)
             self._sftp = self._ssh.open_sftp()
         except AuthenticationException:
             raise FileTransferError('SSH unable to authenticate with destination')
