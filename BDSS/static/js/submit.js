@@ -31,7 +31,7 @@ $(document).ready(function() {
             console.log(e);
 
             // Confirm replacing current URL inputs
-            var numUrlsEntered = $('fieldset[name="required_data[]"]').length
+            var numUrlsEntered = $('fieldset[name="required_data[]"]').length;
             if (numUrlsEntered > 0 && !confirm('Replace current URLs with those from file?')) {
                 return;
             }
@@ -84,6 +84,9 @@ $(document).ready(function() {
             }
             delete form_value.url_manifest;
             return { job: form_value };
+        },
+        onsuccess: function() {
+            window.location = '/jobs';
         }
     });
 });
