@@ -226,7 +226,7 @@ class Job(BaseModel, ValidationMixin):
         # job's owner has a key for that destination.
         if config['data_destinations'][value]['requires_ssh_key']:
             if not [key for key in self.owner.keys if key.destination == value]:
-                raise ValueError(config['data_destinations'][value]['label'] + ' requires an SSH key')    
+                raise ValueError(config['data_destinations'][value]['label'] + ' requires an SSH key')
 
     ## @var destination_directory
     #  The directory on the destination machine to save downloaded data into.
@@ -249,8 +249,14 @@ class Job(BaseModel, ValidationMixin):
     #  Time this job required to complete, from when it was started on the destination.
     measured_time = Column(Float())
 
+    ## @var error_message
+    #  Error message reported if job could not be started.
+    error_message = Column(Text())
+
     ## Get status of this job based on status of its transfer script fragments.
     def status(self):
+        if self.error_message:
+            return 'failed'
         if len([d for d in self.required_data if d.status != 'pending']) == 0:
             return 'pending'
         elif len([d for d in self.required_data if d.status == 'pending' or d.status == 'in_progress']) != 0:
@@ -275,7 +281,8 @@ class Job(BaseModel, ValidationMixin):
             'required_data': [item.serialize() for item in self.required_data],
             'created_at': self.created_at.isoformat(),
             'started_at': self.started_at and self.started_at.isoformat(),
-            'measured_time': self.measured_time
+            'measured_time': self.measured_time,
+            'error': self.error_message
         }
 
 class DataItem(BaseModel, ValidationMixin):
