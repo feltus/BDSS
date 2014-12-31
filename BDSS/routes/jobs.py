@@ -3,7 +3,7 @@ from flask import abort, Blueprint, g, render_template, request
 from flask.ext.login import current_user, login_required
 
 from ..common import config
-from ..models import Job, DataItem, ValidationError
+from ..models import Job, DataItem
 from ..routes.util import filter_params, json_response
 
 job_routes = Blueprint('jobs', __name__)
@@ -65,9 +65,6 @@ def create_job():
         g.db_session.add(job)
         g.db_session.commit()
         return json_response({'job': job.serialize()}, status=201)
-    except ValidationError as e:
-        g.db_session.rollback()
-        return json_response({'form_errors': ['Invalid input']}, status=400)
     except ValueError as e:
         g.db_session.rollback()
         return json_response({'form_errors': [str(e)]}, status=400)

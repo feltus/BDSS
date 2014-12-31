@@ -32,34 +32,6 @@ def validates(attribute_name):
 
     return validates_decorator
 
-class ValidationError(Exception):
-
-    def __init__(self, invalid_obj):
-        if not isinstance(invalid_obj, list):
-            self.invalid_objects = [invalid_obj]
-        else:
-            self.invalid_objects = invalid_obj
-
-@event.listens_for(mapper, 'before_insert')
-@event.listens_for(mapper, 'before_update')
-def before_exec(mapper, connection, target):
-    session = Session.object_session(target)
-
-    if not hasattr(session, '_objs_to_validate') or not session._objs_to_validate:
-        session._objs_to_validate = []
-
-    session._objs_to_validate.append(target)
-
-@event.listens_for(Session, 'before_commit')
-def before_commit(session):
-    if not hasattr(session, '_objs_to_validate') or not session._objs_to_validate:
-        session._objs_to_validate = []
-
-    for obj in session._objs_to_validate:
-        if hasattr(obj, 'validate') and callable(getattr(obj, 'validate')):
-            if not obj.validate():
-                raise ValidationError(obj)
-
 @event.listens_for(mapper, 'mapper_configured')
 def mapper_configured(mapper, cls):
     if hasattr(cls, '_init_validation') and callable(getattr(cls, '_init_validation')):
