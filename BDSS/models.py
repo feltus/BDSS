@@ -9,7 +9,7 @@ from sqlalchemy.types import BigInteger, DateTime, Enum, Float, Integer, String,
 from sqlalchemy.orm import backref, mapper, relationship, Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from .common import config, DBSession, import_class
+from .common import config, DBSession
 
 BaseModel = declarative_base()
 
@@ -222,18 +222,11 @@ class Job(BaseModel, ValidationMixin):
         if value not in available_destinations:
             raise ValueError(value + ' is not an available destination')
 
-        # Check if the specified destination requires an SSH key for file
-        # transfer or job execution.
-        file_transfer_module = config['data_destinations'][value]['file_transfer']['module']
-        file_transfer_class = import_class('.data_destinations.file_transfer', file_transfer_module, 'FileTransferMethod')
-
-        job_execution_module = config['data_destinations'][value]['job_execution']['module']
-        job_execution_class = import_class('.data_destinations.execution', job_execution_module, 'ExecutionMethod')
-
-        destination_requires_ssh_key = file_transfer_class.requires_ssh_key or job_execution_class.requires_ssh_key
-
-        if destination_requires_ssh_key and not [key for key in self.owner.keys if key.destination == value]:
-            raise ValueError(config['data_destinations'][value]['label'] + ' requires an SSH key')
+        # If the specified destination requires an SSH key, check that the
+        # job's owner has a key for that destination.
+        if config['data_destinations'][value]['requires_ssh_key']:
+            if not [key for key in self.owner.keys if key.destination == value]:
+                raise ValueError(config['data_destinations'][value]['label'] + ' requires an SSH key')    
 
     ## @var destination_directory
     #  The directory on the destination machine to save downloaded data into.
