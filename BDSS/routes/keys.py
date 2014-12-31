@@ -13,7 +13,7 @@ key_routes = Blueprint('keys', __name__)
 @login_required
 def list_keys():
     keys = g.db_session.query(SSHKey).filter_by(owner=current_user).all()
-    destinations = [{'id': id, 'label': dest.get('label', id), 'description': dest.get('description', None)} for (id, dest) in config['data_destinations'].iteritems()]
+    destinations = [{'id': id, 'label': dest.get('label', id), 'description': dest.get('description', None)} for (id, dest) in config['data_destinations'].iteritems() if dest['requires_ssh_key']]
     return render_template('keys/index.html.jinja', keys=keys, destinations=destinations)
 
 @key_routes.route('', methods=['POST'])
@@ -25,10 +25,14 @@ def create_key():
     if 'username' not in params.keys() or len(params['username']) == 0:
         errors['username'] = 'A username is required'
 
-    # Prevent duplicate keys for a destination.
-    key = g.db_session.query(SSHKey).filter_by(owner=current_user, destination=params['destination']).first()
-    if key is not None:
-        errors['destination'] = 'You already have a key for this destination'
+    if not config['data_destinations'][params['destination']]['requires_ssh_key']:
+        errors['destination'] = 'This destination does not require an SSH key'
+
+    else:
+        # Prevent duplicate keys for a destination.
+        key = g.db_session.query(SSHKey).filter_by(owner=current_user, destination=params['destination']).first()
+        if key is not None:
+            errors['destination'] = 'You already have a key for this destination'
 
     if errors:
         return json_response({'field_errors': errors}, status=400)
