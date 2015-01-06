@@ -1,13 +1,25 @@
 #!/usr/bin/python
 
 import json
+import logging
+import os
 import string
 import sys
 import time
 import urllib2
-import logging
 
-from os import path
+class StreamToLogger(object):
+    """
+    Fake file-like stream object that redirects writes to a logger instance.
+    """
+    def __init__(self, logger, log_level=logging.INFO):
+        self.logger = logger
+        self.log_level = log_level
+        self.linebuf = ''
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
 
 def import_class(class_path):
     (module_path, class_name) = string.rsplit(class_path, '.', 1)
@@ -17,9 +29,21 @@ def import_class(class_path):
     except AttributeError:
         raise ImportError()
 
-logging.basicConfig(stream=sys.stderr)
+# Redirect stdout,stderr to log file
+containing_directory = os.path.dirname(os.path.realpath(__file__))
+logging.basicConfig(
+    filename=os.path.join(containing_directory, 'transfer.log'),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+    filemode='w'
+)
 
-containing_directory = path.dirname(path.realpath(__file__))
+stdout_logger = logging.getLogger('STDOUT')
+stderr_logger = logging.getLogger('STDERR')
+
+sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
+sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
+
 sys.path.insert(0, containing_directory)
 
 if len(sys.argv) < 2:
@@ -35,7 +59,7 @@ with open(url_list_file, 'r') as f:
 
 # Read config from file.
 config = None
-with open(path.join(containing_directory, 'transfer_config.json')) as f:
+with open(os.path.join(containing_directory, 'transfer_config.json')) as f:
     config = json.load(f)
 
 # Import transfer method class.
