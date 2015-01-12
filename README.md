@@ -27,7 +27,7 @@ Set `database_url` option in BDSS/config/app.yml.
 See [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#database-urls) for URL format.
 
 ```Shell
-python create_db.py
+python scripts/create_db.py
 ```
 
 ### Generate secret key
@@ -35,7 +35,7 @@ python create_db.py
 Generate a random secret key for [Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions). This will be saved in BDSS/config/app.yml.
 
 ```Shell
-python gen_key.py
+python scripts/gen_key.py
 ```
 
 ### Start web server
@@ -43,13 +43,13 @@ python gen_key.py
 #### Flask development server
 
 ```Shell
-python serve.py
+python scripts/serve.py
 ```
 
 For an externally visible server:
 
 ```Shell
-python serve.py --public
+python scripts/serve.py --public
 ```
 
 #### Apache VirtualHost configuration:
@@ -76,6 +76,5 @@ Listen 80
 ### Start job processing daemon
 
 ```Shell
-cd /path/to/bdss
-python worker.py start
+python scripts/worker.py start
 ```

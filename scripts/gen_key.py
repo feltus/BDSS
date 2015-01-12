@@ -1,7 +1,7 @@
 import os
 import yaml
 
-app_config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'BDSS', 'config', 'app.yml')
+app_config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'BDSS', 'config', 'app.yml')
 
 app_config = yaml.load(open(app_config_path, 'r').read())
 

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
+import os
 import sys
-from os.path import dirname, realpath
 
-sys.path.insert(0, dirname(realpath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from BDSS import app as application
 

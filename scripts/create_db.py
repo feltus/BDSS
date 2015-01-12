@@ -1,7 +1,10 @@
+import os
 import sys
 
 from distutils.util import strtobool
 from sqlalchemy_utils import database_exists, drop_database
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from BDSS.common import config, db_engine
 from BDSS.models import *

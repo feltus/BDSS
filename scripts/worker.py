@@ -5,12 +5,11 @@ import signal
 import sys
 import time
 
-from BDSS.background import start_job_loop
 from daemon import daemon, pidfile
 
-containing_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, root_dir)
 
-sys.path.insert(0, containing_dir)
 from BDSS.background import start_job_loop
 
 class StreamToLogger(object):
@@ -32,7 +31,9 @@ class WorkerDaemonError(Exception):
 class WorkerDaemon():
 
     def __init__(self):
-        self.pidfile_path = os.path.join(containing_dir, 'worker.pid')
+        if not os.path.exists(os.path.join(root_dir, 'tmp')):
+            os.mkdir(os.path.join(root_dir, 'tmp'), 0755)
+        self.pidfile_path = os.path.join(root_dir, 'tmp', 'worker.pid')
         self.ctx = daemon.DaemonContext()
         self.ctx.pidfile = pidfile.TimeoutPIDLockFile(self.pidfile_path, 5)
 
@@ -56,10 +57,11 @@ class WorkerDaemon():
         except pidfile.AlreadyLocked:
             raise WorkerDaemonError('PID file %s already locked' % self.pidfile_path)
 
-
+        if not os.path.exists(os.path.join(root_dir, 'log')):
+            os.mkdir(os.path.join(root_dir, 'log'), 0755)
 
         logging.basicConfig(
-            filename=os.path.join(containing_dir, 'BDSS', 'worker.log'),
+            filename=os.path.join(root_dir, 'log', 'worker.log'),
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             level=logging.DEBUG,
             filemode='a'
@@ -70,8 +72,6 @@ class WorkerDaemon():
 
         sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
         sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
-
-        os.umask(022)
 
         start_job_loop()
 
@@ -100,9 +100,12 @@ if __name__ == '__main__':
     action = sys.argv[1]
 
     d = WorkerDaemon()
-    if action == 'start':
-        d.start()
-    elif action == 'stop':
-        d.stop()
-    elif action == 'restart':
-        d.restart()
+    try:
+        if action == 'start':
+            d.start()
+        elif action == 'stop':
+            d.stop()
+        elif action == 'restart':
+            d.restart()
+    except WorkerDaemonError as e:
+        print >> sys.stderr, e.message
