@@ -22,7 +22,7 @@ def status_label_filter(status):
         'completed': 'success',
         'failed': 'danger'
     }
-    return Markup(u'<span class="label label-%s">%s</span>' % (label_classes[status.lower()], status.capitalize()))
+    return Markup(u'<span class="label label-%s">%s</span>' % (label_classes[status.lower()], status.replace('_', ' ').capitalize()))
 
 login_manager = LoginManager()
 login_manager.init_app(app)
