@@ -16,10 +16,13 @@ class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
     """
-    def __init__(self, logger, log_level=logging.INFO):
-        self.logger = logger
+    def __init__(self, name, path, log_level=logging.INFO):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
+        fh = logging.FileHandler(path)
+        fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(fh)
         self.log_level = log_level
-        self.linebuf = ''
 
     def write(self, buf):
         for line in buf.rstrip().splitlines():
@@ -60,18 +63,8 @@ class WorkerDaemon():
         if not os.path.exists(os.path.join(root_dir, 'log')):
             os.mkdir(os.path.join(root_dir, 'log'), 0755)
 
-        logging.basicConfig(
-            filename=os.path.join(root_dir, 'log', 'worker.log'),
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            level=logging.DEBUG,
-            filemode='a'
-        )
-
-        stdout_logger = logging.getLogger('STDOUT')
-        stderr_logger = logging.getLogger('STDERR')
-
-        sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
-        sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
+        sys.stdout = StreamToLogger('STDOUT', os.path.join(root_dir, 'log', 'worker.log'), logging.INFO)
+        sys.stderr = StreamToLogger('STDERR', os.path.join(root_dir, 'log', 'worker.log'), logging.ERROR)
 
         start_job_loop()
 

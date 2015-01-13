@@ -17,6 +17,10 @@ from .models import Job, DataItem
 
 def start_job(job):
 
+    print '-------------'
+    print ''
+    print 'Starting job %d' % job.job_id
+
     job.started_at = datetime.utcnow()
     Session.object_session(job).commit()
 
@@ -53,6 +57,7 @@ def start_job(job):
             file_transfer_method.key = keys[0]
         else:
             job.error_message = 'Failed to transfer job files (No SSH key for destination)'
+            print >> sys.stderr, job.error_message
             job.measured_time = 0
             Session.object_session(job).commit()
             return
@@ -103,12 +108,15 @@ def start_job(job):
 
     except FileTransferError as e:
         job.error_message = 'Failed to transfer job files (%s)' % str(e)
+        print >> sys.stderr, job.error_message
         job.measured_time = 0
         Session.object_session(job).commit()
         return
 
-    except Exception:
+    except Exception as e:
         job.error_message = 'Failed to transfer job files (Unknown error)'
+        print >> sys.stderr, job.error_message
+        print >> sys.stderr, traceback.format_exc()
         job.measured_time = 0
         Session.object_session(job).commit()
         return
@@ -127,6 +135,7 @@ def start_job(job):
             execution_method.key = keys[0]
         else:
             job.error_message = 'Failed to execute job script (No SSH key for destination)'
+            print >> sys.stderr, job.error_message
             job.measured_time = 0
             Session.object_session(job).commit()
             return
@@ -140,15 +149,21 @@ def start_job(job):
 
     except JobExecutionError as e:
         job.error_message = 'Failed to execute job script (%s)' % str(e)
+        print >> sys.stderr, job.error_message
         job.measured_time = 0
         Session.object_session(job).commit()
         return
 
     except Exception:
         job.error_message = 'Failed to execute job script (Unknown error)'
+        print >> sys.stderr, job.error_message
+        print >> sys.stderr, traceback.format_exc()
         job.measured_time = 0
         Session.object_session(job).commit()
         return
+
+    print 'Success'
+
 
 def start_job_loop():
     # Connect to database
@@ -157,17 +172,16 @@ def start_job_loop():
 
     print 'Running'
     while True:
-        print 'Checking for jobs'
         job = db_session.query(Job).filter_by(started_at=None).order_by('created_at ASC').first()
         if job:
             try:
-                print 'Starting job %d' % job.job_id
                 start_job(job)
             except Exception as e:
-                print >> sys.stderr, 'Failed to start job %d: %s' % (job.job_id, str(e))
+                job.error_message = 'Failed to start job (Unknown error)'
+                print >> sys.stderr, job.error_message
                 print >> sys.stderr, traceback.format_exc()
+                Session.object_session(job).commit()
         else:
-            print 'Sleeping'
             sleep(60)
 
     # Disconnect from database.
