@@ -32,7 +32,7 @@
         <li>
             {{- d.status|status_label -}}{{ d.data_url }}<br>
             {%- if d.status == 'in_progress' -%}
-                Started: {{ d.started_at.isoformat() }}
+                Started: {{ d.transfer_started_at.isoformat() }}
             {%- elif d.status == 'failed' -%}
                 {{ d.status|capitalize }} in {{ d.measured_transfer_time|round(2) }} seconds
             {%- elif d.status == 'completed' -%}
