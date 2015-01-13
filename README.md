@@ -73,6 +73,8 @@ Listen 80
 </VirtualHost>
 ```
 
+Note: If using an SQLite database, the directory containing the database file as well as the database file itself must be writable by the Apache user.
+
 ### Start job processing daemon
 
 ```Shell
