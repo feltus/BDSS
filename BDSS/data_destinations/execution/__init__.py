@@ -19,6 +19,14 @@ class BaseExecutionMethod():
     def connect(self):
         pass
 
+    ## Test connection from destination to BDSS server by attempting an
+    #  HTTP GET on the root URL from the destination host.
+    #  @param app_url The app URL from the configuration file.
+    #  @return True if request succeeds, False otherwise.
+    @abstractmethod
+    def test_connection(self, app_url):
+        pass
+
     ## Execute job script.
     @abstractmethod
     def execute_job(self, working_directory):

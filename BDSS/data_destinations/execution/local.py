@@ -12,6 +12,14 @@ class LocalExecutionMethod(BaseExecutionMethod):
     def connect(self):
         pass
 
+    def test_connection(self, app_url):
+        response_code = None
+        try:
+            response_code = int(subprocess.check_output("curl -s -o /dev/null -w \"%%{http_code}\" \"%s\"" % app_url, shell=True))
+        except subprocess.CalledProcessError as e:
+            response_code = int(e.output)
+        return 200 <= response_code < 400
+
     def execute_job(self, working_directory):
         subprocess.Popen(
             self.command,

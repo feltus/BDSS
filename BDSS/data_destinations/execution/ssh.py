@@ -23,6 +23,11 @@ class SshExecutionMethod(BaseExecutionMethod):
         except socket.error:
             raise JobExecutionError('SSH unable to connect to destination')
 
+    def test_connection(self, app_url):
+        (stdin, stdout, stderr) = self._ssh.exec_sync_command("curl -s -o /dev/null -w \"%%{http_code}\" \"%s\"" % app_url)
+        response_code = int(stdout.read())
+        return (200 <= response_code < 400)
+
     def execute_job(self, working_directory):
         self._ssh.exec_sync_command('cd "%s"; %s' % (working_directory, self.command))
 

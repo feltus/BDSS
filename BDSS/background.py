@@ -133,6 +133,8 @@ def start_job(job):
 
     try:
         execution_method.connect()
+        if not execution_method.test_connection(config['app']['app_url']):
+            raise JobExecutionError('Destination is unable to reach BDSS server')
         execution_method.execute_job(job_directory)
         execution_method.disconnect()
 
