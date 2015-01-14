@@ -24,9 +24,13 @@ class SftpFileTransferMethod(BaseFileTransferMethod):
             raise FileTransferError('Unable to write files')
 
     def mkdir_p(self, dir_path):
-        self._ssh.exec_sync_command('mkdir -p "%s"' % dir_path)
+        self._ssh.exec_sync_command('mkdir -p %s' % dir_path.replace(' ', '\\ '))
 
     def transfer_file(self, dest_file_path, file_data):
+        # Run path.expandvars and path.expanduser on destination to get absolute path.
+        (stdin, stdout, stderr) = self._ssh.exec_sync_command("python -c \"from os import path; print path.expandvars(path.expanduser('%s'))\"" % dest_file_path)
+        dest_file_path = stdout.read().rstrip()
+
         remote_file = self._sftp.open(dest_file_path, 'w')
         remote_file.write(file_data)
         remote_file.close()

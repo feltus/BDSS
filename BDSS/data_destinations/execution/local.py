@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 from . import BaseExecutionMethod
@@ -23,7 +24,7 @@ class LocalExecutionMethod(BaseExecutionMethod):
     def execute_job(self, working_directory):
         subprocess.Popen(
             self.command,
-            cwd=working_directory,
+            cwd=os.path.expandvars(os.path.expanduser(working_directory)),
             shell=True,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
