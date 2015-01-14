@@ -1,8 +1,8 @@
+import socket
 import time
 
 from paramiko import SSHClient as ParamikoSSHClient
 from paramiko.client import AutoAddPolicy
-from socket import timeout
 
 ## Add method for running synchronous commands to Paramiko's SSH client.
 class SSHClient(ParamikoSSHClient):
@@ -24,6 +24,6 @@ class SSHClient(ParamikoSSHClient):
             time.sleep(0.05)
             i += 1
             if i % 10 == 0 and time.time() - start > timeout:
-                raise timeout('Command \'%s\' timed out after %fs' % (command, timeout))
+                raise socket.timeout('Command \'%s\' timed out after %fs' % (command, timeout))
 
         return (stdin, stdout, stderr)
