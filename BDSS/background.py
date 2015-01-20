@@ -5,7 +5,6 @@ import sys
 import traceback
 
 from datetime import datetime
-from itsdangerous import Signer
 from os import path
 from sqlalchemy.orm.session import Session
 from time import sleep
@@ -78,19 +77,13 @@ def start_job(job):
             with open(path.join(local_transfer_dir, p), 'r') as f:
                 file_transfer_method.transfer_file(path.join(scripts_dir, p), f.read())
 
-        # Generate token for sending status updates.
-        signer = Signer(config['app']['secret_key'])
-        signed_id = signer.sign('{0},{1}'.format(job.owner.email, job.job_id))
-        signature = signed_id.split('.')[-1]
-
         # Copy configuration
         transfer_config = {
             'app_url': config['app']['app_url'],
             'job_id': job.job_id,
-            'owner': job.owner.email,
             'method': job.data_transfer_method,
             'init_args': job.data_transfer_method_options,
-            'signature': signature
+            'reporting_token': job.reporting_token
         }
         file_transfer_method.transfer_file(path.join(scripts_dir, 'transfer_config.json'), json.dumps(transfer_config))
 

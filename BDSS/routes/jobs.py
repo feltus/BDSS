@@ -48,6 +48,7 @@ def create_job():
 
     job = Job(**job_params)
     job.owner = current_user
+    job.generate_reporting_token()
     for p in data_params:
         job.required_data.append(DataItem(**p))
 
@@ -81,10 +82,11 @@ def update_job(job_id):
         abort(403)
     else:
         job.measured_time = params['measured_time']
+        job.reporting_token = None
         g.db_session.commit()
         return json_response({'job': job.serialize()})
 
-@job_routes.route('/<job_id>/data/status', methods=['POST'])
+@job_routes.route('/<job_id>/status', methods=['POST'])
 @login_required
 def update_transfer_status(job_id):
     params = request.get_json()

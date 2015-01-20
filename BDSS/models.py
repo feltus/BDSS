@@ -1,6 +1,7 @@
 import inspect
 import json
 import re
+import uuid
 
 from datetime import datetime
 from flask.ext.login import UserMixin
@@ -224,6 +225,19 @@ class Job(BaseModel, ValidationMixin):
     ## @var error_message
     #  Error message reported if job could not be started.
     error_message = Column(Text())
+
+    ## @var reporting_token
+    #  Token used by destination to report status updates for this job.
+    reporting_token = Column(String(32))
+
+    ## Generate a unique reporting token for this job.
+    def generate_reporting_token(self):
+        token = uuid.uuid4().hex
+        session = Session.object_session(self)
+        while session.query(self.__class__).filter_by(reporting_token=token).first() is not None:
+            token = uuid.uuid4().hex
+
+        self.reporting_token = token
 
     ## Get status of this job based on status of its transfer script fragments.
     def status(self):

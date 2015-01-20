@@ -4,7 +4,7 @@ from itsdangerous import Signer
 from jinja2 import Markup
 
 from .common import config, db_engine, DBSession
-from .models import User
+from .models import Job, User
 from .routes.util import json_response
 
 from .routes.auth import auth_routes
@@ -34,16 +34,14 @@ def load_user(userid):
 
 @login_manager.request_loader
 def load_user_from_request(self):
-    params = request.get_json()
 
-    if params is None:
-        return None
+    if request.endpoint == 'jobs.update_job' or request.endpoint == 'jobs.update_transfer_status':
+        auth = request.headers.get('Authorization')
+        token = auth.split(' ')[1]
 
-    if 'owner' in params.keys() and 'job_id' in params.keys() and 'signature' in params.keys():
-        signer = Signer(config['app']['secret_key'])
-        s = '{0},{1}'.format(params['owner'], params['job_id'])
-        if signer.unsign('{0}.{1}'.format(s, params['signature'])) == s:
-            return g.db_session.query(User).filter_by(email=params['owner']).first()
+        job = g.db_session.query(Job).filter_by(reporting_token=token).first()
+        if job:
+            return job.owner
 
     return None
 
