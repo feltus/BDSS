@@ -55,6 +55,9 @@ class WorkerDaemon():
         if self.is_pidfile_stale():
             self.ctx.pidfile.break_lock()
 
+        if self.ctx.pidfile.is_locked():
+            raise WorkerDaemonError('PID file %s already locked' % self.pidfile_path)
+
         try:
             self.ctx.open()
         except pidfile.AlreadyLocked:
@@ -67,6 +70,20 @@ class WorkerDaemon():
         sys.stderr = StreamToLogger('STDERR', os.path.join(root_dir, 'log', 'worker.log'), logging.ERROR)
 
         start_job_loop()
+
+    def run_foreground(self):
+        if self.is_pidfile_stale():
+            self.ctx.pidfile.break_lock()
+
+        try:
+            self.ctx.pidfile.acquire()
+        except pidfile.AlreadyLocked:
+            raise WorkerDaemonError('PID file %s already locked' % self.pidfile_path)
+
+        try:
+            start_job_loop()
+        except KeyboardInterrupt:
+            self.ctx.pidfile.release()
 
     def stop(self):
         if not self.ctx.pidfile.is_locked():
@@ -86,7 +103,7 @@ class WorkerDaemon():
         self.start()
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2 or not sys.argv[1] in ('start', 'stop', 'restart'):
+    if len(sys.argv) < 2 or not sys.argv[1] in ('start', 'stop', 'restart', 'fg'):
         print >> sys.stderr, 'Usage: worker.py start|stop|restart'
         sys.exit(1)
 
@@ -96,6 +113,8 @@ if __name__ == '__main__':
     try:
         if action == 'start':
             d.start()
+        elif action == 'fg':
+            d.run_foreground()
         elif action == 'stop':
             d.stop()
         elif action == 'restart':
