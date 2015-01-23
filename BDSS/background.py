@@ -73,7 +73,7 @@ def start_job(job):
 
         local_transfer_dir = path.join(path.dirname(path.realpath(__file__)), 'data_transfer')
 
-        for p in ['methods/__init__.py', 'methods/' + job.data_transfer_method + '.py', 'transfer.py']:
+        for p in ['methods/__init__.py', 'methods/' + job.data_transfer_method + '.py', 'transfer.py', 'reporting.py']:
             with open(path.join(local_transfer_dir, p), 'r') as f:
                 file_transfer_method.transfer_file(path.join(scripts_dir, p), f.read())
 

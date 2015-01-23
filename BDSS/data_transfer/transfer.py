@@ -8,6 +8,8 @@ import sys
 import time
 import urllib2
 
+from reporting import JobStatusReporter
+
 class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
@@ -46,13 +48,8 @@ sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
 
 sys.path.insert(0, containing_directory)
 
-if len(sys.argv) < 2:
-    print >> sys.stderr, 'Usage: run.py url_list_file'
-    sys.exit(1)
-
-url_list_file = sys.argv[1]
-
 # Read data URLs from file.
+url_list_file = sys.argv[1]
 urls = None
 with open(url_list_file, 'r') as f:
     urls = f.read().rstrip().split('\n')
@@ -62,27 +59,20 @@ config = None
 with open(os.path.join(containing_directory, 'transfer_config.json')) as f:
     config = json.load(f)
 
+# Instantiate status reporter
+reporter = JobStatusReporter(server_url=config['app_url'], job_id=config['job_id'], reporting_token=config['reporting_token'])
+
 # Import transfer method class.
 method_name = config['method']
 class_path = 'methods.' + \
     method_name + '.' + \
     ''.join([s.capitalize() for s in method_name.split('_')]) + 'TransferMethod'
 method_class = import_class(class_path)
-method = method_class(config['app_url'], config['job_id'], config['reporting_token'], **config['init_args'])
+method = method_class(reporter, **config['init_args'])
 
 start_time = time.time()
 method.transfer_data(urls)
 elapsed_time = time.time() - start_time
 
 # Report job duration to BDSS server.
-url = config['app_url'] + '/jobs/' + str(config['job_id'])
-request_data = {
-    'measured_time': elapsed_time
-}
-request = urllib2.Request(url, json.dumps(request_data), {'Content-Type': 'application/json', 'Authorization': 'token ' + config['reporting_token']})
-try:
-    f = urllib2.urlopen(request)
-    response = f.read()
-    f.close()
-except urllib2.HTTPError as e:
-    print >> sys.stderr, 'Failed to report job time: ' + json.dumps(data)
+reporter.report_job_finished(measured_time=elapsed_time)
