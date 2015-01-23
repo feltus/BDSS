@@ -14,6 +14,13 @@ class JobStatusReporter(object):
         self.job_id = job_id
         self.reporting_token = reporting_token
 
+    ## Clone this object.
+    #
+    #  @return A new reporter with the same configuration as this one.
+    #
+    def clone(self):
+        return self.__class__(self.server_url, self.job_id, self.reporting_token)
+
     ## The URL to send reports for this job to.
     #
     #  @return string
