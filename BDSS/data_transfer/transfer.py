@@ -70,9 +70,13 @@ class_path = 'methods.' + \
 method_class = import_class(class_path)
 method = method_class(reporter, **config['init_args'])
 
+method.connect()
+
 start_time = time.time()
 method.transfer_data(urls)
 elapsed_time = time.time() - start_time
+
+method.disconnect()
 
 # Report job duration to BDSS server.
 reporter.report_job_finished(measured_time=elapsed_time)

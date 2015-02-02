@@ -23,6 +23,15 @@ class BaseTransferMethod():
         for option, value in kwargs.iteritems():
             setattr(self, option, value)
 
+    def connect(self):
+        pass
+
+    def get_remote_file_size(self, data_url):
+        return None
+
     @abstractmethod
     def transfer_data(self, data_urls):
+        pass
+
+    def disconnect(self):
         pass
