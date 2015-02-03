@@ -1,4 +1,5 @@
 import os
+import urllib2
 
 from abc import ABCMeta, abstractmethod
 
@@ -27,7 +28,22 @@ class BaseTransferMethod():
         pass
 
     def get_remote_file_size(self, data_url):
-        return None
+        # For public HTTP/FTP URLs, attempt a HEAD request.
+        if data_url.lower().startswith('http://') or data_url.lower().startswith('ftp://'):
+            request = urllib2.Request(data_url)
+            request.get_method = lambda : 'HEAD'
+
+            response = urllib2.urlopen(request)
+            head = str(response.info())
+
+            for line in head.split('\n'):
+                if line.startswith('Content-length'):
+                    return int(line.split(': ')[1])
+
+            return None
+
+        else:
+            return None
 
     @abstractmethod
     def transfer_data(self, data_urls):
