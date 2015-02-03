@@ -28,7 +28,6 @@ $(document).ready(function() {
         // still trigger the change event.
         .on('click', function() { $(this).val(null); })
         .on('change', function(e) {
-            console.log(e);
 
             // Confirm replacing current URL inputs
             var numUrlsEntered = $('fieldset[name="required_data[]"]').length;
@@ -44,7 +43,35 @@ $(document).ready(function() {
 
                 $('#url-list li').remove();
 
-                var f = e.target.files[0];
+                Papa.parse(e.target.files[0], {
+                    complete: function(results) {
+                        console.log(results);
+
+                        $('#url-list').html(results.data
+                            .filter(function(d) { return d.length > 0 && d[0].length > 0; })
+                            .map(function(d) {
+                                var url = d[0];
+                                var checksumType = d.length >= 3 ? d[1] : null;
+                                var checksum = d.length >= 3 ? d[2] : null;
+                                return '<li>' +
+                                        '<fieldset name="required_data[]">' +
+                                            '<div class="form-group">' +
+                                            '<input type="hidden" name="data_url" value="' + url + '">' +
+                                            (checksum !== null ?
+                                                '<input type="hidden" name="checksum_method" value="' + checksumType + '">' +
+                                                '<input type="hidden" name="checksum" value="' + checksum + '">'
+                                                : '') +
+                                            '<p class="control-label">' + url + (checksum !== null ? '<br>' + checksumType.toUpperCase() + ' Checksum: ' + checksum : '') + '</p>' +
+                                            '</div>' +
+                                        '</fieldset>' +
+                                    '</li>';
+                            }));
+
+                        fileInput.removeAttr('disabled');
+                    }
+                });
+
+                /*var f = e.target.files[0];
                 var reader = new FileReader();
                 reader.onerror = function() {
                     alert('Error reading manifest file');
@@ -72,7 +99,7 @@ $(document).ready(function() {
                     fileInput.removeAttr('disabled');
                 };
 
-                reader.readAsText(f);
+                reader.readAsText(f);*/
             }
         });
 

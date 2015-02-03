@@ -34,7 +34,9 @@
             <div class="form-group">
                 <label for="url_manifest">URL Manifest:</label>
                 <input type="file" id="url_manifest" name="url_manifest">
-                <p class="help-block">Upload a text file containing one URL per line. HTTP and FTP URLs are supported.</p>
+                <p class="help-block">Upload a text file containing one URL per line. HTTP and FTP URLs are supported.<br>
+                    To verify a file after it is downloaded, its URL line should be formatted URL,checksum_type,checksum where the checksum type
+                    is MD5, SHA1, etc.</p>
             </div>
         </div>
 
@@ -84,6 +86,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/lib/papaparse/papaparse.min.js"></script>
 <script src="/static/js/form-utils.js"></script>
 <script src="/static/js/form.js"></script>
 <script src="/static/js/submit.js"></script>
