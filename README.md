@@ -76,6 +76,7 @@ Listen 80
 	WSGIScriptAlias / /path/to/bdss/bdss.wsgi
 	WSGIProcessGroup bdss
 	WSGIApplicationGroup %{GLOBAL}
+	WSGIPassAuthorization On
 
 </VirtualHost>
 ```
