@@ -9,7 +9,7 @@ from logging.config import fileConfig
 
 sys.path.insert(0, os.getcwd())
 from BDSS.common import config as bdss_config
-from BDSS.models import BaseModel
+from BDSS.models.common import BaseModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
