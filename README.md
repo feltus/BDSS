@@ -27,7 +27,7 @@ Set `database_url` option in BDSS/config/app.yml.
 See [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#database-urls) for URL format.
 
 ```Shell
-python scripts/create_db.py
+alembic upgrade head
 ```
 
 ### Generate secret key

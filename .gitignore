@@ -6,7 +6,7 @@ BDSS/config/data_destinations.yml
 BDSS/config/data_transfer_methods.yml
 
 # Development database
-BDSS/development.sqlite
+*.sqlite
 
 # Log files
 log/*

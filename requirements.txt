@@ -1,11 +1,13 @@
 Flask==0.10.1
 Flask-Login==0.2.11
 Jinja2==2.7.3
+Mako==1.0.1
 MarkupSafe==0.23
 PyYAML==3.11
 SQLAlchemy==0.9.7
 SQLAlchemy-Utils==0.26.16
 Werkzeug==0.9.6
+alembic==0.7.4
 bcrypt==1.0.2
 cffi==0.8.6
 ecdsa==0.11
