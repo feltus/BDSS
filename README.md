@@ -38,6 +38,13 @@ Generate a random secret key for [Flask sessions](http://flask.pocoo.org/docs/0.
 python scripts/gen_key.py
 ```
 
+### Download frontend libraries
+
+```Shell
+npm install
+gulp install
+```
+
 ### Start web server
 
 #### Flask development server

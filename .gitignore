@@ -16,3 +16,9 @@ tmp/*
 
 # oh-my-zsh virtualenvwrapper plugin
 .venv
+
+# NPM libraries
+node_modules
+
+# Bower libraries
+BDSS/static/lib
