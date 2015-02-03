@@ -49,7 +49,6 @@ def upgrade():
         sa.Column('destination_directory', sa.Text(), nullable=False),
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.Column('started_at', sa.DateTime(), nullable=True),
-        sa.Column('measured_time', sa.Float(), nullable=True),
         sa.Column('error_message', sa.Text(), nullable=True),
         sa.Column('reporting_token', sa.String(length=32), nullable=True),
         sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),

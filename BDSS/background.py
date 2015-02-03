@@ -57,7 +57,6 @@ def start_job(job):
         else:
             job.error_message = 'Failed to transfer job files (No SSH key for destination)'
             print >> sys.stderr, job.error_message
-            job.measured_time = 0
             Session.object_session(job).commit()
             return
 
@@ -102,7 +101,6 @@ def start_job(job):
     except FileTransferError as e:
         job.error_message = 'Failed to transfer job files (%s)' % str(e)
         print >> sys.stderr, job.error_message
-        job.measured_time = 0
         Session.object_session(job).commit()
         return
 
@@ -110,7 +108,6 @@ def start_job(job):
         job.error_message = 'Failed to transfer job files (Unknown error)'
         print >> sys.stderr, job.error_message
         print >> sys.stderr, traceback.format_exc()
-        job.measured_time = 0
         Session.object_session(job).commit()
         return
 
@@ -129,7 +126,6 @@ def start_job(job):
         else:
             job.error_message = 'Failed to execute job script (No SSH key for destination)'
             print >> sys.stderr, job.error_message
-            job.measured_time = 0
             Session.object_session(job).commit()
             return
 
@@ -143,7 +139,6 @@ def start_job(job):
     except JobExecutionError as e:
         job.error_message = 'Failed to execute job script (%s)' % str(e)
         print >> sys.stderr, job.error_message
-        job.measured_time = 0
         Session.object_session(job).commit()
         return
 
@@ -151,7 +146,6 @@ def start_job(job):
         job.error_message = 'Failed to execute job script (Unknown error)'
         print >> sys.stderr, job.error_message
         print >> sys.stderr, traceback.format_exc()
-        job.measured_time = 0
         Session.object_session(job).commit()
         return
 

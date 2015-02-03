@@ -218,10 +218,6 @@ class Job(BaseModel, ValidationMixin):
     #  The time this job was sent to its destination and started.
     started_at = Column(DateTime())
 
-    ## @var measured_time
-    #  Time this job required to complete, from when it was started on the destination.
-    measured_time = Column(Float())
-
     ## @var error_message
     #  Error message reported if job could not be started.
     error_message = Column(Text())
@@ -267,7 +263,6 @@ class Job(BaseModel, ValidationMixin):
             'required_data': [item.serialize() for item in self.required_data],
             'created_at': self.created_at.isoformat(),
             'started_at': self.started_at and self.started_at.isoformat(),
-            'measured_time': self.measured_time,
             'error': self.error_message
         }
 

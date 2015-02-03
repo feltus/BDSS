@@ -77,6 +77,3 @@ method.transfer_data(urls)
 elapsed_time = time.time() - start_time
 
 method.disconnect()
-
-# Report job duration to BDSS server.
-reporter.report_job_finished(measured_time=elapsed_time)

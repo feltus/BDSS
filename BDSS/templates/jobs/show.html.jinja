@@ -16,10 +16,7 @@
 {% if job.status() == 'in_progress' %}
     <p>Started: {{ job.started_at.isoformat() }}</p>
 {% elif job.status() == 'completed' or job.status() == 'failed' %}
-    <p>
-        {{ job.status()|capitalize }} after {{ job.measured_time|float(0)|round(2) if job.measured_time != None else '?' }} seconds.
-        {% if job.error_message %}<br>{{ job.error_message }}{% endif %}
-    </p>
+    {% if job.error_message %}<p>{{ job.error_message }}</p>{% endif %}
 {% endif %}
 
 <p><strong>Destination:</strong> {{ destination.label }}</p>

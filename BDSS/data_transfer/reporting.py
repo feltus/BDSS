@@ -98,14 +98,3 @@ class JobStatusReporter(object):
             'current_time': time_finished,
             'measured_transfer_time': measured_time
         })
-
-    ## Report that a job is done transferring.
-    #
-    #  @param float measured_time Measured time (in seconds) required for the job's transfers to run.
-    #
-    #  @return string The response from the server.
-    #
-    def report_job_finished(self, measured_time):
-        return self._report(self.report_url(), {
-            'measured_time': measured_time
-        })

@@ -70,22 +70,6 @@ def create_job():
         g.db_session.rollback()
         return json_response({'form_errors': [str(e)]}, status=400)
 
-@job_routes.route('/<job_id>', methods=['POST'])
-@login_required
-def update_job(job_id):
-    job = g.db_session.query(Job).filter_by(job_id=job_id).first()
-    params = request.get_json()
-
-    if job == None:
-        abort(404)
-    elif job.owner != current_user:
-        abort(403)
-    else:
-        job.measured_time = params['measured_time']
-        job.reporting_token = None
-        g.db_session.commit()
-        return json_response({'job': job.serialize()})
-
 @job_routes.route('/<job_id>/status', methods=['POST'])
 @login_required
 def update_transfer_status(job_id):
@@ -115,6 +99,11 @@ def update_transfer_status(job_id):
         except KeyError:
             data_item.transfer_size = params['transfer_size']
             data_item.status = 'completed'
+
+        # If the job is finished, do not accept anymore status reports.
+        job_status = data_item.job.status()
+        if job_status == 'completed' or job_status == 'failed':
+            data_item.job.reporting_token = None
     else:
         return json_response({'errors': ['Invalid status']}, status=400)
 
