@@ -2,18 +2,19 @@
 
 import json
 import logging
+import multiprocessing
 import os
+import Queue
 import string
 import sys
 import time
+import traceback
 import urllib2
 
 from reporting import JobStatusReporter
 
+## Fake file-like stream object that redirects writes to a logger instance.
 class StreamToLogger(object):
-    """
-    Fake file-like stream object that redirects writes to a logger instance.
-    """
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level
@@ -22,6 +23,9 @@ class StreamToLogger(object):
     def write(self, buf):
         for line in buf.rstrip().splitlines():
             self.logger.log(self.log_level, line.rstrip())
+
+    def flush(self):
+        pass # Necessary to work with multiprocessing
 
 def import_class(class_path):
     (module_path, class_name) = string.rsplit(class_path, '.', 1)
@@ -59,21 +63,56 @@ config = None
 with open(os.path.join(containing_directory, 'transfer_config.json')) as f:
     config = json.load(f)
 
-# Instantiate status reporter
-reporter = JobStatusReporter(server_url=config['app_url'], job_id=config['job_id'], reporting_token=config['reporting_token'])
-
 # Import transfer method class.
 method_name = config['method']
 class_path = 'methods.' + \
     method_name + '.' + \
     ''.join([s.capitalize() for s in method_name.split('_')]) + 'TransferMethod'
 method_class = import_class(class_path)
-method = method_class(reporter, **config['init_args'])
+method = method_class(**config['init_args'])
 
 method.connect()
 
-start_time = time.time()
-method.transfer_data(urls)
-elapsed_time = time.time() - start_time
+# TODO: Get expected file sizes
+
+report_queue = multiprocessing.Queue()
+
+def do_transfer(transfer_method, data_urls, report_queue):
+
+    reporter = JobStatusReporter(report_queue)
+
+    start_time = time.time()
+    method.transfer_data(reporter, urls)
+    elapsed_time = time.time() - start_time
+
+
+def send_report(report):
+    url = config['app_url'] + '/jobs/' + str(config['job_id']) + '/status'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'token ' + config['reporting_token']
+    }
+    request = urllib2.Request(url, json.dumps(status_report), headers)
+    try:
+        f = urllib2.urlopen(request)
+        response = f.read()
+        f.close()
+    except urllib2.HTTPError as e:
+        print >> sys.stderr, 'Failed to report status: ' + json.dumps(data)
+        traceback.print_exc()
+
+
+transfer_process = multiprocessing.Process(target=do_transfer, args=(method, urls, report_queue,))
+transfer_process.start()
+
+while True:
+    try:
+        status_report = report_queue.get(block=True, timeout=3.0)
+        send_report(status_report)
+
+    except Queue.Empty:
+        # If the transfer process is dead, there will be no more reports.
+        if not transfer_process.is_alive():
+            break
 
 method.disconnect()

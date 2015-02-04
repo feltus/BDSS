@@ -41,7 +41,7 @@ class Worker(threading.Thread):
 
 class ParallelCurlTransferMethod(BaseTransferMethod):
 
-    def transfer_data(self, data_urls):
+    def transfer_data(self, reporter, data_urls):
 
         # Queue data URLS.
         q = Queue.Queue()
@@ -51,7 +51,7 @@ class ParallelCurlTransferMethod(BaseTransferMethod):
         # Start worker threads.
         workers = []
         for i in range(0, int(self.num_streams)):
-            w = Worker(i, self.reporter.clone(), q)
+            w = Worker(i, reporter.clone(), q)
             workers.append(w)
             w.start()
 

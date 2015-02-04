@@ -19,8 +19,7 @@ class BaseTransferMethod():
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, reporter, **kwargs):
-        self.reporter = reporter
+    def __init__(self, **kwargs):
         for option, value in kwargs.iteritems():
             setattr(self, option, value)
 
@@ -46,7 +45,7 @@ class BaseTransferMethod():
             return None
 
     @abstractmethod
-    def transfer_data(self, data_urls):
+    def transfer_data(self, reporter, data_urls):
         pass
 
     def disconnect(self):
