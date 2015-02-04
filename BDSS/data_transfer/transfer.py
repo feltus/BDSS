@@ -11,6 +11,7 @@ import time
 import traceback
 import urllib2
 
+from methods import output_path
 from reporting import JobStatusReporter
 
 ## Fake file-like stream object that redirects writes to a logger instance.
@@ -73,9 +74,7 @@ method = method_class(**config['init_args'])
 
 method.connect()
 
-# TODO: Get expected file sizes
-
-report_queue = multiprocessing.Queue()
+expected_file_sizes = { url: method.get_remote_file_size(url) for url in urls }
 
 def do_transfer(transfer_method, data_urls, report_queue):
 
@@ -84,6 +83,14 @@ def do_transfer(transfer_method, data_urls, report_queue):
     start_time = time.time()
     method.transfer_data(reporter, urls)
     elapsed_time = time.time() - start_time
+
+
+def verify_download(data_url):
+    file_size = os.stat(output_path(data_url)).st_size
+    if data_url in expected_file_sizes.keys() and file_size != expected_file_sizes[data_url]:
+        raise ValueError('Download does not match expected file size')
+
+    # TODO: Verify against checksum if one is available
 
 
 def send_report(report):
@@ -102,12 +109,21 @@ def send_report(report):
         traceback.print_exc()
 
 
+report_queue = multiprocessing.Queue()
+
 transfer_process = multiprocessing.Process(target=do_transfer, args=(method, urls, report_queue,))
 transfer_process.start()
 
 while True:
     try:
         status_report = report_queue.get(block=True, timeout=3.0)
+
+        if status_report['status'] == 'finished':
+            try:
+                verify_download(status_report['url'])
+            except ValueError as e:
+                status_report['error'] = e.message
+
         send_report(status_report)
 
     except Queue.Empty:
