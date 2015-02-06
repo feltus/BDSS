@@ -31,7 +31,7 @@
             {%- if d.status == 'in_progress' -%}
                 Started: {{ d.transfer_started_at.isoformat() }}
             {%- elif d.status == 'failed' -%}
-                {{ d.status|capitalize }} in {{ d.measured_transfer_time|round(2) }} seconds
+                {{ d.status|capitalize }} in {{ d.measured_transfer_time|round(2) }} seconds. ({{ d.error_message }})
             {%- elif d.status == 'completed' -%}
                 Downloaded {{ d.transfer_size }} bytes in {{ d.measured_transfer_time|round(2) }} seconds
             {%- endif -%}
