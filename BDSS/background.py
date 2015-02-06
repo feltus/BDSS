@@ -42,6 +42,12 @@ def start_job(job):
 
     url_groups = grouping.group_urls(data_urls)
 
+    # Update URLs' group numbers in database.
+    for d in job.required_data:
+        d.group = [ d.data_url in group for group in url_groups ].index(True)
+
+    Session.object_session(job).commit()
+
     # Copy job files to destination.
     file_transfer_method_class = import_class('.data_destinations.file_transfer', destination_config['file_transfer']['module'], 'FileTransferMethod')
     try:
@@ -78,12 +84,35 @@ def start_job(job):
 
         # Copy configuration
         transfer_config = {
-            'app_url': config['app']['app_url'],
-            'job_id': job.job_id,
-            'method': job.data_transfer_method,
-            'init_args': job.data_transfer_method_options,
-            'reporting_token': job.reporting_token
+            'transfer': {
+                'method': job.data_transfer_method,
+                'init_args': job.data_transfer_method_options
+            },
+            'reporting': {
+                'app_url': config['app']['app_url'],
+                'job_id': job.job_id,
+                'token': job.reporting_token
+            },
+            'data': {}
         }
+
+        for d in job.required_data:
+            if not d.group in transfer_config['data'].keys():
+                transfer_config['data'][d.group] = []
+
+            data_config = {
+                'url': d.data_url,
+                'checksum': None
+            }
+
+            if d.checksum:
+                data_config['checksum'] = {
+                    'type': d.checksum_method,
+                    'value': d.checksum
+                }
+
+            transfer_config['data'][d.group].append(data_config)
+
         file_transfer_method.transfer_file(path.join(scripts_dir, 'transfer_config.json'), json.dumps(transfer_config))
 
         # Copy URL lists.
@@ -133,7 +162,7 @@ def start_job(job):
         execution_method.connect()
         if not execution_method.test_connection(config['app']['app_url']):
             raise JobExecutionError('Destination is unable to reach BDSS server')
-        execution_method.execute_job(job_directory)
+        execution_method.execute_job(job_directory, len(url_groups))
         execution_method.disconnect()
 
     except JobExecutionError as e:

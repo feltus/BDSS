@@ -53,24 +53,26 @@ sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
 
 sys.path.insert(0, containing_directory)
 
-# Read data URLs from file.
-url_list_file = sys.argv[1]
-urls = None
-with open(url_list_file, 'r') as f:
-    urls = f.read().rstrip().split('\n')
+group_index = sys.argv[1]
 
 # Read config from file.
 config = None
 with open(os.path.join(containing_directory, 'transfer_config.json')) as f:
     config = json.load(f)
 
+try:
+    urls = [d['url'] for d in config['data'][group_index]]
+except KeyError:
+    print >> sys.stderr, "Invalid group number (%s)" % group_index
+    sys.exit()
+
 # Import transfer method class.
-method_name = config['method']
+method_name = config['transfer']['method']
 class_path = 'methods.' + \
     method_name + '.' + \
     ''.join([s.capitalize() for s in method_name.split('_')]) + 'TransferMethod'
 method_class = import_class(class_path)
-method = method_class(**config['init_args'])
+method = method_class(**config['transfer']['init_args'])
 
 method.connect()
 
@@ -94,10 +96,10 @@ def verify_download(data_url):
 
 
 def send_report(report):
-    url = config['app_url'] + '/jobs/' + str(config['job_id']) + '/status'
+    url = config['reporting']['app_url'] + '/jobs/' + str(config['reporting']['job_id']) + '/status'
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'token ' + config['reporting_token']
+        'Authorization': 'token ' + config['reporting']['token']
     }
     request = urllib2.Request(url, json.dumps(status_report), headers)
     try:

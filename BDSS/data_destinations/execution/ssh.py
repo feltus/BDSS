@@ -11,7 +11,7 @@ class SshExecutionMethod(BaseExecutionMethod):
     requires_ssh_key = True
 
     def __init__(self, destination_host, **kwargs):
-        self.command = "for f in urls/group*.txt; do nohup python ./scripts/transfer.py $f & done"
+        self.command = "nohup python ./scripts/transfer.py {group} &"
         super(SshExecutionMethod, self).__init__(destination_host, **kwargs)
 
     def connect(self):
@@ -31,8 +31,9 @@ class SshExecutionMethod(BaseExecutionMethod):
         except socket.timeout:
             return False
 
-    def execute_job(self, working_directory):
-        self._ssh.exec_sync_command('cd %s; %s' % (working_directory.replace(' ', '\\ '), self.command))
+    def execute_job(self, working_directory, num_processes):
+        for i in xrange(0, num_processes):
+            self._ssh.exec_sync_command('cd %s; %s' % (working_directory.replace(' ', '\\ '), self.command.format(group=i)))
 
     def disconnect(self):
         self._ssh.close()

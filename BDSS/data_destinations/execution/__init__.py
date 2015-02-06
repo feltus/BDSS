@@ -29,7 +29,7 @@ class BaseExecutionMethod():
 
     ## Execute job script.
     @abstractmethod
-    def execute_job(self, working_directory):
+    def execute_job(self, working_directory, num_processes):
         pass
 
     ## Disconnect from destination.

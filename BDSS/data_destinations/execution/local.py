@@ -7,7 +7,7 @@ from . import BaseExecutionMethod
 class LocalExecutionMethod(BaseExecutionMethod):
 
     def __init__(self, destination_host, **kwargs):
-        self.command = "for f in urls/group*.txt; do python ./scripts/transfer.py $f; done"
+        self.command = "python ./scripts/transfer.py {group}"
         super(LocalExecutionMethod, self).__init__(destination_host, **kwargs)
 
     def connect(self):
@@ -21,14 +21,15 @@ class LocalExecutionMethod(BaseExecutionMethod):
             response_code = int(e.output)
         return 200 <= response_code < 400
 
-    def execute_job(self, working_directory):
-        subprocess.Popen(
-            self.command,
-            cwd=os.path.expandvars(os.path.expanduser(working_directory)),
-            shell=True,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT)
+    def execute_job(self, working_directory, num_processes):
+        for i in xrange(0, num_processes):
+            subprocess.Popen(
+                self.command.format(group=i),
+                cwd=os.path.expandvars(os.path.expanduser(working_directory)),
+                shell=True,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
 
     def disconnect(self):
         pass
