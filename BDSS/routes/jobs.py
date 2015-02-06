@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import abort, Blueprint, g, render_template, request
 from flask.ext.login import current_user, login_required
+from sqlalchemy import desc
 
 from ..common import config
 from ..models import Job, DataItem
@@ -11,7 +12,7 @@ job_routes = Blueprint('jobs', __name__)
 @job_routes.route('')
 @login_required
 def jobs_index():
-    jobs = g.db_session.query(Job).filter_by(owner=current_user).all()
+    jobs = g.db_session.query(Job).filter_by(owner=current_user).order_by(desc(Job.created_at)).all()
     return render_template('jobs/index.html.jinja', jobs=jobs)
 
 @job_routes.route('/<job_id>', methods=['GET'])
