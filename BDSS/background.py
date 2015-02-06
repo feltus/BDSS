@@ -115,13 +115,6 @@ def start_job(job):
 
         file_transfer_method.transfer_file(path.join(scripts_dir, 'transfer_config.json'), json.dumps(transfer_config))
 
-        # Copy URL lists.
-        file_transfer_method.mkdir_p(path.join(job_directory, 'urls'))
-        i = 0
-        for group_urls in url_groups:
-            file_transfer_method.transfer_file(path.join(job_directory, 'urls', 'group_%d.txt' % i), '\n'.join(group_urls))
-            i += 1
-
         # Create output directory.
         file_transfer_method.mkdir_p(path.join(job_directory, 'output'))
 
