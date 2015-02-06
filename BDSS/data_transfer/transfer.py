@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import hashlib
 import json
 import logging
 import multiprocessing
@@ -92,7 +93,23 @@ def verify_download(data_url):
     if data_url in expected_file_sizes.keys() and file_size != expected_file_sizes[data_url]:
         raise ValueError('Download does not match expected file size')
 
-    # TODO: Verify against checksum if one is available
+    # Verify against checksum if one is available
+    data_config = [d for d in config['data'][group_index] if d['url'] == data_url][0]
+    if data_config['checksum']:
+
+        if data_config['checksum']['type'] == 'md5':
+            m = hashlib.md5()
+            with open(output_path(data_url), 'rb') as f:
+                while True:
+                    buf = f.read(2048)
+                    if not buf:
+                        break
+                    m.update(buf)
+
+            file_checksum = m.hexdigest()
+
+            if file_checksum != data_config['checksum']['value']:
+                raise ValueError('Downloaded file does not match provided checksum')
 
 
 def send_report(report):
