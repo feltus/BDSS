@@ -1,11 +1,13 @@
 from datetime import datetime
-from flask import abort, Blueprint, g, render_template, request
+from flask import abort, Blueprint, g, render_template, request, make_response
 from flask.ext.login import current_user, login_required
 from sqlalchemy import desc
 
 from ..common import config
 from ..models import Job, DataItem
 from ..routes.util import filter_params, json_response
+import os
+import csv
 
 job_routes = Blueprint('jobs', __name__)
 
@@ -26,8 +28,29 @@ def show_job_page(job_id):
     else:
         transfer_method = config['data_transfer_methods'][job.data_transfer_method]
         destination = config['data_destinations'][job.data_destination]
+        dwnld_info = os.path.join(job.destination_directory, "bdss\\job_1\\data.csv")
 
-        return render_template('jobs/show.html.jinja', job=job, destination=destination, transfer_method=transfer_method)
+        return render_template('jobs/show.html.jinja', job=job, destination=destination, transfer_method=transfer_method, dwnld_info = dwnld_info)
+
+@job_routes.route('/<job_id>/data', methods=['GET'])
+@login_required
+def dwnld_data(job_id):
+    job = g.db_session.query(Job).filter_by(job_id=job_id).first()
+
+    data_file = "data" + job_id + ".csv"
+
+    with open(data_file, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['URL', 'File Size', 'Transfer Time'])
+        for d in job.required_data:
+            writer.writerow([d.data_url, d.transfer_size, d.measured_transfer_time])
+    csvfile.close()
+
+    file_name = "data" + job_id + ".csv"
+    with open(file_name, 'r') as f: 
+        response = make_response(f.read()) 
+        response.headers["Content-Disposition"] = "attachment; filename=" + file_name 
+        return response
 
 @job_routes.route('/submit', methods=['GET'])
 @login_required
