@@ -1,0 +1,7 @@
+__pycache__
+
+app/app_config.yml
+
+*.sqlite
+
+.vagrant

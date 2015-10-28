@@ -1,0 +1,21 @@
+{% extends "layout.html.jinja" %}
+
+{% block page_header %}Data Sources{% endblock %}
+
+{% block content %}
+
+{% if data_sources|length > 0 %}
+    <ul>
+        {% for data_source in data_sources %}
+            <li>
+                <a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}">{{ data_source.label }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No data sources found.</p>
+{% endif %}
+
+<p><a href="{{ url_for('routes.create_data_source') }}">Add New Data Source</a></p>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+import os
+import yaml
+
+project_root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+app_config_path = os.path.join(project_root, "app", "app_config.yml")
+app_config = yaml.load(open(app_config_path, "r").read())
+app_config["secret_key"] = os.urandom(32)
+yaml.dump(app_config, open(app_config_path, "w"))

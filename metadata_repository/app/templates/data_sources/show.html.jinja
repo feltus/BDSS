@@ -1,0 +1,26 @@
+{% extends "layout.html.jinja" %}
+
+{% block page_header %}{{ data_source.label }}{% endblock %}
+
+{% block content %}
+
+<p><a href="{{ url_for('routes.edit_data_source', source_id=data_source.id) }}">Edit this data source</a></p>
+<p><a href="{{ url_for('routes.delete_data_source', source_id=data_source.id) }}">Delete this data source</a></p>
+
+<h4>URL Matchers</h4>
+
+<ul>
+    {% for matcher in data_source.url_matchers %}
+        <li><a href="{{ url_for('routes.show_url_matcher', source_id=data_source.id, matcher_id=matcher.id) }}">{{ matcher.matcher_type }}</a></li>
+    {% else %}
+        <li>No matchers</li>
+    {% endfor %}
+</ul>
+
+<p><a href="{{ url_for('routes.add_url_matcher', source_id=data_source.id) }}">Add URL matcher</a></p>
+
+<p><a href="{{ url_for('routes.test_data_source_url_match', source_id=data_source.id) }}">Test a URL</a></p>
+
+<p style="margin-top:20px;"><a href="{{ url_for('routes.list_data_sources') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Data Sources</a></p>
+
+{% endblock %}

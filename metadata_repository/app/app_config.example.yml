@@ -1,0 +1,2 @@
+database_url: sqlite:////path/to/bdss/development.sqlite
+secret_key: replace_this

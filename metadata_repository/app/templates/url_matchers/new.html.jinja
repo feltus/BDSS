@@ -1,0 +1,44 @@
+{% extends "layout.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
+
+{% block page_header %}{{ data_source.label }} - Add Matcher{% endblock %}
+
+{% block content %}
+
+{{ form_macros.render_form(form, action_url=url_for("routes.add_url_matcher", source_id=data_source.id), btn_class="btn btn-primary") }}
+
+<hr>
+
+<a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}" class="btn btn-default">Cancel</a>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+$('#matcher_type').on('change', function(e) {
+
+    var select = $(this);
+    var module = select.val();
+
+    $.ajax({
+        url: "{{ url_for('routes.show_matcher_options_form') }}",
+        data: {
+            "matcher_type": module
+        },
+        dataType: "text",
+        success: function(data) {
+            var fieldset = $(data).find("fieldset");
+            var group = select.closest(".form-group");
+            group.next("fieldset").remove();
+            fieldset.insertAfter(group);
+        },
+        error: function(err) {
+            console.warn(err);
+        }
+    });
+
+});
+</script>
+
+{% endblock %}
