@@ -3,15 +3,22 @@ import traceback
 import wtforms
 from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
 
-from .forms import DataSourceForm, TestMatchForm, UrlMatcherForm
-from .models import db_session, DataSource, UrlMatcher
+from .forms import DataSourceForm, TestMatchForm, UrlMatcherForm, UrlTransformForm
+from .models import db_engine, db_session, DataSource, UrlMatcher, Transform
 from .util import available_matcher_types, options_form_class_for_matcher_type
+from .util import available_transform_types, options_form_class_for_transform_type
 
 routes = Blueprint("routes", __name__)
 
 @routes.route("/")
 def index():
     return redirect(url_for("routes.list_data_sources"))
+
+######################################################################################################
+#
+# Data sources
+#
+######################################################################################################
 
 @routes.route("/data_sources")
 def list_data_sources():
@@ -107,6 +114,12 @@ def delete_data_source(source_id):
             traceback.print_exc()
 
     return render_template("data_sources/delete.html.jinja", data_source=data_source)
+
+######################################################################################################
+#
+# Matchers
+#
+######################################################################################################
 
 @routes.route("/data_sources/<source_id>/matchers/new", methods=["GET", "POST"])
 def add_url_matcher(source_id):
@@ -255,6 +268,175 @@ def show_matcher_options_form():
             """Placeholder form to render FormField with matcher type's options form class"""
             matcher_options = wtforms.fields.FormField(options_form_class)
 
-        return render_template("url_matchers/matcher_options_form.html.jinja", form=ContainerForm())
+        return render_template("options_form.html.jinja", form=ContainerForm())
+    else:
+        return ""
+
+######################################################################################################
+#
+# Transforms
+#
+######################################################################################################
+
+@routes.route("/data_sources/<source_id>/transforms/new", methods=["GET", "POST"])
+def add_transform(source_id):
+    """
+    Add a new URL transform to a data source
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    form = UrlTransformForm()
+    form.to_data_source_id.choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
+
+    if request.method == "GET":
+        options_form_class = options_form_class_for_transform_type(form.transform_type.choices[0][0])
+        if options_form_class:
+            wtforms.form.BaseForm.__setitem__(form, "transform_options", wtforms.fields.FormField(options_form_class))
+        form.process(request.form)
+
+    elif request.method == "POST":
+        form.process(request.form)
+
+        # Dynamically add subform for transform options. Fields cannot be added to a
+        # Form after its process method is called, so a second form must be created.
+        # https://wtforms.readthedocs.org/en/latest/forms.html#wtforms.form.BaseForm.__setitem__
+        form2 = UrlTransformForm()
+        form2.to_data_source_id.choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
+        if form.transform_type.data:
+            options_form_class = options_form_class_for_transform_type(form.transform_type.data)
+            if options_form_class:
+                wtforms.form.BaseForm.__setitem__(form2, "transform_options", wtforms.fields.FormField(options_form_class))
+
+        # Load request data into new form.
+        form = form2
+        form.process(request.form)
+
+        if form.validate():
+            transform = Transform(
+                from_data_source_id=data_source.id,
+                to_data_source_id=form.to_data_source_id.data,
+                transform_type=form.transform_type.data,
+                description=form.description.data
+            )
+            if "transform_options" in form._fields.keys() and form._fields["transform_options"]:
+                transform.transform_options = form._fields["transform_options"].data
+            else:
+                transform.transform_options = {}
+
+            if db_engine.dialect.name == "sqlite":
+                transform.transform_id = len(data_source.transforms)
+
+            try:
+                db_session.add(transform)
+                db_session.commit()
+                flash("Transform saved", "success")
+                return redirect(url_for("routes.show_data_source", source_id=data_source.id))
+            except:
+                db_session.rollback()
+                flash("Failed to save transform", "danger")
+                traceback.print_exc()
+
+    return render_template("transforms/new.html.jinja", from_data_source=data_source, form=form)
+
+@routes.route("/data_sources/<source_id>/transforms/<transform_id>")
+def show_transform(source_id, transform_id):
+    """
+    Show information about a specific transform.
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    transform = Transform.query.filter((DataSource.id == source_id) & (Transform.transform_id == transform_id)).first()
+
+    return render_template("transforms/show.html.jinja", from_data_source=data_source, transform=transform)
+
+@routes.route("/data_sources/<source_id>/transforms/<transform_id>/edit", methods=["GET", "POST"])
+def edit_transform(source_id, transform_id):
+    """
+    Edit a transform
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    transform = Transform.query.filter((DataSource.id == source_id) & (Transform.transform_id == transform_id)).first()
+    form = UrlTransformForm()
+    form.to_data_source_id.choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
+
+    if request.method == "GET":
+        options_form_class = options_form_class_for_transform_type(transform.transform_type)
+        if options_form_class:
+            wtforms.form.BaseForm.__setitem__(form, "transform_options", wtforms.fields.FormField(options_form_class))
+        form.process(request.form, transform)
+
+    elif request.method == "POST":
+        form.process(request.form, transform)
+
+        # Dynamically add subform for transform options. Fields cannot be added to a
+        # Form after its process method is called, so a second form must be created.
+        # https://wtforms.readthedocs.org/en/latest/forms.html#wtforms.form.BaseForm.__setitem__
+        form2 = UrlTransformForm()
+        form2.to_data_source_id.choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
+        if form.transform_type.data:
+            options_form_class = options_form_class_for_transform_type(form.transform_type.data)
+            if options_form_class:
+                wtforms.form.BaseForm.__setitem__(form2, "transform_options", wtforms.fields.FormField(options_form_class))
+
+        # Load request data into new form.
+        form = form2
+        form.process(request.form, transform)
+
+        if form.validate():
+            transform.to_data_source_id = form.to_data_source_id.data
+            transform.transform_type = form.transform_type.data
+            transform.description = form.description.data
+
+            if "transform_options" in form._fields.keys() and form._fields["transform_options"]:
+                transform.transform_options = form._fields["transform_options"].data
+            else:
+                transform.transform_options = {}
+
+            try:
+                db_session.commit()
+                flash("Transform updated", "success")
+                return redirect(url_for("routes.show_transform", source_id=data_source.id, transform_id=transform.transform_id))
+            except:
+                db_session.rollback()
+                flash("Failed to update transform", "danger")
+                traceback.print_exc()
+
+    return render_template("transforms/edit.html.jinja", from_data_source=data_source, transform=transform, form=form)
+
+@routes.route("/data_sources/<source_id>/transforms/<transform_id>/delete", methods=["GET", "POST"])
+def delete_transform(source_id, transform_id):
+    """
+    Delete a URL transform. Prompt for confirmation first.
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    transform = Transform.query.filter((DataSource.id == source_id) & (Transform.transform_id == transform_id)).first()
+
+    if request.method == "POST":
+        try:
+            db_session.delete(transform)
+            db_session.commit()
+            flash("Transform deleted", "success")
+            return redirect(url_for("routes.show_data_source", source_id=data_source.id))
+        except:
+            db_session.rollback()
+            flash("Failed to delete transform", "danger")
+            traceback.print_exc()
+
+    return render_template("transforms/delete.html.jinja", from_data_source=data_source, transform=transform)
+
+@routes.route("/data_sources/transform_options_form")
+def show_transform_options_form():
+    """
+    Show options form for a specific transform type.
+    """
+    transform_type = request.args.get("transform_type")
+    if transform_type not in available_transform_types():
+        abort(404)
+
+    options_form_class = options_form_class_for_transform_type(transform_type)
+    if options_form_class:
+        class ContainerForm(wtforms.Form):
+            """Placeholder form to render FormField with transform type's options form class"""
+            transform_options = wtforms.fields.FormField(options_form_class)
+
+        return render_template("options_form.html.jinja", form=ContainerForm())
     else:
         return ""

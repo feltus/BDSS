@@ -54,3 +54,34 @@ class UrlMatcher(BaseModel):
 
     def matches_url(self, url):
         return matcher_of_type(self.matcher_type)(self.matcher_options, url)
+
+class Transform(BaseModel):
+
+    __tablename__ = "url_transforms"
+
+    __table_args__ = {
+        # http://docs.sqlalchemy.org/en/rel_1_0/core/metadata.html#sqlalchemy.schema.Column.params.autoincrement
+        # http://docs.sqlalchemy.org/en/rel_1_0/dialects/sqlite.html#sqlite-autoincrement
+        "sqlite_autoincrement": True
+    }
+
+    transform_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=True, nullable=False)
+
+    from_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
+
+    from_data_source = sa.orm.relationship("DataSource", backref="transforms", foreign_keys=[from_data_source_id])
+
+    to_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), nullable=False)
+
+    to_data_source = sa.orm.relationship("DataSource", backref="targeting_transforms", foreign_keys=[to_data_source_id])
+
+    transform_type = sa.Column(sa.types.String(100), nullable=False)
+
+    transform_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={})
+
+    description = sa.Column(sa.types.Text())
+
+    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return "<Transform (from_data_source=%d, transform_id=%d)>" % (self.from_data_source_id, self.transform_id)

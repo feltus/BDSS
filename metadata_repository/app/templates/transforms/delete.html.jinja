@@ -1,0 +1,26 @@
+{% extends "layout.html.jinja" %}
+
+{% block page_header %}Transform from {{ from_data_source.label }} to {{ transform.to_data_source.label }}{% endblock %}
+
+{% block content %}
+
+<p><strong>Transform type:</strong> {{ transform.transform_type }}</p>
+
+{% if transform.transform_options %}
+    <strong>Transform Options:</strong>
+    <ul>
+        {% for opt, val in transform.transform_options.items() %}
+            <li><strong>{{ " ".join(opt.capitalize().split("_")) }}:</strong> {{ val|e }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p>Are you sure you want to delete this transform? This cannot be undone.</p>
+
+<form action="{{ url_for('routes.delete_transform', source_id=from_data_source.id, transform_id=transform.transform_id) }}" method="POST">
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+
+<p style="margin-top:20px;"><a class="btn btn-default" href="{{ url_for('routes.show_transform', source_id=from_data_source.id, transform_id=transform.transform_id) }}">Cancel</a></p>
+
+{% endblock %}
