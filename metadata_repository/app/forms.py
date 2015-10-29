@@ -48,11 +48,11 @@ class UrlTransformForm(wtforms.Form):
         label="Description",
         validators=[wtforms.validators.Optional()])
 
-class TestMatchForm(wtforms.Form):
+class TestUrlForm(wtforms.Form):
     """
     Form for testing whether or not a URL matches data source(s).
     """
 
     test_url = wtforms.fields.StringField(
-        label="URL to test",
+        label="URL",
         validators=[wtforms.validators.InputRequired(), wtforms.validators.URL(require_tld=False)])

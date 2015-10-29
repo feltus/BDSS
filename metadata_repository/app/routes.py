@@ -3,7 +3,8 @@ import traceback
 import wtforms
 from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
 
-from .forms import DataSourceForm, TestMatchForm, UrlMatcherForm, UrlTransformForm
+from .core import transform_url
+from .forms import DataSourceForm, TestUrlForm, UrlMatcherForm, UrlTransformForm
 from .models import db_engine, db_session, DataSource, UrlMatcher, Transform
 from .util import available_matcher_types, options_form_class_for_matcher_type
 from .util import available_transform_types, options_form_class_for_transform_type
@@ -12,6 +13,7 @@ routes = Blueprint("routes", __name__)
 
 @routes.route("/")
 def index():
+    """Home page"""
     return redirect(url_for("routes.list_data_sources"))
 
 ######################################################################################################
@@ -65,7 +67,7 @@ def test_data_source_url_match(source_id):
     Test whether or not a URL matches a data source.
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    form = TestMatchForm(request.form)
+    form = TestUrlForm(request.form)
 
     if request.method == "POST" and form.validate():
         if data_source.matches_url(form.test_url.data):
@@ -440,3 +442,22 @@ def show_transform_options_form():
         return render_template("options_form.html.jinja", form=ContainerForm())
     else:
         return ""
+
+######################################################################################################
+#
+# Other
+#
+######################################################################################################
+
+@routes.route("/transformed_urls", methods=["GET", "POST"])
+def get_transformed_urls():
+    """
+    Find transformed URLs for a URL.
+    """
+    form = TestUrlForm(request.form)
+
+    results = None
+    if request.method == "POST" and form.validate():
+        results = transform_url(form.test_url.data)
+
+    return render_template("get_transformed_urls.html.jinja", form=form, results=results)

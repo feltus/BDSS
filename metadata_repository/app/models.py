@@ -5,7 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 from .config import app_config
-from .util import matcher_of_type, JSONEncodedDict, MutableDict
+from .util import matcher_of_type, transform_of_type, JSONEncodedDict, MutableDict
 
 # http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/#declarative
 db_engine = sa.create_engine(app_config["database_url"])
@@ -85,3 +85,6 @@ class Transform(BaseModel):
 
     def __repr__(self):
         return "<Transform (from_data_source=%d, transform_id=%d)>" % (self.from_data_source_id, self.transform_id)
+
+    def transform_url(self, url):
+        return transform_of_type(self.transform_type)(self.transform_options, url)
