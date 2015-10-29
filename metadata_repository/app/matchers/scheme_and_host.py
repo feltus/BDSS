@@ -6,7 +6,7 @@ label = "Scheme and Host"
 
 def matches_url(options, url):
     parsed = urlparse(url)
-    if parsed.scheme == options["scheme"] and parsed.hostname == options.host:
+    if parsed.scheme == options["scheme"] and parsed.hostname == options["host"]:
         return True
     else:
         return False
