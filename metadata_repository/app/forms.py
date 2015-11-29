@@ -3,6 +3,7 @@ import wtforms
 from .util import available_matcher_types, label_for_matcher_type
 from .util import available_transform_types, label_for_transform_type
 
+
 class DataSourceForm(wtforms.Form):
     """
     Form for creating/editing a data source.
@@ -11,6 +12,7 @@ class DataSourceForm(wtforms.Form):
     label = wtforms.fields.StringField(
         label="Label",
         validators=[wtforms.validators.InputRequired()])
+
 
 class UrlMatcherForm(wtforms.Form):
     """
@@ -24,6 +26,7 @@ class UrlMatcherForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
     matcher_options = None
+
 
 class UrlTransformForm(wtforms.Form):
     """
@@ -47,6 +50,7 @@ class UrlTransformForm(wtforms.Form):
     description = wtforms.fields.TextAreaField(
         label="Description",
         validators=[wtforms.validators.Optional()])
+
 
 class TestUrlForm(wtforms.Form):
     """

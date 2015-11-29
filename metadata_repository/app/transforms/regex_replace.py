@@ -1,18 +1,20 @@
 import re
 
-import wtforms
+from wtforms import Form
+from wtforms.fields import StringField
+from wtforms.validators import InputRequired
 
 label = "Regex Search and Replace"
+
 
 def transform_url(options, url):
     return re.sub(options["pattern"], options["repl"], url)
 
-class OptionsForm(wtforms.Form):
 
-    pattern = wtforms.fields.StringField(
-        label="Search Pattern",
-        validators=[wtforms.validators.InputRequired()])
+class OptionsForm(Form):
 
-    repl = wtforms.fields.StringField(
-        label="Replacement",
-        validators=[wtforms.validators.InputRequired()])
+    pattern = StringField(label="Search Pattern",
+                          validators=[InputRequired()])
+
+    repl = StringField(label="Replacement",
+                       validators=[InputRequired()])

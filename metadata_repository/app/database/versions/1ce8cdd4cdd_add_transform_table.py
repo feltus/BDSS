@@ -19,18 +19,17 @@ from app.util import JSONEncodedDict
 
 def upgrade():
     op.create_table('url_transforms',
-        sa.Column('transform_id', sa.Integer(), nullable=False),
-        sa.Column('from_data_source_id', sa.Integer(), nullable=False),
-        sa.Column('to_data_source_id', sa.Integer(), nullable=False),
-        sa.Column('transform_type', sa.String(length=100), nullable=False),
-        sa.Column('transform_options', JSONEncodedDict(), nullable=True),
-        sa.Column('description', sa.Text(), nullable=True),
-        sa.Column('created_at', sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(['from_data_source_id'], ['data_sources.id'], ),
-        sa.ForeignKeyConstraint(['to_data_source_id'], ['data_sources.id'], ),
-        sa.PrimaryKeyConstraint('transform_id', 'from_data_source_id'),
-        sqlite_autoincrement=True
-    )
+                    sa.Column('transform_id', sa.Integer(), nullable=False),
+                    sa.Column('from_data_source_id', sa.Integer(), nullable=False),
+                    sa.Column('to_data_source_id', sa.Integer(), nullable=False),
+                    sa.Column('transform_type', sa.String(length=100), nullable=False),
+                    sa.Column('transform_options', JSONEncodedDict(), nullable=True),
+                    sa.Column('description', sa.Text(), nullable=True),
+                    sa.Column('created_at', sa.DateTime(), nullable=False),
+                    sa.ForeignKeyConstraint(['from_data_source_id'], ['data_sources.id'], ),
+                    sa.ForeignKeyConstraint(['to_data_source_id'], ['data_sources.id'], ),
+                    sa.PrimaryKeyConstraint('transform_id', 'from_data_source_id'),
+                    sqlite_autoincrement=True)
 
 
 def downgrade():

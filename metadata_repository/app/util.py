@@ -6,17 +6,21 @@ import pkgutil
 import sqlalchemy
 import sqlalchemy.ext.mutable
 
+
 def _modules_in_package(package_name):
     modules_directory = os.path.join(os.path.dirname(__file__), package_name)
     return [name for _, name, _ in pkgutil.iter_modules([modules_directory])]
+
 
 def available_matcher_types():
     """List names of available matcher modules."""
     return _modules_in_package("matchers")
 
+
 def available_transform_types():
     """List names of available matcher modules."""
     return _modules_in_package("transforms")
+
 
 def _property_of_module(module, property_name):
     try:
@@ -25,31 +29,38 @@ def _property_of_module(module, property_name):
     except (AttributeError, ImportError):
         return None
 
+
 def label_for_matcher_type(matcher_type):
     """Get user facing label for a matcher type."""
     label = _property_of_module("matchers." + matcher_type, "label")
     return label if label else matcher_type
 
+
 def matcher_of_type(matcher_type):
     """Get matcher function for a matcher type."""
     return _property_of_module("matchers." + matcher_type, "matches_url")
 
+
 def options_form_class_for_matcher_type(matcher_type):
     """Get options form for a matcher type."""
     return _property_of_module("matchers." + matcher_type, "OptionsForm")
+
 
 def label_for_transform_type(transform_type):
     """Get user facing label for a transform type."""
     label = _property_of_module("transforms." + transform_type, "label")
     return label if label else transform_type
 
+
 def transform_of_type(transform_type):
     """Get matcher function for a transform type."""
     return _property_of_module("transforms." + transform_type, "transform_url")
 
+
 def options_form_class_for_transform_type(transform_type):
     """Get options form for a transform type."""
     return _property_of_module("transforms." + transform_type, "OptionsForm")
+
 
 class JSONEncodedDict(sqlalchemy.types.TypeDecorator):
     """
@@ -72,6 +83,7 @@ class JSONEncodedDict(sqlalchemy.types.TypeDecorator):
         if value is not None:
             value = json.loads(value)
         return value
+
 
 class MutableDict(sqlalchemy.ext.mutable.Mutable, dict):
     """

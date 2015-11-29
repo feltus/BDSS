@@ -1,9 +1,10 @@
 from collections import namedtuple
 import sys
 
-from .models import DataSource, UrlMatcher, Transform
+from .models import UrlMatcher
 
 TransformResult = namedtuple("TransformResult", "original_url original_source transform_applied transformed_url")
+
 
 def transform_url(url):
 

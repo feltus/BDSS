@@ -14,6 +14,7 @@ db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind
 BaseModel = declarative_base()
 BaseModel.query = db_session.query_property()
 
+
 class DataSource(BaseModel):
 
     __tablename__ = "data_sources"
@@ -35,6 +36,7 @@ class DataSource(BaseModel):
                 return True
         return False
 
+
 class UrlMatcher(BaseModel):
 
     __tablename__ = "url_matchers"
@@ -54,6 +56,7 @@ class UrlMatcher(BaseModel):
 
     def matches_url(self, url):
         return matcher_of_type(self.matcher_type)(self.matcher_options, url)
+
 
 class Transform(BaseModel):
 

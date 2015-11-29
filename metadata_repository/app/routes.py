@@ -11,16 +11,19 @@ from .util import available_transform_types, options_form_class_for_transform_ty
 
 routes = Blueprint("routes", __name__)
 
+
 @routes.route("/")
 def index():
     """Home page"""
     return redirect(url_for("routes.list_data_sources"))
+
 
 ######################################################################################################
 #
 # Data sources
 #
 ######################################################################################################
+
 
 @routes.route("/data_sources")
 def list_data_sources():
@@ -29,6 +32,7 @@ def list_data_sources():
     """
     data_sources = DataSource.query.all()
     return render_template("data_sources/index.html.jinja", data_sources=data_sources)
+
 
 @routes.route("/data_sources/new", methods=["GET", "POST"])
 def create_data_source():
@@ -53,6 +57,7 @@ def create_data_source():
 
     return render_template("data_sources/new.html.jinja", form=form)
 
+
 @routes.route("/data_sources/<source_id>")
 def show_data_source(source_id):
     """
@@ -60,6 +65,7 @@ def show_data_source(source_id):
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
     return render_template("data_sources/show.html.jinja", data_source=data_source)
+
 
 @routes.route("/data_sources/<source_id>/test_match", methods=["GET", "POST"])
 def test_data_source_url_match(source_id):
@@ -76,6 +82,7 @@ def test_data_source_url_match(source_id):
             flash("URL does not match", "danger")
 
     return render_template("data_sources/test_url.html.jinja", data_source=data_source, form=form)
+
 
 @routes.route("/data_sources/<source_id>/edit", methods=["GET", "POST"])
 def edit_data_source(source_id):
@@ -100,6 +107,7 @@ def edit_data_source(source_id):
 
     return render_template("data_sources/edit.html.jinja", data_source=data_source, form=form)
 
+
 @routes.route("/data_sources/<source_id>/delete", methods=["GET", "POST"])
 def delete_data_source(source_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
@@ -117,11 +125,13 @@ def delete_data_source(source_id):
 
     return render_template("data_sources/delete.html.jinja", data_source=data_source)
 
+
 ######################################################################################################
 #
 # Matchers
 #
 ######################################################################################################
+
 
 @routes.route("/data_sources/<source_id>/matchers/new", methods=["GET", "POST"])
 def add_url_matcher(source_id):
@@ -175,6 +185,7 @@ def add_url_matcher(source_id):
 
     return render_template("url_matchers/new.html.jinja", data_source=data_source, form=form)
 
+
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>")
 def show_url_matcher(source_id, matcher_id):
     """
@@ -184,6 +195,7 @@ def show_url_matcher(source_id, matcher_id):
     url_matcher = UrlMatcher.query.filter((DataSource.id == source_id) & (UrlMatcher.id == matcher_id)).first()
 
     return render_template("url_matchers/show.html.jinja", data_source=data_source, url_matcher=url_matcher)
+
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>/edit", methods=["GET", "POST"])
 def edit_url_matcher(source_id, matcher_id):
@@ -234,6 +246,7 @@ def edit_url_matcher(source_id, matcher_id):
 
     return render_template("url_matchers/edit.html.jinja", data_source=data_source, url_matcher=url_matcher, form=form)
 
+
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>/delete", methods=["GET", "POST"])
 def delete_url_matcher(source_id, matcher_id):
     """
@@ -255,6 +268,7 @@ def delete_url_matcher(source_id, matcher_id):
 
     return render_template("url_matchers/delete.html.jinja", data_source=data_source, url_matcher=url_matcher)
 
+
 @routes.route("/data_sources/matcher_options_form")
 def show_matcher_options_form():
     """
@@ -274,11 +288,13 @@ def show_matcher_options_form():
     else:
         return ""
 
+
 ######################################################################################################
 #
 # Transforms
 #
 ######################################################################################################
+
 
 @routes.route("/data_sources/<source_id>/transforms/new", methods=["GET", "POST"])
 def add_transform(source_id):
@@ -339,6 +355,7 @@ def add_transform(source_id):
 
     return render_template("transforms/new.html.jinja", from_data_source=data_source, form=form)
 
+
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>")
 def show_transform(source_id, transform_id):
     """
@@ -348,6 +365,7 @@ def show_transform(source_id, transform_id):
     transform = Transform.query.filter((DataSource.id == source_id) & (Transform.transform_id == transform_id)).first()
 
     return render_template("transforms/show.html.jinja", from_data_source=data_source, transform=transform)
+
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/edit", methods=["GET", "POST"])
 def edit_transform(source_id, transform_id):
@@ -403,6 +421,7 @@ def edit_transform(source_id, transform_id):
 
     return render_template("transforms/edit.html.jinja", from_data_source=data_source, transform=transform, form=form)
 
+
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/delete", methods=["GET", "POST"])
 def delete_transform(source_id, transform_id):
     """
@@ -424,6 +443,7 @@ def delete_transform(source_id, transform_id):
 
     return render_template("transforms/delete.html.jinja", from_data_source=data_source, transform=transform)
 
+
 @routes.route("/data_sources/transform_options_form")
 def show_transform_options_form():
     """
@@ -443,11 +463,13 @@ def show_transform_options_form():
     else:
         return ""
 
+
 ######################################################################################################
 #
 # Other
 #
 ######################################################################################################
+
 
 @routes.route("/transformed_urls", methods=["GET", "POST"])
 def get_transformed_urls():

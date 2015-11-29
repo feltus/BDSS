@@ -2,9 +2,11 @@ from flask import Flask
 
 from .config import app_config
 from .models import db_session
+from .routes import routes
 
 app = Flask(__name__)
 app.secret_key = app_config["secret_key"]
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -14,6 +16,5 @@ def shutdown_session(exception=None):
     """
     db_session.remove()
 
-from .routes import routes
 
 app.register_blueprint(routes)

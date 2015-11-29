@@ -1,8 +1,11 @@
 import re
 
-import wtforms
+from wtforms import Form
+from wtforms.fields import StringField
+from wtforms.validators import InputRequired
 
 label = "Regular Expression"
+
 
 def matches_url(options, url):
     if re.match(options["pattern"], url):
@@ -10,9 +13,9 @@ def matches_url(options, url):
     else:
         return False
 
-class OptionsForm(wtforms.Form):
 
-    pattern = wtforms.fields.StringField(
-        label="Pattern",
-        validators=[wtforms.validators.InputRequired()],
-        description="URLs will be matched against this pattern.")
+class OptionsForm(Form):
+
+    pattern = StringField(label="Pattern",
+                          validators=[InputRequired()],
+                          description="URLs will be matched against this pattern.")
