@@ -1,0 +1,5 @@
+#!/bin/bash
+
+SCRIPTS_DIR=$( cd $(dirname $0); pwd -P )
+
+flake8 "${SCRIPTS_DIR}/../metadata_repository"

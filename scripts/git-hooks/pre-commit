@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./scripts/lint
+if [ $? -ne 0 ]; then
+    echo "Code does not conform to PEP8"
+    exit 1
+fi
