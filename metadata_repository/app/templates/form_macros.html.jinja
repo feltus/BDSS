@@ -11,10 +11,12 @@
 {% macro render_field(field, label_visible=true) -%}
 
     {% if (field.type == "FormField") %}
-        <fieldset id={{ field.id }}>
+        <fieldset id={{ field.id }} style="margin-bottom:15px;">
             <legend>{{ field.label }}</legend>
             {%- for subfield in field -%}
                 {{ render_field(subfield) }}
+            {%- else -%}
+                <p>No options available</p>
             {%- endfor -%}
         </fieldset>
     {% else %}
