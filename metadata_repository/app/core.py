@@ -41,6 +41,6 @@ def transform_url(url):
             else:
                 print("Transformed URL did not match target data source", file=sys.stderr)
 
-        # TODO: If no matching sources have transforms, flash error
+        # TODO: If no matching sources have transforms, raise exception.
 
     return transform_results
