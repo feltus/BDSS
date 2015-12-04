@@ -11,7 +11,21 @@ from .util import matcher_of_type, transform_of_type, JSONEncodedDict, MutableDi
 db_engine = sa.create_engine(app_config["database_url"])
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db_engine))
 
-BaseModel = declarative_base()
+
+class BaseModel(object):
+    """Base class for models."""
+
+    def _asdict(self):
+        """
+        Return a dictionary to be serialized to JSON.
+        The simplejson JSONEncoder looks for this method when serializing.
+
+        Returns: dict
+        """
+        return {col.name: getattr(self, col.name) for col in self.__table__.columns}
+
+
+BaseModel = declarative_base(cls=BaseModel)
 BaseModel.query = db_session.query_property()
 
 

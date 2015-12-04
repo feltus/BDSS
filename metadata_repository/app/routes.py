@@ -1,7 +1,7 @@
 import traceback
 
 import wtforms
-from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
+from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from .core import transform_url
 from .forms import DataSourceForm, TestUrlForm, UrlMatcherForm, UrlTransformForm
@@ -480,6 +480,15 @@ def get_transformed_urls():
 
     results = None
     if request.method == "POST" and form.validate():
-        results = transform_url(form.test_url.data)
+        error_message = None
+        try:
+            results = transform_url(form.test_url.data)
+        except Exception as e:
+            error_message = e.message or "Unknown error"
+
+        if request.headers.get("Accept") == "application/json":
+            return jsonify(results=results, error=error_message)
+        elif error_message:
+            flash(error_message, "danger")
 
     return render_template("get_transformed_urls.html.jinja", form=form, results=results)
