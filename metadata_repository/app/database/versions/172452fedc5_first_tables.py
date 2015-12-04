@@ -27,7 +27,7 @@ def upgrade():
                     sa.Column('id', sa.Integer(), nullable=False),
                     sa.Column('data_source_id', sa.Integer(), nullable=False),
                     sa.Column('matcher_type', sa.String(length=100), nullable=False),
-                    sa.Column('matcher_options', JSONEncodedDict(), nullable=True),
+                    sa.Column('matcher_options', JSONEncodedDict(), nullable=False, server_default="{}"),
                     sa.Column('created_at', sa.DateTime(), nullable=False),
                     sa.ForeignKeyConstraint(['data_source_id'], ['data_sources.id'], ),
                     sa.PrimaryKeyConstraint('id'))

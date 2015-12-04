@@ -61,7 +61,7 @@ class UrlMatcher(BaseModel):
 
     matcher_type = sa.Column(sa.types.String(100), nullable=False)
 
-    matcher_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={})
+    matcher_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
 
     created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
@@ -94,7 +94,7 @@ class Transform(BaseModel):
 
     transform_type = sa.Column(sa.types.String(100), nullable=False)
 
-    transform_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={})
+    transform_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
 
     description = sa.Column(sa.types.Text())
 
