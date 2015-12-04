@@ -7,19 +7,16 @@ import sqlalchemy
 import sqlalchemy.ext.mutable
 
 
+######################################################################################################
+#
+# Base methods
+#
+######################################################################################################
+
+
 def _modules_in_package(package_name):
     modules_directory = os.path.join(os.path.dirname(__file__), package_name)
     return [name for _, name, _ in pkgutil.iter_modules([modules_directory])]
-
-
-def available_matcher_types():
-    """List names of available matcher modules."""
-    return _modules_in_package("matchers")
-
-
-def available_transform_types():
-    """List names of available matcher modules."""
-    return _modules_in_package("transforms")
 
 
 def _property_of_module(module, property_name):
@@ -28,6 +25,18 @@ def _property_of_module(module, property_name):
         return getattr(module, property_name)
     except (AttributeError, ImportError):
         return None
+
+
+######################################################################################################
+#
+# URL Matchers
+#
+######################################################################################################
+
+
+def available_matcher_types():
+    """List names of available matcher modules."""
+    return _modules_in_package("matchers")
 
 
 def label_for_matcher_type(matcher_type):
@@ -46,6 +55,18 @@ def options_form_class_for_matcher_type(matcher_type):
     return _property_of_module("matchers." + matcher_type, "OptionsForm")
 
 
+######################################################################################################
+#
+# URL Transforms
+#
+######################################################################################################
+
+
+def available_transform_types():
+    """List names of available matcher modules."""
+    return _modules_in_package("transforms")
+
+
 def label_for_transform_type(transform_type):
     """Get user facing label for a transform type."""
     label = _property_of_module("transforms." + transform_type, "label")
@@ -60,6 +81,13 @@ def transform_of_type(transform_type):
 def options_form_class_for_transform_type(transform_type):
     """Get options form for a transform type."""
     return _property_of_module("transforms." + transform_type, "OptionsForm")
+
+
+######################################################################################################
+#
+# Database types
+#
+######################################################################################################
 
 
 class JSONEncodedDict(sqlalchemy.types.TypeDecorator):
