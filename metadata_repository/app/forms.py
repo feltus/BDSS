@@ -1,6 +1,7 @@
 import wtforms
 
 from .util import available_matcher_types, label_for_matcher_type
+from .util import available_transfer_mechanism_types, label_for_transfer_mechanism_type
 from .util import available_transform_types, label_for_transform_type
 
 
@@ -12,6 +13,13 @@ class DataSourceForm(wtforms.Form):
     label = wtforms.fields.StringField(
         label="Label",
         validators=[wtforms.validators.InputRequired()])
+
+    transfer_mechanism_type = wtforms.fields.SelectField(
+        label="Transfer Mechanism",
+        choices=[(t, label_for_transfer_mechanism_type(t)) for t in available_transfer_mechanism_types()],
+        validators=[wtforms.validators.InputRequired()])
+
+    transfer_mechanism_options = None
 
 
 class UrlMatcherForm(wtforms.Form):

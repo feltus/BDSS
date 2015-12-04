@@ -7,6 +7,7 @@ from .core import transform_url
 from .forms import DataSourceForm, TestUrlForm, UrlMatcherForm, UrlTransformForm
 from .models import db_engine, db_session, DataSource, UrlMatcher, Transform
 from .util import available_matcher_types, options_form_class_for_matcher_type
+from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
 from .util import available_transform_types, options_form_class_for_transform_type
 
 routes = Blueprint("routes", __name__)
@@ -37,23 +38,51 @@ def list_data_sources():
 @routes.route("/data_sources/new", methods=["GET", "POST"])
 def create_data_source():
     """
-    For GET requests, show form for creating a new data source.
-    For POST requests, process form and insert new data source into database.
+    Add a new data source to the database.
     """
-    form = DataSourceForm(request.form)
-    if request.method == "POST" and form.validate():
-        source = DataSource()
-        form.populate_obj(source)
+    form = DataSourceForm()
 
-        try:
-            db_session.add(source)
-            db_session.commit()
-            flash("Data source saved", "success")
-            return redirect(url_for("routes.list_data_sources"))
-        except:
-            db_session.rollback()
-            flash("Failed to save data source", "danger")
-            traceback.print_exc()
+    if request.method == "GET":
+        options_form_class = options_form_class_for_transfer_mechanism_type(form.transfer_mechanism_type.choices[0][0])
+        if options_form_class:
+            wtforms.form.BaseForm.__setitem__(form, "transfer_mechanism_options", wtforms.fields.FormField(options_form_class))
+        form.process(request.form)
+
+    elif request.method == "POST":
+        form.process(request.form)
+
+        # Dynamically add subform for transfer mechanism options. Fields cannot be added to a
+        # Form after its process method is called, so a second form must be created.
+        # https://wtforms.readthedocs.org/en/latest/forms.html#wtforms.form.BaseForm.__setitem__
+        form2 = DataSourceForm()
+        if form.transfer_mechanism_type.data:
+            options_form_class = options_form_class_for_transfer_mechanism_type(form.transfer_mechanism_type.data)
+            if options_form_class:
+                wtforms.form.BaseForm.__setitem__(form2, "transfer_mechanism_options", wtforms.fields.FormField(options_form_class))
+
+        # Load request data into new form.
+        form = form2
+        form.process(request.form)
+
+        if form.validate():
+            source = DataSource(
+                label=form.label.data,
+                transfer_mechanism_type=form.transfer_mechanism_type.data
+            )
+            if "transfer_mechanism_options" in form._fields.keys() and form._fields["transfer_mechanism_options"]:
+                source.transfer_mechanism_options = form._fields["transfer_mechanism_options"].data
+            else:
+                source.transfer_mechanism_options = {}
+
+            try:
+                db_session.add(source)
+                db_session.commit()
+                flash("Data source saved", "success")
+                return redirect(url_for("routes.list_data_sources"))
+            except:
+                db_session.rollback()
+                flash("Failed to save data source", "danger")
+                traceback.print_exc()
 
     return render_template("data_sources/new.html.jinja", form=form)
 
@@ -91,19 +120,47 @@ def edit_data_source(source_id):
     For POST requests, process form and update data source in database.
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    form = DataSourceForm(request.form, data_source)
 
-    if request.method == "POST" and form.validate():
-        form.populate_obj(data_source)
+    form = DataSourceForm()
 
-        try:
-            db_session.commit()
-            flash("Data source updated", "success")
-            return redirect(url_for("routes.show_data_source", source_id=source_id))
-        except:
-            db_session.rollback()
-            flash("Failed to update data source", "danger")
-            traceback.print_exc()
+    if request.method == "GET":
+        options_form_class = options_form_class_for_transfer_mechanism_type(data_source.transfer_mechanism_type)
+        if options_form_class:
+            wtforms.form.BaseForm.__setitem__(form, "transfer_mechanism_options", wtforms.fields.FormField(options_form_class))
+        form.process(request.form, data_source)
+
+    elif request.method == "POST":
+        form.process(request.form, data_source)
+
+        # Dynamically add subform for matcher options. Fields cannot be added to a
+        # Form after its process method is called, so a second form must be created.
+        # https://wtforms.readthedocs.org/en/latest/forms.html#wtforms.form.BaseForm.__setitem__
+        form2 = DataSourceForm()
+        if form.transfer_mechanism_type.data:
+            options_form_class = options_form_class_for_transfer_mechanism_type(form.transfer_mechanism_type.data)
+            if options_form_class:
+                wtforms.form.BaseForm.__setitem__(form2, "transfer_mechanism_options", wtforms.fields.FormField(options_form_class))
+
+        # Load request data into new form.
+        form = form2
+        form.process(request.form, data_source)
+
+        if form.validate():
+            data_source.label = form.label.data
+            data_source.transfer_mechanism_type = form.transfer_mechanism_type.data
+            if "transfer_mechanism_options" in form._fields.keys() and form._fields["transfer_mechanism_options"]:
+                data_source.transfer_mechanism_options = form._fields["transfer_mechanism_options"].data
+            else:
+                data_source.transfer_mechanism_options = {}
+
+            try:
+                db_session.commit()
+                flash("Data source updated", "success")
+                return redirect(url_for("routes.show_data_source", source_id=source_id))
+            except:
+                db_session.rollback()
+                flash("Failed to update data source", "danger")
+                traceback.print_exc()
 
     return render_template("data_sources/edit.html.jinja", data_source=data_source, form=form)
 
@@ -125,6 +182,25 @@ def delete_data_source(source_id):
 
     return render_template("data_sources/delete.html.jinja", data_source=data_source)
 
+
+@routes.route("/data_sources/transfer_mechanism_options_form")
+def show_transfer_mechanism_options_form():
+    """
+    Show options form for a specific transfer mechanism type.
+    """
+    transfer_mechanism_type = request.args.get("transfer_mechanism_type")
+    if transfer_mechanism_type not in available_transfer_mechanism_types():
+        abort(404)
+
+    options_form_class = options_form_class_for_transfer_mechanism_type(transfer_mechanism_type)
+    if options_form_class:
+        class ContainerForm(wtforms.Form):
+            """Placeholder form to render FormField with transfer mechanism type's options form class"""
+            transfer_mechanism_options = wtforms.fields.FormField(options_form_class)
+
+        return render_template("options_form.html.jinja", form=ContainerForm())
+    else:
+        return ""
 
 ######################################################################################################
 #

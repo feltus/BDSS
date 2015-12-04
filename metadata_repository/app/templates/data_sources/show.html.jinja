@@ -4,6 +4,17 @@
 
 {% block content %}
 
+<p><strong>Transfer mechanism type:</strong> {{ data_source.transfer_mechanism_type }}</p>
+
+{% if data_source.transfer_mechanism_options %}
+    <strong>Transfer Mechanism Options:</strong>
+    <ul>
+        {% for opt, val in data_source.transfer_mechanism_options.items() %}
+            <li><strong>{{ " ".join(opt.capitalize().split("_")) }}:</strong> {{ val|e }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <p><a href="{{ url_for('routes.edit_data_source', source_id=data_source.id) }}">Edit this data source</a></p>
 <p><a href="{{ url_for('routes.delete_data_source', source_id=data_source.id) }}">Delete this data source</a></p>
 

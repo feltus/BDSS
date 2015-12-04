@@ -1,6 +1,7 @@
 import datetime
 
 import sqlalchemy as sa
+from flask.ext.jsontools.formatting import get_entity_loaded_propnames
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -20,9 +21,11 @@ class BaseModel(object):
         Return a dictionary to be serialized to JSON.
         The simplejson JSONEncoder looks for this method when serializing.
 
+        See https://github.com/kolypto/py-flask-jsontools/blob/master/flask_jsontools/formatting.py#L71
+
         Returns: dict
         """
-        return {col.name: getattr(self, col.name) for col in self.__table__.columns}
+        return {name: getattr(self, name) for name in get_entity_loaded_propnames(self)}
 
 
 BaseModel = declarative_base(cls=BaseModel)
@@ -38,6 +41,10 @@ class DataSource(BaseModel):
     label = sa.Column(sa.types.String(100), nullable=False)
 
     url_matchers = sa.orm.relationship("UrlMatcher", backref="data_source", cascade="all, delete-orphan")
+
+    transfer_mechanism_type = sa.Column(sa.types.String(100), nullable=False)
+
+    transfer_mechanism_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
 
     created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 

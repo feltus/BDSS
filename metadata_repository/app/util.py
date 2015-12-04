@@ -15,11 +15,13 @@ import sqlalchemy.ext.mutable
 
 
 def _modules_in_package(package_name):
+    """List of names of modules in a package."""
     modules_directory = os.path.join(os.path.dirname(__file__), package_name)
     return [name for _, name, _ in pkgutil.iter_modules([modules_directory])]
 
 
 def _property_of_module(module, property_name):
+    """Return a property of a module or None if the property doesn't exist."""
     try:
         module = importlib.import_module(__package__ + "." + module)
         return getattr(module, property_name)
@@ -81,6 +83,29 @@ def transform_of_type(transform_type):
 def options_form_class_for_transform_type(transform_type):
     """Get options form for a transform type."""
     return _property_of_module("transforms." + transform_type, "OptionsForm")
+
+
+######################################################################################################
+#
+# Transfer mechanisms
+#
+######################################################################################################
+
+
+def available_transfer_mechanism_types():
+    """List names of available transfer mechanism modules."""
+    return _modules_in_package("transfer_mechanisms")
+
+
+def label_for_transfer_mechanism_type(transfer_mechanism_type):
+    """Get user facing label for a transfer mechanism type."""
+    label = _property_of_module("transfer_mechanisms." + transfer_mechanism_type, "label")
+    return label if label else transfer_mechanism_type
+
+
+def options_form_class_for_transfer_mechanism_type(transfer_mechanism_type):
+    """Get options form for a transfer_mechanism type."""
+    return _property_of_module("transfer_mechanisms." + transfer_mechanism_type, "OptionsForm")
 
 
 ######################################################################################################

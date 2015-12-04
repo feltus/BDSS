@@ -12,7 +12,10 @@
         <hr>
         <ol>
             {% for r in results %}
-                <li>{{ r.original_url }} {{ r.original_source.label }} =&gt; {{ r.transform_applied.transform_id }} = {{ r.transformed_url }}</li>
+                <li>{{ r.original_url }} = {{ r.transformed_url }}<br>
+                    {{ r.original_source.label }} =&gt;
+                    {{ r.transform_applied.transform_id }} =&gt;
+                    {{ r.transform_applied.to_data_source.label }}</li>
             {% endfor %}
         </ol>
     {% else %}

@@ -12,3 +12,33 @@
 <a href="{{ url_for('routes.list_data_sources') }}" class="btn btn-default">Cancel</a>
 
 {% endblock %}
+
+{% block scripts %}
+
+<script>
+$('#transfer_mechanism_type').on('change', function(e) {
+
+    var select = $(this);
+    var module = select.val();
+
+    $.ajax({
+        url: "{{ url_for('routes.show_transfer_mechanism_options_form') }}",
+        data: {
+            "transfer_mechanism_type": module
+        },
+        dataType: "text",
+        success: function(data) {
+            var fieldset = $(data).find("fieldset");
+            var group = select.closest(".form-group");
+            group.next("fieldset").remove();
+            fieldset.insertAfter(group);
+        },
+        error: function(err) {
+            console.warn(err);
+        }
+    });
+
+});
+</script>
+
+{% endblock %}
