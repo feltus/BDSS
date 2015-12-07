@@ -3,10 +3,13 @@ import traceback
 
 import wtforms
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask.ext.login import login_required, login_user, logout_user
+from passlib.context import CryptContext
 
 from .core import matching_data_source, transform_url
 from .forms import DataSourceForm, TestUrlForm, TimingReportForm, TransferTestFileForm, UrlMatcherForm, UrlTransformForm
-from .models import db_engine, db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform
+from .forms import LoginForm, RegistrationForm
+from .models import db_engine, db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
 from .util import available_matcher_types, options_form_class_for_matcher_type
 from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
 from .util import available_transform_types, options_form_class_for_transform_type
@@ -22,12 +25,72 @@ def index():
 
 ######################################################################################################
 #
+# User accounts
+#
+######################################################################################################
+
+
+pwd_context = CryptContext(schemes="bcrypt_sha256")
+
+
+@routes.route("/login", methods=["GET", "POST"])
+def login():
+    """
+    Login to the application.
+    """
+    form = LoginForm(request.form)
+    if request.method == "POST" and form.validate():
+        user = User.query.filter(User.email == form.email.data).first()
+        if user and pwd_context.verify(form.password.data, user.password_hash):
+            login_user(user, remember=True)
+            return redirect(url_for("routes.index"))
+        else:
+            flash("Invalid credentials", "danger")
+
+    return render_template("users/login.html.jinja", form=form)
+
+
+@routes.route("/register", methods=["GET", "POST"])
+def register():
+    """
+    Register a new user account.
+    """
+    form = RegistrationForm(request.form)
+    if request.method == "POST" and form.validate():
+        pwd_hash = pwd_context.encrypt(form.password.data)
+        user = User(name=form.name.data, email=form.email.data, password_hash=pwd_hash)
+        try:
+            db_session.add(user)
+            db_session.commit()
+            login_user(user, remember=True)
+            return redirect(url_for("routes.index"))
+        except:
+            db_session.rollback()
+            flash("Unable to register", "danger")
+            traceback.print_exc()
+
+    return render_template("users/register.html.jinja", form=form)
+
+
+@login_required
+@routes.route("/logout")
+def logout():
+    """
+    Logout of the application.
+    """
+    logout_user()
+    return redirect(url_for("routes.login"))
+
+
+######################################################################################################
+#
 # Data sources
 #
 ######################################################################################################
 
 
 @routes.route("/data_sources")
+@login_required
 def list_data_sources():
     """
     List all data sources in database.
@@ -37,6 +100,7 @@ def list_data_sources():
 
 
 @routes.route("/data_sources/new", methods=["GET", "POST"])
+@login_required
 def create_data_source():
     """
     Add a new data source to the database.
@@ -89,6 +153,7 @@ def create_data_source():
 
 
 @routes.route("/data_sources/<source_id>")
+@login_required
 def show_data_source(source_id):
     """
     Show information about a specific data source.
@@ -98,6 +163,7 @@ def show_data_source(source_id):
 
 
 @routes.route("/data_sources/<source_id>/test_match", methods=["GET", "POST"])
+@login_required
 def test_data_source_url_match(source_id):
     """
     Test whether or not a URL matches a data source.
@@ -115,6 +181,7 @@ def test_data_source_url_match(source_id):
 
 
 @routes.route("/data_sources/<source_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_data_source(source_id):
     """
     For GET requests, show form for editing a data source.
@@ -167,6 +234,7 @@ def edit_data_source(source_id):
 
 
 @routes.route("/data_sources/<source_id>/delete", methods=["GET", "POST"])
+@login_required
 def delete_data_source(source_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
 
@@ -185,6 +253,7 @@ def delete_data_source(source_id):
 
 
 @routes.route("/data_sources/transfer_mechanism_options_form")
+@login_required
 def show_transfer_mechanism_options_form():
     """
     Show options form for a specific transfer mechanism type.
@@ -211,6 +280,7 @@ def show_transfer_mechanism_options_form():
 
 
 @routes.route("/data_sources/<source_id>/matchers/new", methods=["GET", "POST"])
+@login_required
 def add_url_matcher(source_id):
     """
     Add a new URL matcher to a data source
@@ -264,6 +334,7 @@ def add_url_matcher(source_id):
 
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>")
+@login_required
 def show_url_matcher(source_id, matcher_id):
     """
     Show information about a specific matcher.
@@ -275,6 +346,7 @@ def show_url_matcher(source_id, matcher_id):
 
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_url_matcher(source_id, matcher_id):
     """
     Edit a matcher
@@ -325,6 +397,7 @@ def edit_url_matcher(source_id, matcher_id):
 
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>/delete", methods=["GET", "POST"])
+@login_required
 def delete_url_matcher(source_id, matcher_id):
     """
     Delete a URL matcher. Prompt for confirmation first.
@@ -347,6 +420,7 @@ def delete_url_matcher(source_id, matcher_id):
 
 
 @routes.route("/data_sources/matcher_options_form")
+@login_required
 def show_matcher_options_form():
     """
     Show options form for a specific matcher type.
@@ -374,6 +448,7 @@ def show_matcher_options_form():
 
 
 @routes.route("/data_sources/<source_id>/transforms/new", methods=["GET", "POST"])
+@login_required
 def add_transform(source_id):
     """
     Add a new URL transform to a data source
@@ -434,6 +509,7 @@ def add_transform(source_id):
 
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>")
+@login_required
 def show_transform(source_id, transform_id):
     """
     Show information about a specific transform.
@@ -445,6 +521,7 @@ def show_transform(source_id, transform_id):
 
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_transform(source_id, transform_id):
     """
     Edit a transform
@@ -500,6 +577,7 @@ def edit_transform(source_id, transform_id):
 
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/delete", methods=["GET", "POST"])
+@login_required
 def delete_transform(source_id, transform_id):
     """
     Delete a URL transform. Prompt for confirmation first.
@@ -522,6 +600,7 @@ def delete_transform(source_id, transform_id):
 
 
 @routes.route("/data_sources/transform_options_form")
+@login_required
 def show_transform_options_form():
     """
     Show options form for a specific transform type.
@@ -549,6 +628,7 @@ def show_transform_options_form():
 
 
 @routes.route("/data_sources/<source_id>/test_files/new", methods=["GET", "POST"])
+@login_required
 def add_test_file(source_id):
     """
     Add a new test file to a data source
@@ -582,6 +662,7 @@ def add_test_file(source_id):
 
 
 @routes.route("/data_sources/<source_id>/test_files/<file_id>")
+@login_required
 def show_test_file(source_id, file_id):
     """
     Show information about a specific test file.
@@ -592,6 +673,7 @@ def show_test_file(source_id, file_id):
 
 
 @routes.route("/data_sources/<source_id>/test_files/<file_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_test_file(source_id, file_id):
     """
     Edit a test file
@@ -621,6 +703,7 @@ def edit_test_file(source_id, file_id):
 
 
 @routes.route("/data_sources/<source_id>/test_files/<file_id>/delete", methods=["GET", "POST"])
+@login_required
 def delete_test_file(source_id, file_id):
     """
     Delete a test file. Prompt for confirmation first.

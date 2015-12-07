@@ -2,6 +2,7 @@ import datetime
 
 import sqlalchemy as sa
 from flask.ext.jsontools.formatting import get_entity_loaded_propnames
+from flask.ext.login import UserMixin
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -30,6 +31,26 @@ class BaseModel(object):
 
 BaseModel = declarative_base(cls=BaseModel)
 BaseModel.query = db_session.query_property()
+
+
+class User(BaseModel, UserMixin):
+
+    __tablename__ = "users"
+
+    user_id = sa.Column(sa.types.Integer(), primary_key=True, nullable=False)
+
+    def get_id(self):
+        return str(self.user_id)
+
+    name = sa.Column(sa.types.String(100), nullable=False)
+
+    email = sa.Column(sa.types.String(100), nullable=False, unique=True)
+
+    password_hash = sa.Column(sa.types.String(80), nullable=False)
+
+    is_active = sa.Column(sa.types.Boolean(), default=True, nullable=False)
+
+    is_admin = sa.Column(sa.types.Boolean(), default=False, nullable=False)
 
 
 class DataSource(BaseModel):

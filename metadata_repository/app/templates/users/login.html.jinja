@@ -1,0 +1,14 @@
+{% extends "layout.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
+
+{% block page_header %}Login{% endblock %}
+
+{% block content %}
+
+{{ form_macros.render_form(form, action_url=url_for("routes.login"), btn_class="btn btn-primary") }}
+
+<hr>
+
+<p style="margin-top: 10px;">Or <a href="{{ url_for('routes.register') }}">create a new account</a></p>
+
+{% endblock %}

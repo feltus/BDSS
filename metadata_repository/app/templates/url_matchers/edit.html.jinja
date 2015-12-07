@@ -1,4 +1,4 @@
-{% extends "layout.html.jinja" %}
+{% extends "authenticated.html.jinja" %}
 {% import "form_macros.html.jinja" as form_macros %}
 
 {% block page_header %}{{ data_source.label }} - Edit {{ url_matcher.matcher_type }} Matcher{% endblock %}
