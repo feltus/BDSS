@@ -3,7 +3,7 @@ import traceback
 
 import wtforms
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
-from flask.ext.login import login_required, login_user, logout_user
+from flask.ext.login import current_user, login_required, login_user, logout_user
 from passlib.context import CryptContext
 
 from .core import matching_data_source, transform_url
@@ -38,6 +38,10 @@ def login():
     """
     Login to the application.
     """
+    print(current_user, file=sys.stderr)
+    if current_user and not current_user.is_anonymous:
+        return redirect(url_for("routes.index"))
+
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
         user = User.query.filter(User.email == form.email.data).first()
@@ -55,6 +59,9 @@ def register():
     """
     Register a new user account.
     """
+    if current_user and not current_user.is_anonymous:
+        return redirect(url_for("routes.index"))
+
     form = RegistrationForm(request.form)
     if request.method == "POST" and form.validate():
         pwd_hash = pwd_context.encrypt(form.password.data)
