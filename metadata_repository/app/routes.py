@@ -327,6 +327,9 @@ def add_url_matcher(source_id):
             else:
                 url_matcher.matcher_options = {}
 
+            if db_engine.dialect.name == "sqlite":
+                url_matcher.matcher_id = len(data_source.url_matchers)
+
             try:
                 db_session.add(url_matcher)
                 db_session.commit()
@@ -347,7 +350,7 @@ def show_url_matcher(source_id, matcher_id):
     Show information about a specific matcher.
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    url_matcher = UrlMatcher.query.filter((DataSource.id == source_id) & (UrlMatcher.id == matcher_id)).first()
+    url_matcher = UrlMatcher.query.filter((DataSource.id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first()
 
     return render_template("url_matchers/show.html.jinja", data_source=data_source, url_matcher=url_matcher)
 
@@ -359,7 +362,7 @@ def edit_url_matcher(source_id, matcher_id):
     Edit a matcher
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    url_matcher = UrlMatcher.query.filter((DataSource.id == source_id) & (UrlMatcher.id == matcher_id)).first()
+    url_matcher = UrlMatcher.query.filter((DataSource.id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first()
     form = UrlMatcherForm()
 
     if request.method == "GET":
@@ -394,7 +397,7 @@ def edit_url_matcher(source_id, matcher_id):
             try:
                 db_session.commit()
                 flash("Matcher updated", "success")
-                return redirect(url_for("routes.show_url_matcher", source_id=data_source.id, matcher_id=url_matcher.id))
+                return redirect(url_for("routes.show_url_matcher", source_id=data_source.id, matcher_id=url_matcher.matcher_id))
             except:
                 db_session.rollback()
                 flash("Failed to update matcher", "danger")
@@ -410,7 +413,7 @@ def delete_url_matcher(source_id, matcher_id):
     Delete a URL matcher. Prompt for confirmation first.
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    url_matcher = UrlMatcher.query.filter((DataSource.id == source_id) & (UrlMatcher.id == matcher_id)).first()
+    url_matcher = UrlMatcher.query.filter((DataSource.id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first()
 
     if request.method == "POST":
         try:

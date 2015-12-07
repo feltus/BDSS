@@ -22,7 +22,7 @@
 
 <ul>
     {% for matcher in data_source.url_matchers %}
-        <li><a href="{{ url_for('routes.show_url_matcher', source_id=data_source.id, matcher_id=matcher.id) }}">{{ matcher.matcher_type }}</a></li>
+        <li><a href="{{ url_for('routes.show_url_matcher', source_id=data_source.id, matcher_id=matcher.matcher_id) }}">{{ matcher.matcher_type }}</a></li>
     {% else %}
         <li>No matchers</li>
     {% endfor %}

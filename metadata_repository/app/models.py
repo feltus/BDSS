@@ -2,9 +2,9 @@ import datetime
 
 import sqlalchemy as sa
 from flask.ext.jsontools.formatting import get_entity_loaded_propnames
-from flask.ext.login import UserMixin
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from flask.ext.login import current_user, UserMixin
+from sqlalchemy.orm import backref, scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 from .config import app_config
 from .util import matcher_of_type, transform_of_type, JSONEncodedDict, MutableDict
@@ -12,6 +12,25 @@ from .util import matcher_of_type, transform_of_type, JSONEncodedDict, MutableDi
 # http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/#declarative
 db_engine = sa.create_engine(app_config["database_url"])
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db_engine))
+
+
+@sa.event.listens_for(db_session, "before_flush")
+def receive_before_flush(session, flush_context, instances):
+    for obj in session.new:
+        if hasattr(obj, "created_at"):
+            obj.created_at = datetime.datetime.utcnow()
+        if hasattr(obj, "created_by_user_id"):
+            obj.created_by_user_id = current_user.user_id
+        if hasattr(obj, "last_updated_at"):
+            obj.last_updated_at = datetime.datetime.utcnow()
+        if hasattr(obj, "last_updated_by_user_id"):
+            obj.last_updated_by_user_id = current_user.user_id
+
+    for obj in session.dirty:
+        if hasattr(obj, "last_updated_at"):
+            obj.last_updated_at = datetime.datetime.utcnow()
+        if hasattr(obj, "last_updated_by_user_id"):
+            obj.last_updated_by_user_id = current_user.user_id
 
 
 class BaseModel(object):
@@ -48,12 +67,39 @@ class User(BaseModel, UserMixin):
 
     password_hash = sa.Column(sa.types.String(80), nullable=False)
 
+    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
+
+    last_updated_at = sa.Column(sa.types.DateTime(), nullable=False)
+
     is_active = sa.Column(sa.types.Boolean(), default=True, nullable=False)
 
     is_admin = sa.Column(sa.types.Boolean(), default=False, nullable=False)
 
 
-class DataSource(BaseModel):
+class TrackEditsMixin(object):
+
+    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
+
+    @declared_attr
+    def created_by_user_id(cls):
+        return sa.Column(sa.types.Integer(), sa.ForeignKey("users.user_id"), nullable=False)
+
+    @declared_attr
+    def created_by(cls):
+        return sa.orm.relationship("User", foreign_keys=lambda: [cls.created_by_user_id])
+
+    last_updated_at = sa.Column(sa.types.DateTime(), nullable=False)
+
+    @declared_attr
+    def last_updated_by_user_id(cls):
+        return sa.Column(sa.types.Integer(), sa.ForeignKey("users.user_id"), nullable=False)
+
+    @declared_attr
+    def last_updated_by(cls):
+        return sa.orm.relationship("User", foreign_keys=lambda: [cls.last_updated_by_user_id])
+
+
+class DataSource(BaseModel, TrackEditsMixin):
 
     __tablename__ = "data_sources"
 
@@ -61,13 +107,9 @@ class DataSource(BaseModel):
 
     label = sa.Column(sa.types.String(100), nullable=False)
 
-    url_matchers = sa.orm.relationship("UrlMatcher", backref="data_source", cascade="all, delete-orphan")
-
     transfer_mechanism_type = sa.Column(sa.types.String(100), nullable=False)
 
     transfer_mechanism_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
-
-    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         return "<DataSource (id=%s, label=%s)>" % (self.id, self.label)
@@ -79,19 +121,21 @@ class DataSource(BaseModel):
         return False
 
 
-class UrlMatcher(BaseModel):
+class UrlMatcher(BaseModel, TrackEditsMixin):
 
     __tablename__ = "url_matchers"
 
-    id = sa.Column(sa.types.Integer(), primary_key=True, nullable=False)
+    matcher_id = sa.Column(sa.types.Integer(), primary_key=True, nullable=False)
 
-    data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), nullable=False)
+    data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
+
+    data_source = sa.orm.relationship("DataSource",
+                                      backref=backref("url_matchers", cascade="all, delete-orphan"),
+                                      foreign_keys=[data_source_id])
 
     matcher_type = sa.Column(sa.types.String(100), nullable=False)
 
     matcher_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
-
-    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         return "<UrlMatcher (id=%d)>" % (self.id)
@@ -100,7 +144,7 @@ class UrlMatcher(BaseModel):
         return matcher_of_type(self.matcher_type)(self.matcher_options, url)
 
 
-class Transform(BaseModel):
+class Transform(BaseModel, TrackEditsMixin):
 
     __tablename__ = "url_transforms"
 
@@ -108,19 +152,21 @@ class Transform(BaseModel):
 
     from_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
-    from_data_source = sa.orm.relationship("DataSource", backref="transforms", foreign_keys=[from_data_source_id])
+    from_data_source = sa.orm.relationship("DataSource",
+                                           backref=backref("transforms", cascade="all, delete-orphan"),
+                                           foreign_keys=[from_data_source_id])
 
     to_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), nullable=False)
 
-    to_data_source = sa.orm.relationship("DataSource", backref="targeting_transforms", foreign_keys=[to_data_source_id])
+    to_data_source = sa.orm.relationship("DataSource",
+                                         backref=backref("targeting_transforms", cascade="all, delete-orphan"),
+                                         foreign_keys=[to_data_source_id])
 
     transform_type = sa.Column(sa.types.String(100), nullable=False)
 
     transform_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
 
     description = sa.Column(sa.types.Text())
-
-    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         return "<Transform (from_data_source=%d, transform_id=%d)>" % (self.from_data_source_id, self.transform_id)
@@ -137,7 +183,9 @@ class TimingReport(BaseModel):
 
     data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
-    data_source = sa.orm.relationship("DataSource", backref="timing_reports", foreign_keys=[data_source_id])
+    data_source = sa.orm.relationship("DataSource",
+                                      backref=backref("timing_reports", cascade="all, delete-orphan"),
+                                      foreign_keys=[data_source_id])
 
     url = sa.Column(sa.types.Text(), nullable=False)
 
@@ -151,7 +199,7 @@ class TimingReport(BaseModel):
         return "<TimingReport (data_source=%d, url=%s, time=%f)>" % (self.data_source_id, self.url, self.transfer_duration_seconds)
 
 
-class TransferTestFile(BaseModel):
+class TransferTestFile(BaseModel, TrackEditsMixin):
 
     __tablename__ = "transfer_test_files"
 
@@ -159,11 +207,11 @@ class TransferTestFile(BaseModel):
 
     data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
-    data_source = sa.orm.relationship("DataSource", backref="transfer_test_files", foreign_keys=[data_source_id])
+    data_source = sa.orm.relationship("DataSource",
+                                      backref=backref("transfer_test_files", cascade="all, delete-orphan"),
+                                      foreign_keys=[data_source_id])
 
     url = sa.Column(sa.types.Text(), nullable=False)
-
-    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         return "<TransferTestFile (data_source=%d, url=%s)>" % (self.data_source_id, self.url)
