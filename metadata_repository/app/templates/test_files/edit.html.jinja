@@ -1,0 +1,14 @@
+{% extends "layout.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
+
+{% block page_header %}{{ test_file.data_source.label }} - Edit Test File{% endblock %}
+
+{% block content %}
+
+{{ form_macros.render_form(form, action_url=url_for("routes.edit_test_file", source_id=test_file.data_source_id, file_id=test_file.file_id), btn_class="btn btn-primary") }}
+
+<hr>
+
+<a href="{{ url_for('routes.show_test_file', source_id=test_file.data_source_id, file_id=test_file.file_id) }}" class="btn btn-default">Cancel</a>
+
+{% endblock %}

@@ -128,3 +128,21 @@ class TimingReport(BaseModel):
 
     def __repr__(self):
         return "<TimingReport (data_source=%d, url=%s, time=%f)>" % (self.data_source_id, self.url, self.transfer_duration_seconds)
+
+
+class TransferTestFile(BaseModel):
+
+    __tablename__ = "transfer_test_files"
+
+    file_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=True, nullable=False)
+
+    data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
+
+    data_source = sa.orm.relationship("DataSource", backref="transfer_test_files", foreign_keys=[data_source_id])
+
+    url = sa.Column(sa.types.Text(), nullable=False)
+
+    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return "<TransferTestFile (data_source=%d, url=%s)>" % (self.data_source_id, self.url)

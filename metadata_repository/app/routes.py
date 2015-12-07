@@ -1,11 +1,12 @@
+import sys
 import traceback
 
 import wtforms
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
 from .core import matching_data_source, transform_url
-from .forms import DataSourceForm, TestUrlForm, TimingReportForm, UrlMatcherForm, UrlTransformForm
-from .models import db_engine, db_session, DataSource, UrlMatcher, TimingReport, Transform
+from .forms import DataSourceForm, TestUrlForm, TimingReportForm, TransferTestFileForm, UrlMatcherForm, UrlTransformForm
+from .models import db_engine, db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform
 from .util import available_matcher_types, options_form_class_for_matcher_type
 from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
 from .util import available_transform_types, options_form_class_for_transform_type
@@ -538,6 +539,107 @@ def show_transform_options_form():
         return render_template("options_form.html.jinja", form=ContainerForm())
     else:
         return ""
+
+
+######################################################################################################
+#
+# Test files
+#
+######################################################################################################
+
+
+@routes.route("/data_sources/<source_id>/test_files/new", methods=["GET", "POST"])
+def add_test_file(source_id):
+    """
+    Add a new test file to a data source
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    form = TransferTestFileForm(request.form)
+
+    if request.method == "POST" and form.validate():
+        test_file = TransferTestFile()
+        form.populate_obj(test_file)
+        test_file.data_source_id = data_source.id
+        if db_engine.dialect.name == "sqlite":
+            test_file.file_id = len(data_source.transfer_test_files)
+
+        if data_source.matches_url(test_file.url):
+            try:
+                db_session.add(test_file)
+                db_session.commit()
+                flash("Test file saved", "success")
+                return redirect(url_for("routes.show_data_source", source_id=data_source.id))
+            except:
+                db_session.rollback()
+                flash("Failed to save test file", "danger")
+                traceback.print_exc()
+        else:
+            # FIXME: This should be a log
+            print("Test file URL does not match data source", file=sys.stderr)
+            flash("Test file URL does not match data source", "danger")
+
+    return render_template("test_files/new.html.jinja", data_source=data_source, form=form)
+
+
+@routes.route("/data_sources/<source_id>/test_files/<file_id>")
+def show_test_file(source_id, file_id):
+    """
+    Show information about a specific test file.
+    """
+    test_file = TransferTestFile.query.filter((DataSource.id == source_id) & (TransferTestFile.file_id == file_id)).first()
+
+    return render_template("test_files/show.html.jinja", test_file=test_file)
+
+
+@routes.route("/data_sources/<source_id>/test_files/<file_id>/edit", methods=["GET", "POST"])
+def edit_test_file(source_id, file_id):
+    """
+    Edit a test file
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    test_file = TransferTestFile.query.filter((DataSource.id == source_id) & (TransferTestFile.file_id == file_id)).first()
+    form = TransferTestFileForm(request.form, test_file)
+
+    if request.method == "POST" and form.validate():
+        form.populate_obj(test_file)
+
+        if data_source.matches_url(test_file.url):
+            try:
+                db_session.commit()
+                flash("Test file updated", "success")
+                return redirect(url_for("routes.show_test_file", source_id=data_source.id, file_id=test_file.file_id))
+            except:
+                db_session.rollback()
+                flash("Failed to update test file", "danger")
+                traceback.print_exc()
+        else:
+            # FIXME: This should be a log
+            print("Test file URL does not match data source", file=sys.stderr)
+            flash("Test file URL does not match data source", "danger")
+
+    return render_template("test_files/edit.html.jinja", test_file=test_file, form=form)
+
+
+@routes.route("/data_sources/<source_id>/test_files/<file_id>/delete", methods=["GET", "POST"])
+def delete_test_file(source_id, file_id):
+    """
+    Delete a test file. Prompt for confirmation first.
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    test_file = TransferTestFile.query.filter((DataSource.id == source_id) & (TransferTestFile.file_id == file_id)).first()
+
+    if request.method == "POST":
+        try:
+            db_session.delete(test_file)
+            db_session.commit()
+            flash("Test file deleted", "success")
+            return redirect(url_for("routes.show_data_source", source_id=data_source.id))
+        except:
+            db_session.rollback()
+            flash("Failed to delete test file", "danger")
+            traceback.print_exc()
+
+    return render_template("test_files/delete.html.jinja", test_file=test_file)
 
 
 ######################################################################################################

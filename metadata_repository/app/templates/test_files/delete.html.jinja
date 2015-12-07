@@ -1,0 +1,17 @@
+{% extends "layout.html.jinja" %}
+
+{% block page_header %}Test file for {{ test_file.data_source.label }}{% endblock %}
+
+{% block content %}
+
+<p><strong>File URL:</strong> {{ test_file.url }}</p>
+
+<p>Are you sure you want to delete this test file? This cannot be undone.</p>
+
+<form action="{{ url_for('routes.delete_test_file', source_id=test_file.data_source_id, file_id=test_file.file_id) }}" method="POST">
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+
+<p style="margin-top:20px;"><a class="btn btn-default" href="{{ url_for('routes.show_test_file', source_id=test_file.data_source_id, file_id=test_file.file_id) }}">Cancel</a></p>
+
+{% endblock %}

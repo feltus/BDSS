@@ -86,3 +86,13 @@ class TimingReportForm(wtforms.Form):
     transfer_duration_seconds = wtforms.FloatField(
         label="Transfer Duration (seconds)",
         validators=[wtforms.validators.InputRequired()])
+
+
+class TransferTestFileForm(wtforms.Form):
+    """
+    Form for adding test files to a data source.
+    """
+
+    url = wtforms.StringField(
+        label="URL",
+        validators=[wtforms.validators.InputRequired()])
