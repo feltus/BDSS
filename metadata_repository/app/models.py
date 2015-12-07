@@ -83,12 +83,6 @@ class Transform(BaseModel):
 
     __tablename__ = "url_transforms"
 
-    __table_args__ = {
-        # http://docs.sqlalchemy.org/en/rel_1_0/core/metadata.html#sqlalchemy.schema.Column.params.autoincrement
-        # http://docs.sqlalchemy.org/en/rel_1_0/dialects/sqlite.html#sqlite-autoincrement
-        "sqlite_autoincrement": True
-    }
-
     transform_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=True, nullable=False)
 
     from_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
@@ -112,3 +106,25 @@ class Transform(BaseModel):
 
     def transform_url(self, url):
         return transform_of_type(self.transform_type)(self.transform_options, url)
+
+
+class TimingReport(BaseModel):
+
+    __tablename__ = "timing_reports"
+
+    report_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=True, nullable=False)
+
+    data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
+
+    data_source = sa.orm.relationship("DataSource", backref="timing_reports", foreign_keys=[data_source_id])
+
+    url = sa.Column(sa.types.Text(), nullable=False)
+
+    file_size_bytes = sa.Column(sa.types.Integer(), nullable=False)
+
+    transfer_duration_seconds = sa.Column(sa.types.Float(), nullable=False)
+
+    created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return "<TimingReport (data_source=%d, url=%s, time=%f)>" % (self.data_source_id, self.url, self.transfer_duration_seconds)

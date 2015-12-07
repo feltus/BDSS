@@ -68,3 +68,21 @@ class TestUrlForm(wtforms.Form):
     test_url = wtforms.fields.StringField(
         label="URL",
         validators=[wtforms.validators.InputRequired(), wtforms.validators.URL(require_tld=False)])
+
+
+class TimingReportForm(wtforms.Form):
+    """
+    Form for reporting transfer times.
+    """
+
+    url = wtforms.StringField(
+        label="URL",
+        validators=[wtforms.validators.InputRequired()])
+
+    file_size_bytes = wtforms.IntegerField(
+        label="File Size (bytes)",
+        validators=[wtforms.validators.InputRequired()])
+
+    transfer_duration_seconds = wtforms.FloatField(
+        label="Transfer Duration (seconds)",
+        validators=[wtforms.validators.InputRequired()])

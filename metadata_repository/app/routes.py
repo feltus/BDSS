@@ -3,9 +3,9 @@ import traceback
 import wtforms
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
-from .core import transform_url
-from .forms import DataSourceForm, TestUrlForm, UrlMatcherForm, UrlTransformForm
-from .models import db_engine, db_session, DataSource, UrlMatcher, Transform
+from .core import matching_data_source, transform_url
+from .forms import DataSourceForm, TestUrlForm, TimingReportForm, UrlMatcherForm, UrlTransformForm
+from .models import db_engine, db_session, DataSource, UrlMatcher, TimingReport, Transform
 from .util import available_matcher_types, options_form_class_for_matcher_type
 from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
 from .util import available_transform_types, options_form_class_for_transform_type
@@ -568,3 +568,36 @@ def get_transformed_urls():
             flash(error_message, "danger")
 
     return render_template("get_transformed_urls.html.jinja", form=form, results=results)
+
+
+@routes.route("/report_transfer_timing", methods=["POST"])
+def report_transfer_timing():
+    """
+    Report timing of a transfer.
+    """
+    form = TimingReportForm(request.form)
+    error_message = None
+    if form.validate():
+        data_source = matching_data_source(form.url.data)
+        if data_source:
+            report = TimingReport()
+            form.populate_obj(report)
+            report.data_source_id = data_source.id
+            if db_engine.dialect.name == "sqlite":
+                report.report_id = len(data_source.timing_reports)
+            try:
+                db_session.add(report)
+                db_session.commit()
+            except:
+                db_session.rollback()
+                traceback.print_exc()
+                error_message = "Failed to save report"
+        else:
+            error_message = "No data sources matches URL"
+    else:
+        error_message = "Invalid report"
+
+    if error_message:
+        return jsonify(success=False, error=error_message)
+    else:
+        return jsonify(success=True, error=None)
