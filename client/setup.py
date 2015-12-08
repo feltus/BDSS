@@ -28,6 +28,6 @@ setup(name="bdss_client",
           "": ["*.cfg", "*.md", "*.rst", "*.txt"]
       },
       entry_points={
-          "console_scripts": ["bdss = client.cli:main"]
+          "console_scripts": ["bdss = client.__main__:main"]
       },
       zip_safe=False)
