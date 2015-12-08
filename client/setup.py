@@ -25,7 +25,7 @@ setup(name="bdss_client",
       install_requires=requirements,
       packages=find_packages(),
       package_data={
-          "": ["*.md", "*.rst", "*.txt"]
+          "": ["*.cfg", "*.md", "*.rst", "*.txt"]
       },
       entry_points={
           "console_scripts": ["bdss = client.cli:main"]

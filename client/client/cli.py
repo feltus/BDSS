@@ -1,5 +1,9 @@
 import argparse
+import configparser
+import os
 import sys
+from pkg_resources import resource_string
+
 
 def main():
     parser = argparse.ArgumentParser(description="BDSS client")
@@ -23,4 +27,8 @@ def main():
         parser.print_help(file=sys.stderr)
         sys.exit(1)
 
-    print(args.urls)
+    config = configparser.ConfigParser()
+    config.read_string(resource_string(__name__, "defaults.cfg").decode("utf-8"))
+    config.read([os.path.expanduser("~/.bdss.cfg"), "bdss.cfg"])
+
+    print(config.get("metadata_repository", "url"))
