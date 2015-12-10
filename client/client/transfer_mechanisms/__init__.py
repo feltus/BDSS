@@ -13,8 +13,11 @@ def default_mechanism(url):
     """
     Name of the default transfer mechanism for a URL.
     This is used if the metadata repository doesn't specify a mechanism.
+
+    Returns
+    Tuple of mechanism name and options.
     """
-    return "curl"
+    return ("curl", None)
 
 
 def transfer_mechanism_module(mechanism_name):

@@ -2,7 +2,30 @@ import argparse
 import configparser
 import os
 import sys
+import traceback
+from collections import namedtuple
 from pkg_resources import resource_string
+
+import requests
+
+from .transfer_mechanisms import default_mechanism, transfer_mechanism_module
+
+
+TransferSpec = namedtuple("TransferSpec", "url transfer_mechanism transfer_mechanism_options")
+
+
+def transfer_data_file(specs):
+    print(specs)
+    for s in specs:
+        transfer_module = transfer_mechanism_module(s.transfer_mechanism)
+        try:
+            print("Downloading %s..." % s.url)
+            print(transfer_module)
+            return True
+        except Exception:
+            traceback.print_exc()
+
+    return False
 
 
 def main():
@@ -31,4 +54,22 @@ def main():
     config.read_string(resource_string(__name__, "defaults.cfg").decode("utf-8"))
     config.read([os.path.expanduser("~/.bdss.cfg"), "bdss.cfg"])
 
-    print(config.get("metadata_repository", "url"))
+    metadata_repository_url = config.get("metadata_repository", "url").rstrip("/")
+
+    for url in args.urls:
+        try:
+            response = requests.post("%s/transformed_urls" % metadata_repository_url,
+                                     data={"test_url": url},
+                                     headers={"Accept": "application/json"}).json()
+
+            specs = [TransferSpec(r["transformed_url"],
+                                  r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
+                                  r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
+
+            if specs:
+                transfer_data_file(specs)
+            else:
+                transfer_data_file([TransferSpec(url, *default_mechanism(url))])
+        except Exception:
+            traceback.print_exc()
+            transfer_data_file([TransferSpec(url, *default_mechanism(url))])
