@@ -14,13 +14,12 @@ from .transfer_mechanisms import default_mechanism, transfer_mechanism_module
 TransferSpec = namedtuple("TransferSpec", "url transfer_mechanism transfer_mechanism_options")
 
 
-def transfer_data_file(specs):
+def transfer_data_file(specs, output_path):
     print(specs)
     for s in specs:
         transfer_module = transfer_mechanism_module(s.transfer_mechanism)
         try:
-            print("Downloading %s..." % s.url)
-            print(transfer_module)
+            transfer_module.transfer_data_file(s.url, output_path, s.transfer_mechanism_options)
             return True
         except Exception:
             traceback.print_exc()
@@ -57,6 +56,10 @@ def main():
     metadata_repository_url = config.get("metadata_repository", "url").rstrip("/")
 
     for url in args.urls:
+
+        output_path = url.partition("?")[0].rpartition("/")[2]
+        transfer_specs = None
+
         try:
             response = requests.post("%s/transformed_urls" % metadata_repository_url,
                                      data={"url": url},
@@ -65,14 +68,17 @@ def main():
             print(response.text)
             response = response.json()
 
-            specs = [TransferSpec(r["transformed_url"],
-                                  r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
-                                  r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
+            transfer_specs = [TransferSpec(r["transformed_url"],
+                              r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
+                              r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
 
-            if specs:
-                transfer_data_file(specs)
-            else:
-                transfer_data_file([TransferSpec(url, *default_mechanism(url))])
         except Exception:
             traceback.print_exc()
-            transfer_data_file([TransferSpec(url, *default_mechanism(url))])
+
+        if not transfer_specs:
+            transfer_specs = [TransferSpec(url, *default_mechanism(url))]
+
+        try:
+            transfer_data_file(transfer_specs, output_path)
+        except Exception:
+            traceback.print_exc()
