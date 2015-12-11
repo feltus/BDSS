@@ -750,15 +750,18 @@ def get_transformed_urls():
     form = UrlForm(request.form)
 
     results = None
-    if request.method == "POST" and form.validate():
+    if request.method == "POST":
         error_message = None
-        try:
-            results = transform_url(form.url.data)
-        except Exception as e:
-            error_message = e.message or "Unknown error"
+        if form.validate():
+            try:
+                results = transform_url(form.url.data)
+            except Exception as e:
+                error_message = e.message or "Unknown error"
+        else:
+            error_message = "Validation error"
 
         if request.headers.get("Accept") == "application/json":
-            return jsonify(results=results, error=error_message)
+            return jsonify(results=results, error={"message": error_message})
         elif error_message:
             flash(error_message, "danger")
 
@@ -793,6 +796,6 @@ def report_transfer_timing():
         error_message = "Invalid report"
 
     if error_message:
-        return jsonify(success=False, error=error_message)
+        return jsonify(success=False, error={"message": error_message})
     else:
         return jsonify(success=True, error=None)
