@@ -111,12 +111,12 @@ class UrlTransformForm(wtforms.Form):
         validators=[wtforms.validators.Optional()])
 
 
-class TestUrlForm(wtforms.Form):
+class UrlForm(wtforms.Form):
     """
-    Form for testing whether or not a URL matches data source(s).
+    Form for entering URLs to check matches with data source(s) or to get transformed URLs.
     """
 
-    test_url = wtforms.fields.StringField(
+    url = wtforms.fields.StringField(
         label="URL",
         validators=[wtforms.validators.InputRequired(), wtforms.validators.URL(require_tld=False)])
 

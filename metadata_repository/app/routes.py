@@ -7,7 +7,7 @@ from flask.ext.login import current_user, login_required, login_user, logout_use
 from passlib.context import CryptContext
 
 from .core import matching_data_source, transform_url
-from .forms import DataSourceForm, TestUrlForm, TimingReportForm, TransferTestFileForm, UrlMatcherForm, UrlTransformForm
+from .forms import DataSourceForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm
 from .forms import LoginForm, RegistrationForm
 from .models import db_engine, db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
 from .util import available_matcher_types, options_form_class_for_matcher_type
@@ -176,10 +176,10 @@ def test_data_source_url_match(source_id):
     Test whether or not a URL matches a data source.
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    form = TestUrlForm(request.form)
+    form = UrlForm(request.form)
 
     if request.method == "POST" and form.validate():
-        if data_source.matches_url(form.test_url.data):
+        if data_source.matches_url(form.url.data):
             flash("URL matches", "success")
         else:
             flash("URL does not match", "danger")
@@ -747,13 +747,13 @@ def get_transformed_urls():
     """
     Find transformed URLs for a URL.
     """
-    form = TestUrlForm(request.form)
+    form = UrlForm(request.form)
 
     results = None
     if request.method == "POST" and form.validate():
         error_message = None
         try:
-            results = transform_url(form.test_url.data)
+            results = transform_url(form.url.data)
         except Exception as e:
             error_message = e.message or "Unknown error"
 

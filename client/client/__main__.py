@@ -59,8 +59,11 @@ def main():
     for url in args.urls:
         try:
             response = requests.post("%s/transformed_urls" % metadata_repository_url,
-                                     data={"test_url": url},
-                                     headers={"Accept": "application/json"}).json()
+                                     data={"url": url},
+                                     headers={"Accept": "application/json"})
+
+            print(response.text)
+            response = response.json()
 
             specs = [TransferSpec(r["transformed_url"],
                                   r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
