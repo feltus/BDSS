@@ -118,7 +118,7 @@ class UrlForm(wtforms.Form):
 
     url = wtforms.fields.StringField(
         label="URL",
-        validators=[wtforms.validators.InputRequired(), wtforms.validators.URL(require_tld=False)])
+        validators=[wtforms.validators.InputRequired()])
 
 
 class TimingReportForm(wtforms.Form):
