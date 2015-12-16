@@ -768,7 +768,7 @@ def get_transformed_urls():
     return render_template("get_transformed_urls.html.jinja", form=form, results=results)
 
 
-@routes.route("/report_transfer_timing", methods=["POST"])
+@routes.route("/timing_reports", methods=["POST"])
 def report_transfer_timing():
     """
     Report timing of a transfer.
