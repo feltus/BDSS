@@ -5,16 +5,17 @@
 apt-get update
 
 # BDSS dependencies
-apt-get install --assume-yes python-dev libffi-dev
+apt-get install --assume-yes python3-dev libffi-dev
 
 # Install pip dependencies for BDSS
-apt-get install --assume-yes python3-pip
-pip3 install --requirement /vagrant/requirements.txt
+wget "https://bootstrap.pypa.io/get-pip.py"
+python3 ./get-pip.py
+pip install --requirement /vagrant/requirements.txt
 
 # MySQL database
 DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes mysql-server
 echo "CREATE DATABASE bdss" | mysql -u root
-pip3 install pymysql
+pip install pymysql
 
 # Install Apache and mod_wsgi
 apt-get install --assume-yes apache2 libapache2-mod-wsgi
