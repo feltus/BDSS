@@ -17,8 +17,15 @@ DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes mysql-server
 echo "CREATE DATABASE bdss" | mysql -u root
 pip install pymysql
 
-# Install Apache and mod_wsgi
-apt-get install --assume-yes apache2 libapache2-mod-wsgi
+# Install Apache
+apt-get install --assume-yes apache2 apache2-dev
+
+# Install mod_wsgi (apt-get repo version is outdated)
+pip install mod_wsgi
+/usr/local/bin/mod_wsgi-express install-module
+echo "LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi-py34.cpython-34m.so" > /etc/apache2/mods-available/wsgi_express.load
+echo "WSGIPythonHome /usr" > /etc/apache2/mods-available/wsgi_express.conf
+a2enmod wsgi_express
 
 # Remove default Apache configuration
 rm /etc/apache2/sites-enabled/000-default.conf
@@ -55,7 +62,7 @@ if [[ ! -e /vagrant/app/app_config.yml ]]; then
     cat > app/app_config.yml <<EOF
 database_url: mysql+pymysql://root:@localhost/bdss
 EOF
-    ./scripts/generate_flask_key
+    sh ./scripts/generate_flask_key
 fi
 
 # Create database schema
