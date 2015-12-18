@@ -103,9 +103,11 @@ class DataSource(BaseModel, TrackEditsMixin):
 
     __tablename__ = "data_sources"
 
-    id = sa.Column(sa.types.Integer(), primary_key=True, nullable=False)
+    id = sa.Column(sa.types.Integer(), autoincrement=True, primary_key=True, nullable=False)
 
-    label = sa.Column(sa.types.String(100), nullable=False)
+    label = sa.Column(sa.types.String(100), index=True, nullable=False, unique=True)
+
+    description = sa.Column(sa.types.Text())
 
     transfer_mechanism_type = sa.Column(sa.types.String(100), nullable=False)
 
@@ -125,7 +127,7 @@ class UrlMatcher(BaseModel, TrackEditsMixin):
 
     __tablename__ = "url_matchers"
 
-    matcher_id = sa.Column(sa.types.Integer(), primary_key=True, nullable=False)
+    matcher_id = sa.Column(sa.types.Integer(), autoincrement=False, primary_key=True, nullable=False)
 
     data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
@@ -148,7 +150,7 @@ class Transform(BaseModel, TrackEditsMixin):
 
     __tablename__ = "url_transforms"
 
-    transform_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=True, nullable=False)
+    transform_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=False, nullable=False)
 
     from_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
@@ -179,7 +181,7 @@ class TimingReport(BaseModel):
 
     __tablename__ = "timing_reports"
 
-    report_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=True, nullable=False)
+    report_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=False, nullable=False)
 
     data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
@@ -203,7 +205,7 @@ class TransferTestFile(BaseModel, TrackEditsMixin):
 
     __tablename__ = "transfer_test_files"
 
-    file_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=True, nullable=False)
+    file_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=False, nullable=False)
 
     data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 

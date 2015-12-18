@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from .core import matching_data_source, transform_url
 from .forms import DataSourceForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm
 from .forms import LoginForm, RegistrationForm
-from .models import db_engine, db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
+from .models import db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
 from .util import available_matcher_types, options_form_class_for_matcher_type
 from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
 from .util import available_transform_types, options_form_class_for_transform_type
@@ -320,15 +320,13 @@ def add_url_matcher(source_id):
         if form.validate():
             url_matcher = UrlMatcher(
                 data_source_id=data_source.id,
+                matcher_id=len(data_source.url_matchers) + 1,
                 matcher_type=form.matcher_type.data
             )
             if "matcher_options" in form._fields.keys() and form._fields["matcher_options"]:
                 url_matcher.matcher_options = form._fields["matcher_options"].data
             else:
                 url_matcher.matcher_options = {}
-
-            if db_engine.dialect.name == "sqlite":
-                url_matcher.matcher_id = len(data_source.url_matchers)
 
             try:
                 db_session.add(url_matcher)
@@ -494,6 +492,7 @@ def add_transform(source_id):
             transform = Transform(
                 from_data_source_id=data_source.id,
                 to_data_source_id=form.to_data_source_id.data,
+                transform_id=len(data_source.transforms) + 1,
                 transform_type=form.transform_type.data,
                 description=form.description.data
             )
@@ -501,9 +500,6 @@ def add_transform(source_id):
                 transform.transform_options = form._fields["transform_options"].data
             else:
                 transform.transform_options = {}
-
-            if db_engine.dialect.name == "sqlite":
-                transform.transform_id = len(data_source.transforms)
 
             try:
                 db_session.add(transform)
@@ -647,11 +643,10 @@ def add_test_file(source_id):
     form = TransferTestFileForm(request.form)
 
     if request.method == "POST" and form.validate():
-        test_file = TransferTestFile()
+        test_file = TransferTestFile(
+            data_source_id=data_source.id,
+            file_id=len(data_source.transfer_test_files) + 1)
         form.populate_obj(test_file)
-        test_file.data_source_id = data_source.id
-        if db_engine.dialect.name == "sqlite":
-            test_file.file_id = len(data_source.transfer_test_files)
 
         if data_source.matches_url(test_file.url):
             try:
@@ -778,11 +773,11 @@ def report_transfer_timing():
     if form.validate():
         data_source = matching_data_source(form.url.data)
         if data_source:
-            report = TimingReport()
+            report = TimingReport(
+                data_source_id=data_source.id,
+                report_id=len(data_source.timing_reports) + 1)
             form.populate_obj(report)
-            report.data_source_id = data_source.id
-            if db_engine.dialect.name == "sqlite":
-                report.report_id = len(data_source.timing_reports)
+
             try:
                 db_session.add(report)
                 db_session.commit()

@@ -1,6 +1,6 @@
 import wtforms
 
-from .models import db_session, User
+from .models import db_session, DataSource, User
 from .util import available_matcher_types, label_for_matcher_type
 from .util import available_transfer_mechanism_types, label_for_transfer_mechanism_type
 from .util import available_transform_types, label_for_transform_type
@@ -63,7 +63,11 @@ class DataSourceForm(wtforms.Form):
 
     label = wtforms.fields.StringField(
         label="Label",
-        validators=[wtforms.validators.InputRequired()])
+        validators=[wtforms.validators.InputRequired(), Unique(DataSource, "label")])
+
+    description = wtforms.fields.TextAreaField(
+        label="Description",
+        validators=[wtforms.validators.Optional()])
 
     transfer_mechanism_type = wtforms.fields.SelectField(
         label="Transfer Mechanism",

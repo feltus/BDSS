@@ -1,13 +1,13 @@
-"""new database schema
+"""schema
 
-Revision ID: 392943113a0
+Revision ID: 400d8616184
 Revises:
-Create Date: 2015-12-07 16:30:11.808067
+Create Date: 2015-12-18 13:45:44.828587
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '392943113a0'
+revision = '400d8616184'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -33,6 +33,7 @@ def upgrade():
     op.create_table('data_sources',
                     sa.Column('id', sa.Integer(), nullable=False),
                     sa.Column('label', sa.String(length=100), nullable=False),
+                    sa.Column('description', sa.Text(), nullable=True),
                     sa.Column('transfer_mechanism_type', sa.String(length=100), nullable=False),
                     sa.Column('transfer_mechanism_options', JSONEncodedDict(), nullable=False),
                     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -43,19 +44,21 @@ def upgrade():
                     sa.ForeignKeyConstraint(['last_updated_by_user_id'], ['users.user_id'], ),
                     sa.PrimaryKeyConstraint('id'))
 
+    op.create_index(op.f('ix_data_sources_label'), 'data_sources', ['label'], unique=True)
+
     op.create_table('timing_reports',
                     sa.Column('data_source_id', sa.Integer(), nullable=False),
-                    sa.Column('report_id', sa.Integer(), nullable=False),
+                    sa.Column('report_id', sa.Integer(), autoincrement=False, nullable=False),
                     sa.Column('url', sa.Text(), nullable=False),
                     sa.Column('file_size_bytes', sa.Integer(), nullable=False),
                     sa.Column('transfer_duration_seconds', sa.Float(), nullable=False),
                     sa.Column('created_at', sa.DateTime(), nullable=False),
                     sa.ForeignKeyConstraint(['data_source_id'], ['data_sources.id'], ),
-                    sa.PrimaryKeyConstraint('data_source_id', 'report_id'))
+                    sa.PrimaryKeyConstraint('report_id', 'data_source_id'))
 
     op.create_table('transfer_test_files',
                     sa.Column('data_source_id', sa.Integer(), nullable=False),
-                    sa.Column('file_id', sa.Integer(), nullable=False),
+                    sa.Column('file_id', sa.Integer(), autoincrement=False, nullable=False),
                     sa.Column('url', sa.Text(), nullable=False),
                     sa.Column('created_at', sa.DateTime(), nullable=False),
                     sa.Column('created_by_user_id', sa.Integer(), nullable=False),
@@ -64,11 +67,11 @@ def upgrade():
                     sa.ForeignKeyConstraint(['created_by_user_id'], ['users.user_id'], ),
                     sa.ForeignKeyConstraint(['data_source_id'], ['data_sources.id'], ),
                     sa.ForeignKeyConstraint(['last_updated_by_user_id'], ['users.user_id'], ),
-                    sa.PrimaryKeyConstraint('data_source_id', 'file_id'))
+                    sa.PrimaryKeyConstraint('file_id', 'data_source_id'))
 
     op.create_table('url_matchers',
                     sa.Column('data_source_id', sa.Integer(), nullable=False),
-                    sa.Column('matcher_id', sa.Integer(), nullable=False),
+                    sa.Column('matcher_id', sa.Integer(), autoincrement=False, nullable=False),
                     sa.Column('matcher_type', sa.String(length=100), nullable=False),
                     sa.Column('matcher_options', JSONEncodedDict(), nullable=False),
                     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -78,13 +81,13 @@ def upgrade():
                     sa.ForeignKeyConstraint(['created_by_user_id'], ['users.user_id'], ),
                     sa.ForeignKeyConstraint(['data_source_id'], ['data_sources.id'], ),
                     sa.ForeignKeyConstraint(['last_updated_by_user_id'], ['users.user_id'], ),
-                    sa.PrimaryKeyConstraint('data_source_id', 'matcher_id'))
+                    sa.PrimaryKeyConstraint('matcher_id', 'data_source_id'))
 
     op.create_table('url_transforms',
-                    sa.Column('transform_id', sa.Integer(), nullable=False),
-                    sa.Column('description', sa.Text(), nullable=True),
                     sa.Column('from_data_source_id', sa.Integer(), nullable=False),
+                    sa.Column('transform_id', sa.Integer(), autoincrement=False, nullable=False),
                     sa.Column('to_data_source_id', sa.Integer(), nullable=False),
+                    sa.Column('description', sa.Text(), nullable=True),
                     sa.Column('transform_type', sa.String(length=100), nullable=False),
                     sa.Column('transform_options', JSONEncodedDict(), nullable=False),
                     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -103,5 +106,6 @@ def downgrade():
     op.drop_table('url_matchers')
     op.drop_table('transfer_test_files')
     op.drop_table('timing_reports')
+    op.drop_index(op.f('ix_data_sources_label'), table_name='data_sources')
     op.drop_table('data_sources')
     op.drop_table('users')
