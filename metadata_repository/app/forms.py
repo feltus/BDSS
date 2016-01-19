@@ -8,12 +8,15 @@ from .util import available_transform_types, label_for_transform_type
 
 class Unique(object):
     """
-    Custom validator to enforce unique user emails in database.
+    Custom validator to enforce unique values in database.
     """
 
-    def __init__(self, model, field, scope={}, message=None):
+    def __init__(self, model, field, scope=None, message=None):
         self.model = model
         self.field = field
+
+        if not scope:
+            scope = {}
         self.scope = scope
 
         if not message:
