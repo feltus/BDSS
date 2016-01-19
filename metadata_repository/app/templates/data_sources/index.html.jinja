@@ -13,7 +13,7 @@
         {% endfor %}
     </ul>
 
-    {% if page_range %}
+    {% if total_num_pages > 1 %}
         <nav style="text-align:center;">
             <ul class="pagination">
                 {% if page_range[0] > 1 %}
