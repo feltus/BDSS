@@ -1,3 +1,4 @@
+import math
 import sys
 import traceback
 
@@ -102,8 +103,14 @@ def list_data_sources():
     """
     List all data sources in database.
     """
-    data_sources = DataSource.query.all()
-    return render_template("data_sources/index.html.jinja", data_sources=data_sources)
+    page_num = int(request.args.get("page", 1))
+    num_sources_per_page = 10
+    data_sources = DataSource.query.limit(num_sources_per_page).offset((page_num - 1) * num_sources_per_page).all()
+    total_num_sources = DataSource.query.count()
+    total_num_pages = math.ceil(total_num_sources / num_sources_per_page)
+    page_range = range(max(1, page_num - 3), min(total_num_pages, page_num + 3) + 1)
+    return render_template("data_sources/index.html.jinja", data_sources=data_sources, page_num=page_num,
+                           page_range=page_range, total_num_pages=total_num_pages)
 
 
 @routes.route("/data_sources/new", methods=["GET", "POST"])

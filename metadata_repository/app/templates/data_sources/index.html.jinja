@@ -12,6 +12,23 @@
             </li>
         {% endfor %}
     </ul>
+
+    {% if page_range %}
+        <nav style="text-align:center;">
+            <ul class="pagination">
+                {% if page_range[0] > 1 %}
+                    <li><a href="{{ url_for('routes.list_data_sources', page=(page_range[0] - 1)) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                {% endif %}
+                {% for p in page_range %}
+                    {% if p == page_num %}<li class="active">{% else %}<li>{% endif %}
+                    <a href="{{ url_for('routes.list_data_sources', page=p) }}">{{ p }}</a></li>
+                {% endfor %}
+                {% if page_range[-1] < total_num_pages %}
+                    <li><a href="{{ url_for('routes.list_data_sources', page=(page_range[-1] + 1)) }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 {% else %}
     <p>No data sources found.</p>
 {% endif %}
