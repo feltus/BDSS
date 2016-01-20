@@ -2,5 +2,4 @@
 
 SCRIPTS_DIR=$( cd $(dirname $0); pwd -P )
 
-flake8 --max-line-length=139 "${SCRIPTS_DIR}/../client"
-flake8 --max-line-length=139 "${SCRIPTS_DIR}/../metadata_repository"
+flake8 --max-line-length=139 "${SCRIPTS_DIR}/../client" "${SCRIPTS_DIR}/../metadata_repository"
