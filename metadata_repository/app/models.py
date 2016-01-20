@@ -195,6 +195,12 @@ class TimingReport(BaseModel):
 
     transfer_duration_seconds = sa.Column(sa.types.Float(), nullable=False)
 
+    file_checksum = sa.Column(sa.types.String(32), nullable=False)
+
+    mechanism_output = sa.Column(sa.types.Text())
+
+    is_success = sa.Column(sa.types.Boolean(), default=True, nullable=False)
+
     created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):

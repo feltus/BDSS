@@ -133,6 +133,10 @@ class TimingReportForm(wtforms.Form):
     Form for reporting transfer times.
     """
 
+    is_success = wtforms.BooleanField(
+        label="Successful Transfer",
+        validators=[wtforms.validators.InputRequired()])
+
     url = wtforms.StringField(
         label="URL",
         validators=[wtforms.validators.InputRequired()])
@@ -144,6 +148,14 @@ class TimingReportForm(wtforms.Form):
     transfer_duration_seconds = wtforms.FloatField(
         label="Transfer Duration (seconds)",
         validators=[wtforms.validators.InputRequired()])
+
+    file_checksum = wtforms.StringField(
+        label="MD5 Checksum",
+        validators=[wtforms.validators.InputRequired(), wtforms.validators.Regexp(r"[0-9A-Fa-f]{32}")])
+
+    mechanism_output = wtforms.fields.TextAreaField(
+        label="Mechanism Output",
+        validators=[wtforms.validators.Optional()])
 
 
 class TransferTestFileForm(wtforms.Form):

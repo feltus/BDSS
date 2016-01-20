@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import os
 import sys
 import time
@@ -13,7 +14,21 @@ from .transfer_mechanisms import default_mechanism, transfer_mechanism_module
 TransferSpec = namedtuple("TransferSpec", "url transfer_mechanism transfer_mechanism_options")
 
 
-def send_timing_report(data_file_url, file_size_bytes, transfer_duration_seconds):
+def file_md5sum(filename):
+    """
+    Calculate the MD5 hash of a file.
+
+    Parameters:
+    filename - String - The name of the file.
+    """
+    h = hashlib.md5()
+    with open(filename, "rb") as f:
+        for block in iter(lambda: f.read(65536), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def send_timing_report(success, data_file_url, file_size_bytes, transfer_duration_seconds, file_checksum, mechanism_output):
     """
     Send a timing report to the metadata repository.
 
@@ -21,12 +36,17 @@ def send_timing_report(data_file_url, file_size_bytes, transfer_duration_seconds
     data_file_url - String - The URL of the data file that was transferred.
     file_size_bytes - Integer - The size of the data file (in bytes).
     transfer_duration_seconds - Float - The time required to download the file (in seconds).
+    file_checksum - String - The MD5 checksum of the downloaded file.
+    mechanism_output - String - The output of the transfer mechanism used.
     """
     requests.post(metadata_repository_url + "/timing_reports",
                   data={
+                      "is_success": success,
                       "url": data_file_url,
                       "file_size_bytes": file_size_bytes,
-                      "transfer_duration_seconds": transfer_duration_seconds
+                      "transfer_duration_seconds": transfer_duration_seconds,
+                      "file_checksum": file_checksum,
+                      "mechanism_output": mechanism_output
                   })
 
 
@@ -42,14 +62,24 @@ def transfer_data_file(specs, output_path):
     for s in specs:
         transfer_module = transfer_mechanism_module(s.transfer_mechanism)
         start_time = time.time()
+
+        # This assumes transfer_data_file returns an object with a "stdout" member containing the output of
+        # the transfer mechanism. Or if it throws an exception, the exception has a "stdout" member.
+        # This is true if transfer_data_file returns the result of subprocess.run.
+        success = False
+        mechanism_output = ""
         try:
-            transfer_module.transfer_data_file(s.url, output_path, s.transfer_mechanism_options)
+            (success, mechanism_output) = transfer_module.transfer_data_file(s.url, output_path, s.transfer_mechanism_options)
+        except Exception as e:
+            print("Exception occurred in %s transfer mechanism", s.transfer_mechanism, file=sys.stderr)
+            traceback.print_exc()
+        finally:
             time_elapsed = time.time() - start_time
             file_size = os.stat(output_path).st_size
-            send_timing_report(s.url, file_size, time_elapsed)
-            return True
-        except Exception:
-            traceback.print_exc()
+            file_checksum = file_md5sum(output_path)
+            send_timing_report(success, s.url, file_size, time_elapsed, file_checksum, mechanism_output)
+            if success:
+                return True
 
     return False
 

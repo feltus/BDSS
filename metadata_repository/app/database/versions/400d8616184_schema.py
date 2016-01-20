@@ -52,6 +52,9 @@ def upgrade():
                     sa.Column('url', sa.Text(), nullable=False),
                     sa.Column('file_size_bytes', sa.Integer(), nullable=False),
                     sa.Column('transfer_duration_seconds', sa.Float(), nullable=False),
+                    sa.Column('file_checksum', sa.String(length=32), nullable=False),
+                    sa.Column('mechanism_output', sa.Text(), nullable=True),
+                    sa.Column('is_success', sa.Boolean(), nullable=False),
                     sa.Column('created_at', sa.DateTime(), nullable=False),
                     sa.ForeignKeyConstraint(['data_source_id'], ['data_sources.id'], ),
                     sa.PrimaryKeyConstraint('report_id', 'data_source_id'))
