@@ -70,7 +70,7 @@ def transfer_data_file(specs, output_path):
         mechanism_output = ""
         try:
             (success, mechanism_output) = transfer_module.transfer_data_file(s.url, output_path, s.transfer_mechanism_options)
-        except Exception as e:
+        except Exception:
             print("Exception occurred in %s transfer mechanism", s.transfer_mechanism, file=sys.stderr)
             traceback.print_exc()
         finally:

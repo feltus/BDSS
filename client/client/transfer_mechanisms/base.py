@@ -8,6 +8,7 @@ def transfer_data_file_with_subprocess(subprocess_args):
                                stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
 
     output = ""
+
     def select_callback(stream, mask):
         nonlocal output
         line = stream.readline()
