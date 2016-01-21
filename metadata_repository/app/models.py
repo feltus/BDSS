@@ -1,4 +1,6 @@
 import datetime
+import math
+import statistics
 
 import sqlalchemy as sa
 from flask.ext.jsontools.formatting import get_entity_loaded_propnames
@@ -113,6 +115,14 @@ class DataSource(BaseModel, TrackEditsMixin):
 
     transfer_mechanism_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
 
+    @property
+    def mean_successful_transfer_rate(self):
+        return statistics.mean([r.transfer_rate for r in self.timing_reports if r.is_success])
+
+    @property
+    def stdev_successful_transfer_rates(self):
+        return statistics.stdev([r.transfer_rate for r in self.timing_reports if r.is_success])
+
     def __repr__(self):
         return "<DataSource (id=%s, label=%s)>" % (self.id, self.label)
 
@@ -194,6 +204,16 @@ class TimingReport(BaseModel):
     file_size_bytes = sa.Column(sa.types.Integer(), nullable=False)
 
     transfer_duration_seconds = sa.Column(sa.types.Float(), nullable=False)
+
+    @property
+    def transfer_rate(self):
+        return self.file_size_bytes / self.transfer_duration_seconds
+
+    @property
+    def is_transfer_rate_outlier(self):
+        avg = self.data_source.mean_successful_transfer_rate
+        stdev = self.data_source.stdev_successful_transfer_rates
+        return math.fabs(self.transfer_rate - avg) > 3 * stdev
 
     file_checksum = sa.Column(sa.types.String(32), nullable=False)
 

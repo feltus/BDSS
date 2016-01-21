@@ -756,6 +756,14 @@ def list_timing_reports(source_id):
     return render_template("timing_reports/index.html.jinja", data_source=data_source, reports=reports)
 
 
+@routes.route("/data_sources/<source_id>/timing_reports/graph")
+@login_required
+def timing_reports_graph(source_id):
+    reports = TimingReport.query.filter((TimingReport.data_source_id == source_id) & (TimingReport.is_success == True)).all()  # noqa
+    graph_data = [[r.created_at.timestamp(), r.transfer_rate] for r in reports]
+    return jsonify(points=graph_data)
+
+
 @routes.route("/data_sources/<source_id>/timing_reports/<report_id>")
 @login_required
 def show_timing_report(source_id, report_id):
