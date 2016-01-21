@@ -9,6 +9,14 @@ app = Flask(__name__)
 app.secret_key = app_config["secret_key"]
 
 
+@app.template_filter("format_number")
+def format_number(value):
+    if isinstance(value, int):
+        return "{:,d}".format(value)
+    else:
+        return "{:,.3f}".format(value)
+
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     """

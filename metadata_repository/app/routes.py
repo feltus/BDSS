@@ -775,6 +775,28 @@ def show_timing_report(source_id, report_id):
     return render_template("timing_reports/show.html.jinja", data_source=report.data_source, report=report)
 
 
+@routes.route("/data_sources/<source_id>/timing_reports/<report_id>/delete", methods=["GET", "POST"])
+@login_required
+def delete_timing_report(source_id, report_id):
+    """
+    Delete a timing report. Prompt for confirmation first.
+    """
+    report = TimingReport.query.filter((DataSource.id == source_id) & (TimingReport.report_id == report_id)).first()
+
+    if request.method == "POST":
+        try:
+            db_session.delete(report)
+            db_session.commit()
+            flash("Timing report deleted", "success")
+            return redirect(url_for("routes.list_timing_reports", source_id=report.data_source_id))
+        except:
+            db_session.rollback()
+            flash("Failed to delete timing report", "danger")
+            traceback.print_exc()
+
+    return render_template("timing_reports/delete.html.jinja", report=report)
+
+
 ######################################################################################################
 #
 # Other

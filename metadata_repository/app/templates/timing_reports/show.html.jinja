@@ -16,7 +16,7 @@
 {%- endif -%}
 <p>
 
-<p>Transferred {{ report.file_size_bytes }} bytes in {{ report.transfer_duration_seconds|round(3) }} seconds. {{ report.transfer_rate|round(3) }} bytes/second</p>
+<p>Transferred {{ report.file_size_bytes|format_number }} bytes in {{ report.transfer_duration_seconds|format_number }} seconds. {{ report.transfer_rate|format_number }} bytes/second</p>
 
 {% if report.is_transfer_rate_outlier %}
 <div class="alert alert-warning">This report is an outlier, greater than 3 standard deviations from the average transfer rate for this data source.</div>
@@ -24,6 +24,8 @@
 
 <strong>Output</strong>
 <pre>{{ report.mechanism_output }}</pre>
+
+<p><a href="{{ url_for('routes.delete_timing_report', source_id=report.data_source_id, report_id=report.report_id) }}">Delete this timing report</a></p>
 
 <hr>
 
