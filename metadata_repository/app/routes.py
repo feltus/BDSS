@@ -739,6 +739,36 @@ def delete_test_file(source_id, file_id):
 
 ######################################################################################################
 #
+# Timing reports
+#
+######################################################################################################
+
+
+@routes.route("/data_sources/<source_id>/timing_reports")
+@login_required
+def list_timing_reports(source_id):
+    """
+    Show timing reports for transfers from a data source.
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    reports = TimingReport.query.filter(TimingReport.data_source_id == source_id).order_by(TimingReport.created_at.desc()).all()
+
+    return render_template("timing_reports/index.html.jinja", data_source=data_source, reports=reports)
+
+
+@routes.route("/data_sources/<source_id>/timing_reports/<report_id>")
+@login_required
+def show_timing_report(source_id, report_id):
+    """
+    Show information about a specific timing report.
+    """
+    report = TimingReport.query.filter((DataSource.id == source_id) & (TimingReport.report_id == report_id)).first()
+
+    return render_template("timing_reports/show.html.jinja", data_source=report.data_source, report=report)
+
+
+######################################################################################################
+#
 # Other
 #
 ######################################################################################################

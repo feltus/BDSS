@@ -1,0 +1,28 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}{{ data_source.label }} - Timing Report{% endblock %}
+
+{% block content %}
+
+<p><strong>URL:</strong> {{ report.url }}</p>
+
+<p><strong>Transferred At:</strong> {{ report.created_at }}</p>
+
+<p style="font-size:22px;">
+{%- if report.is_success -%}
+<span class="label label-success">Successful</span>
+{%- else -%}
+<span class="label label-danger">Failed</span>
+{%- endif -%}
+<p>
+
+<p>Transferred {{ report.file_size_bytes }} bytes in {{ report.transfer_duration_seconds|round(3) }} seconds.</p>
+
+<strong>Output</strong>
+<pre>{{ report.mechanism_output }}</pre>
+
+<hr>
+
+<p style="margin-top:20px;"><a href="{{ url_for('routes.list_timing_reports', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ data_source.label }}</a></p>
+
+{% endblock %}

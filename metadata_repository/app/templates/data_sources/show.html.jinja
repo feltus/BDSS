@@ -62,6 +62,12 @@
 
 <hr>
 
+<h4>Timing Reports</h4>
+
+<p><a href="{{ url_for('routes.list_timing_reports', source_id=data_source.id) }}">View timing reports</a></p>
+
+<hr>
+
 <p style="margin-top:20px;"><a href="{{ url_for('routes.list_data_sources') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Data Sources</a></p>
 
 {% endblock %}

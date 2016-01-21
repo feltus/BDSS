@@ -1,0 +1,21 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}{{ data_source.label }} - Timing Reports{% endblock %}
+
+{% block content %}
+
+{% if reports|length > 0 %}
+    <ul>
+        {% for report in reports %}
+            <li>
+                <a href="{{ url_for('routes.show_timing_report', source_id=data_source.id, report_id=report.report_id) }}">{{ report.created_at }} - {{ report.url }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No timing reports found.</p>
+{% endif %}
+
+<p style="margin-top:20px;"><a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ data_source.label }}</a></p>
+
+{% endblock %}
