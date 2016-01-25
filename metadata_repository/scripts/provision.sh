@@ -12,10 +12,39 @@ wget "https://bootstrap.pypa.io/get-pip.py"
 python3 ./get-pip.py
 pip install --requirement /vagrant/requirements.txt
 
-# MySQL database
-DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes mysql-server
-echo "CREATE DATABASE bdss" | mysql -u root
-pip install pymysql
+# PostgreSQL
+apt-get install --assume-yes postgresql postgresql-contrib
+
+PG_VERSION=$(psql --version | awk '{ print $3 }' | awk 'BEGIN { FS="." } ; { print $1"."$2 }')
+PG_CONF="/etc/postgresql/$PG_VERSION/main/postgresql.conf"
+PG_HBA="/etc/postgresql/$PG_VERSION/main/pg_hba.conf"
+
+# Enable password authentication for bdss database user
+sed -i '/local   all             postgres                                peer/i \
+local   bdss            bdss                                    md5' "$PG_HBA"
+
+echo "client_encoding = utf8" >> "$PG_CONF"
+
+service postgresql restart
+
+# Create database and user
+DB_NAME=bdss
+DB_USER=bdss
+DB_PASS=bdss
+
+cat << EOF | su - postgres -c psql
+-- Create the database user:
+CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';
+
+-- Create the database:
+CREATE DATABASE $DB_NAME WITH OWNER=$DB_USER
+                                 LC_COLLATE='en_US.utf8'
+                                 LC_CTYPE='en_US.utf8'
+                                 ENCODING='UTF8'
+                                 TEMPLATE=template0;
+EOF
+
+pip install psycopg2
 
 # Install Apache
 apt-get install --assume-yes apache2 apache2-dev
@@ -60,7 +89,7 @@ ln --symbolic /etc/apache2/sites-available/bdss.conf /etc/apache2/sites-enabled/
 if [[ ! -e /vagrant/app/app_config.yml ]]; then
     cd /vagrant
     cat > app/app_config.yml <<EOF
-database_url: mysql+pymysql://root:@localhost/bdss
+database_url: postgresql+psycopg2://bdss:bdss@localhost/bdss
 EOF
     sh ./scripts/generate_flask_key
 fi
