@@ -15,8 +15,10 @@
     </ul>
 {% endif %}
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.edit_url_matcher', source_id=data_source.id, matcher_id=url_matcher.matcher_id) }}">Edit this matcher</a></p>
 <p><a href="{{ url_for('routes.delete_url_matcher', source_id=data_source.id, matcher_id=url_matcher.matcher_id) }}">Delete this matcher</a></p>
+{% endif %}
 
 <p style="margin-top:20px;"><a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ data_source.label }} Data Source</a></p>
 

@@ -25,7 +25,9 @@
 <strong>Output</strong>
 <pre>{{ report.mechanism_output }}</pre>
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.delete_timing_report', source_id=report.data_source_id, report_id=report.report_id) }}">Delete this timing report</a></p>
+{% endif %}
 
 <hr>
 

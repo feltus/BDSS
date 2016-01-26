@@ -15,8 +15,10 @@
     </ul>
 {% endif %}
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.edit_transform', source_id=from_data_source.id, transform_id=transform.transform_id) }}">Edit this transform</a></p>
 <p><a href="{{ url_for('routes.delete_transform', source_id=from_data_source.id, transform_id=transform.transform_id) }}">Delete this transform</a></p>
+{% endif %}
 
 <p style="margin-top:20px;"><a href="{{ url_for('routes.show_data_source', source_id=from_data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ from_data_source.label }} Data Source</a></p>
 

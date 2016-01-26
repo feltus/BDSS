@@ -6,8 +6,10 @@
 
 <p><strong>File URL:</strong> <a href="{{ test_file.url }}">{{ test_file.url }}</a></p>
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.edit_test_file', source_id=test_file.data_source_id, file_id=test_file.file_id) }}">Edit this test file</a></p>
 <p><a href="{{ url_for('routes.delete_test_file', source_id=test_file.data_source_id, file_id=test_file.file_id) }}">Delete this test file</a></p>
+{% endif %}
 
 <p style="margin-top:20px;"><a href="{{ url_for('routes.show_data_source', source_id=test_file.data_source_id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ test_file.data_source.label }} Data Source</a></p>
 

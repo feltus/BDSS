@@ -15,8 +15,10 @@
     </ul>
 {% endif %}
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.edit_data_source', source_id=data_source.id) }}">Edit this data source</a></p>
 <p><a href="{{ url_for('routes.delete_data_source', source_id=data_source.id) }}">Delete this data source</a></p>
+{% endif %}
 
 <h4>URL Matchers</h4>
 
@@ -28,7 +30,9 @@
     {% endfor %}
 </ul>
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.add_url_matcher', source_id=data_source.id) }}">Add URL matcher</a></p>
+{% endif %}
 
 <p><a href="{{ url_for('routes.test_data_source_url_match', source_id=data_source.id) }}">Test a URL</a></p>
 
@@ -44,7 +48,9 @@
     {% endfor %}
 </ul>
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.add_transform', source_id=data_source.id) }}">Add URL transform</a></p>
+{% endif %}
 
 <hr>
 
@@ -58,7 +64,9 @@
     {% endfor %}
 </ul>
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.add_test_file', source_id=data_source.id) }}">Add test file</a></p>
+{% endif %}
 
 <hr>
 

@@ -33,7 +33,9 @@
     <p>No data sources found.</p>
 {% endif %}
 
+{% if current_user.is_admin %}
 <p><a href="{{ url_for('routes.create_data_source') }}">Add New Data Source</a></p>
+{% endif %}
 <p><a href="{{ url_for('routes.get_transformed_urls') }}">Find Alternate Data Sources</a></p>
 
 {% endblock %}

@@ -1,10 +1,11 @@
 import math
 import sys
 import traceback
+from functools import wraps
 
 import wtforms
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
-from flask.ext.login import current_user, login_required, login_user, logout_user
+from flask.ext.login import current_app, current_user, login_required, login_user, logout_user
 from passlib.context import CryptContext
 
 from .core import matching_data_source, transform_url
@@ -15,7 +16,15 @@ from .util import available_matcher_types, options_form_class_for_matcher_type
 from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
 from .util import available_transform_types, options_form_class_for_transform_type
 
+
 routes = Blueprint("routes", __name__)
+
+
+######################################################################################################
+#
+# Misc routes
+#
+######################################################################################################
 
 
 @routes.route("/")
@@ -26,7 +35,7 @@ def index():
 
 ######################################################################################################
 #
-# User accounts
+# Authentication/authorization
 #
 ######################################################################################################
 
@@ -90,6 +99,28 @@ def logout():
     return redirect(url_for("routes.login"))
 
 
+@routes.route("/access_denied")
+@login_required
+def admin_permission_required():
+    return render_template("admin_permission_required.html.jinja")
+
+
+def admin_required(func):
+    """
+    Decorator to require admin rights to access a route
+    """
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if request.method in set(["OPTIONS"]):
+            return func(*args, **kwargs)
+        elif current_app.login_manager._login_disabled:
+            return func(*args, **kwargs)
+        elif not current_user.is_admin:
+            return redirect(url_for("routes.admin_permission_required"))
+        return func(*args, **kwargs)
+    return decorated_view
+
+
 ######################################################################################################
 #
 # Data sources
@@ -115,6 +146,7 @@ def list_data_sources():
 
 @routes.route("/data_sources/new", methods=["GET", "POST"])
 @login_required
+@admin_required
 def create_data_source():
     """
     Add a new data source to the database.
@@ -196,6 +228,7 @@ def test_data_source_url_match(source_id):
 
 @routes.route("/data_sources/<source_id>/edit", methods=["GET", "POST"])
 @login_required
+@admin_required
 def edit_data_source(source_id):
     """
     For GET requests, show form for editing a data source.
@@ -249,6 +282,7 @@ def edit_data_source(source_id):
 
 @routes.route("/data_sources/<source_id>/delete", methods=["GET", "POST"])
 @login_required
+@admin_required
 def delete_data_source(source_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
 
@@ -268,6 +302,7 @@ def delete_data_source(source_id):
 
 @routes.route("/data_sources/transfer_mechanism_options_form")
 @login_required
+@admin_required
 def show_transfer_mechanism_options_form():
     """
     Show options form for a specific transfer mechanism type.
@@ -295,6 +330,7 @@ def show_transfer_mechanism_options_form():
 
 @routes.route("/data_sources/<source_id>/matchers/new", methods=["GET", "POST"])
 @login_required
+@admin_required
 def add_url_matcher(source_id):
     """
     Add a new URL matcher to a data source
@@ -362,6 +398,7 @@ def show_url_matcher(source_id, matcher_id):
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>/edit", methods=["GET", "POST"])
 @login_required
+@admin_required
 def edit_url_matcher(source_id, matcher_id):
     """
     Edit a matcher
@@ -413,6 +450,7 @@ def edit_url_matcher(source_id, matcher_id):
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>/delete", methods=["GET", "POST"])
 @login_required
+@admin_required
 def delete_url_matcher(source_id, matcher_id):
     """
     Delete a URL matcher. Prompt for confirmation first.
@@ -436,6 +474,7 @@ def delete_url_matcher(source_id, matcher_id):
 
 @routes.route("/data_sources/matcher_options_form")
 @login_required
+@admin_required
 def show_matcher_options_form():
     """
     Show options form for a specific matcher type.
@@ -464,6 +503,7 @@ def show_matcher_options_form():
 
 @routes.route("/data_sources/<source_id>/transforms/new", methods=["GET", "POST"])
 @login_required
+@admin_required
 def add_transform(source_id):
     """
     Add a new URL transform to a data source
@@ -535,6 +575,7 @@ def show_transform(source_id, transform_id):
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/edit", methods=["GET", "POST"])
 @login_required
+@admin_required
 def edit_transform(source_id, transform_id):
     """
     Edit a transform
@@ -591,6 +632,7 @@ def edit_transform(source_id, transform_id):
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/delete", methods=["GET", "POST"])
 @login_required
+@admin_required
 def delete_transform(source_id, transform_id):
     """
     Delete a URL transform. Prompt for confirmation first.
@@ -614,6 +656,7 @@ def delete_transform(source_id, transform_id):
 
 @routes.route("/data_sources/transform_options_form")
 @login_required
+@admin_required
 def show_transform_options_form():
     """
     Show options form for a specific transform type.
@@ -655,6 +698,7 @@ def list_test_files(source_id):
 
 @routes.route("/data_sources/<source_id>/test_files/new", methods=["GET", "POST"])
 @login_required
+@admin_required
 def add_test_file(source_id):
     """
     Add a new test file to a data source
@@ -699,6 +743,7 @@ def show_test_file(source_id, file_id):
 
 @routes.route("/data_sources/<source_id>/test_files/<file_id>/edit", methods=["GET", "POST"])
 @login_required
+@admin_required
 def edit_test_file(source_id, file_id):
     """
     Edit a test file
@@ -729,6 +774,7 @@ def edit_test_file(source_id, file_id):
 
 @routes.route("/data_sources/<source_id>/test_files/<file_id>/delete", methods=["GET", "POST"])
 @login_required
+@admin_required
 def delete_test_file(source_id, file_id):
     """
     Delete a test file. Prompt for confirmation first.
@@ -790,6 +836,7 @@ def show_timing_report(source_id, report_id):
 
 @routes.route("/data_sources/<source_id>/timing_reports/<report_id>/delete", methods=["GET", "POST"])
 @login_required
+@admin_required
 def delete_timing_report(source_id, report_id):
     """
     Delete a timing report. Prompt for confirmation first.
