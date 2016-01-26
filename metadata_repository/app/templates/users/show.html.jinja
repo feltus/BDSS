@@ -1,0 +1,17 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}{{ user.name }}{% endblock %}
+
+{% block content %}
+
+<a href="mailto:{{ user.email }}">{{ user.email }}</a>
+
+<br>
+
+<a href="{{ url_for('routes.edit_user_permissions', user_id=user.user_id) }}">{%- if not user.is_admin -%}Grant{%- else -%}Revoke{%- endif %} Admin Permissions</a>
+
+<hr>
+
+<p style="margin-top:20px;"><a href="{{ url_for('routes.list_users') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Users</a></p>
+
+{% endblock %}

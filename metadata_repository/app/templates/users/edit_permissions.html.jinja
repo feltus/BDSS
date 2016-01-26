@@ -1,0 +1,23 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}Edit Permissions for {{ user.name }}{% endblock %}
+
+{% block content %}
+
+{%- if user.user_id == current_user.user_id -%}
+    <div class="alert alert-warning">You cannot edit your own permissions</div>
+{%- else -%}
+    <form action="{{ url_for('routes.edit_user_permissions', user_id=user.user_id) }}" method="POST">
+        {%- if not user.is_admin -%}
+            <button type="submit" class="btn btn-primary">Grant Admin Permissions</button>
+        {%- else -%}
+            <button type="submit" class="btn btn-danger">Revoke Admin Permissions</button>
+        {%- endif -%}
+    </form>
+{%- endif -%}
+
+<hr>
+
+<p style="margin-top:20px;"><a href="{{ url_for('routes.list_users') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Users</a></p>
+
+{% endblock %}
