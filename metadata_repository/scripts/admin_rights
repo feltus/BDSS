@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import traceback
+
+def print_usage():
+    print("Usage: admin_rights grant|revoke user_id [user_id ...]", file=sys.stderr)
+
+if len(sys.argv) < 3:
+    print_usage()
+    sys.exit(1)
+
+if sys.argv[1] not in ["grant", "revoke"]:
+    print_usage()
+    sys.exit(1)
+
+for arg in sys.argv[2:]:
+    if not arg.isdigit():
+        print_usage()
+        sys.exit(1)
+
+project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, project_dir)
+
+from app.models import db_session, User
+
+action = sys.argv[1]
+user_ids = [int(arg) for arg in sys.argv[2:]]
+
+users = User.query.filter(User.user_id.in_(user_ids)).all()
+if action == "grant":
+    for u in users:
+        u.is_admin = True
+else:
+    for u in users:
+        u.is_admin = False
+
+try:
+    db_session.commit()
+except:
+    traceback.print_exc()
+    print("Failed to save changes to database", file=sys.stderr)
