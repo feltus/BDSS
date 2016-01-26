@@ -640,6 +640,19 @@ def show_transform_options_form():
 ######################################################################################################
 
 
+@routes.route("/data_sources/<source_id>/test_files")
+def list_test_files(source_id):
+    """
+    List test files for a particular data source
+    """
+    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+
+    if request.headers.get("Accept") == "application/json":
+        return jsonify(test_files=data_source.transfer_test_files)
+    else:
+        return redirect(url_for("routes.show_data_source", source_id=source_id))
+
+
 @routes.route("/data_sources/<source_id>/test_files/new", methods=["GET", "POST"])
 @login_required
 def add_test_file(source_id):
