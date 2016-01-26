@@ -868,9 +868,16 @@ def list_timing_reports(source_id):
     Show timing reports for transfers from a data source.
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    reports = TimingReport.query.filter(TimingReport.data_source_id == source_id).order_by(TimingReport.created_at.desc()).all()
 
-    return render_template("timing_reports/index.html.jinja", data_source=data_source, reports=reports)
+    page_num = int(request.args.get("page", 1))
+    num_reports_per_page = 25
+    reports = TimingReport.query.filter(TimingReport.data_source_id == source_id).order_by(TimingReport.created_at.desc()) \
+        .limit(num_reports_per_page).offset((page_num - 1) * num_reports_per_page).all()
+    total_num_reports = TimingReport.query.filter(TimingReport.data_source_id == source_id).count()
+    total_num_pages = math.ceil(total_num_reports / num_reports_per_page)
+    page_range = range(max(1, page_num - 3), min(total_num_pages, page_num + 3) + 1)
+    return render_template("timing_reports/index.html.jinja", data_source=data_source, reports=reports,
+                           page_num=page_num, page_range=page_range, total_num_pages=total_num_pages)
 
 
 @routes.route("/data_sources/<source_id>/timing_reports/graph")

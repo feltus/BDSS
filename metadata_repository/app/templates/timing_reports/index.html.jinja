@@ -37,6 +37,23 @@ svg {
             </li>
         {% endfor %}
     </ul>
+
+    {% if total_num_pages > 1 %}
+        <nav style="text-align:center;">
+            <ul class="pagination">
+                {% if page_range[0] > 1 %}
+                    <li><a href="{{ url_for('routes.list_timing_reports', source_id=data_source.id, page=(page_range[0] - 1)) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                {% endif %}
+                {% for p in page_range %}
+                    {% if p == page_num %}<li class="active">{% else %}<li>{% endif %}
+                    <a href="{{ url_for('routes.list_timing_reports', source_id=data_source.id, page=p) }}">{{ p }}</a></li>
+                {% endfor %}
+                {% if page_range[-1] < total_num_pages %}
+                    <li><a href="{{ url_for('routes.list_timing_reports', source_id=data_source.id, page=(page_range[-1] + 1)) }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 {% else %}
     <p>No timing reports found.</p>
 {% endif %}
