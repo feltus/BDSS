@@ -9,7 +9,16 @@
         {{ macros.render_field(form.email, placeholder='Input email', type='email') }}
 #}
 {% macro render_field(field, label_visible=true) -%}
+    {% if field.type == "BooleanField" %}
+        {{ render_checkbox_field(field) }}
+    {% elif field.type == "RadioField" %}
+        {{ render_radio_field(field) }}
+    {% else %}
+        {{ render_default_field(field, label_visible) }}
+    {% endif %}
+{% endmacro %}
 
+{% macro render_default_field(field, label_visible) -%}
     {% if (field.type == "FormField") %}
         <fieldset id={{ field.id }} style="margin-bottom:15px;">
             <legend>{{ field.label }}</legend>
@@ -52,8 +61,8 @@
  #}
 {% macro render_checkbox_field(field) -%}
     <div class="checkbox">
-        <label>
-            {{ field(type="checkbox", **kwargs) }} {{ field.label }}
+        <label for="{{ field.id }}">
+            {{ field(type="checkbox", **kwargs) }} {{ field.label.text }}
         </label>
     </div>
 {%- endmacro %}
@@ -101,13 +110,7 @@
             {{ caller() }}
         {% else %}
             {% for f in form %}
-                {% if f.type == "BooleanField" %}
-                    {{ render_checkbox_field(f) }}
-                {% elif f.type == "RadioField" %}
-                    {{ render_radio_field(f) }}
-                {% else %}
-                    {{ render_field(f) }}
-                {% endif %}
+                {{ render_field(f) }}
             {% endfor %}
         {% endif %}
         <input type="submit" class="{{ btn_class }}" value="{{ action_text }}">
