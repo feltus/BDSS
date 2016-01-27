@@ -106,16 +106,16 @@ class UrlTransformForm(wtforms.Form):
         coerce=int,
         validators=[wtforms.validators.InputRequired()])
 
+    description = wtforms.fields.TextAreaField(
+        label="Description",
+        validators=[wtforms.validators.Optional()])
+
     transform_type = wtforms.fields.SelectField(
         label="Transform Type",
         choices=[(t, label_for_transform_type(t)) for t in available_transform_types()],
         validators=[wtforms.validators.InputRequired()])
 
     transform_options = None
-
-    description = wtforms.fields.TextAreaField(
-        label="Description",
-        validators=[wtforms.validators.Optional()])
 
 
 class UrlForm(wtforms.Form):
