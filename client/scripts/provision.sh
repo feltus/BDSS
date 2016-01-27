@@ -4,6 +4,10 @@ set -e
 
 apt-get update
 
+# Install pip
+wget "https://bootstrap.pypa.io/get-pip.py"
+python3 ./get-pip.py
+
 # Download and verify Aspera Connect
 # http://downloads.asperasoft.com/en/downloads/8?list
 wget "http://download.asperasoft.com/download/sw/connect/3.6.1/aspera-connect-3.6.1.110647-linux-64.tar.gz"
