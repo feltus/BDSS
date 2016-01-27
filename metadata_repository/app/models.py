@@ -165,7 +165,8 @@ class Transform(BaseModel, TrackEditsMixin):
     from_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
     from_data_source = sa.orm.relationship("DataSource",
-                                           backref=backref("transforms", cascade="all, delete-orphan"),
+                                           backref=backref("transforms", cascade="all, delete-orphan",
+                                                           order_by="Transform.preference_order"),
                                            foreign_keys=[from_data_source_id])
 
     to_data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), nullable=False)
@@ -173,6 +174,8 @@ class Transform(BaseModel, TrackEditsMixin):
     to_data_source = sa.orm.relationship("DataSource",
                                          backref=backref("targeting_transforms", cascade="all, delete-orphan"),
                                          foreign_keys=[to_data_source_id])
+
+    preference_order = sa.Column(sa.types.Integer(), nullable=False)
 
     transform_type = sa.Column(sa.types.String(100), nullable=False)
 

@@ -90,6 +90,7 @@ def upgrade():
                     sa.Column('from_data_source_id', sa.Integer(), nullable=False),
                     sa.Column('transform_id', sa.Integer(), autoincrement=False, nullable=False),
                     sa.Column('to_data_source_id', sa.Integer(), nullable=False),
+                    sa.Column('preference_order', sa.Integer(), nullable=False),
                     sa.Column('description', sa.Text(), nullable=True),
                     sa.Column('transform_type', sa.String(length=100), nullable=False),
                     sa.Column('transform_options', JSONEncodedDict(), nullable=False),

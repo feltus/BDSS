@@ -39,10 +39,27 @@
 <hr>
 
 <h4>Transforms</h4>
+<p>Listed in order of preference</p>
 
-<ul>
+<ul class="striped">
     {% for transform in data_source.transforms %}
-        <li><a href="{{ url_for('routes.show_transform', source_id=data_source.id, transform_id=transform.transform_id) }}">{{ transform.transform_type }}</a></li>
+        <li>
+            <a href="{{ url_for('routes.show_transform', source_id=data_source.id, transform_id=transform.transform_id) }}">{{ transform.transform_type }}</a>
+            {%- if current_user.is_admin -%}
+                <span class="pull-right">
+                    <span style="display:inline-block;width:16px;">
+                        {%- if not loop.first -%}
+                            <a href="{{ url_for('routes.edit_transform_order', source_id=data_source.id, transform_id=transform.transform_id, direction='up') }}">&#8679;</a>
+                        {%- endif -%}
+                    </span>
+                    <span style="display:inline-block;width:16px;">
+                        {%- if not loop.last -%}
+                            <a href="{{ url_for('routes.edit_transform_order', source_id=data_source.id, transform_id=transform.transform_id, direction='down') }}">&#8681;</a>
+                        {%- endif -%}
+                    </span>
+                </span>
+            {%- endif -%}
+        </li>
     {% else %}
         <li>No transforms</li>
     {% endfor %}

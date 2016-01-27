@@ -599,7 +599,8 @@ def add_transform(source_id):
                 to_data_source_id=form.to_data_source_id.data,
                 transform_id=len(data_source.transforms) + 1,
                 transform_type=form.transform_type.data,
-                description=form.description.data
+                description=form.description.data,
+                preference_order=max([s.preference_order for s in data_source.transforms] + [-1]) + 1
             )
             if "transform_options" in form._fields.keys() and form._fields["transform_options"]:
                 transform.transform_options = form._fields["transform_options"].data
@@ -686,6 +687,45 @@ def edit_transform(source_id, transform_id):
                 traceback.print_exc()
 
     return render_template("transforms/edit.html.jinja", from_data_source=data_source, transform=transform, form=form)
+
+
+@routes.route("/data_sources/<source_id>/transforms/<transform_id>/reorder")
+@login_required
+@admin_required
+def edit_transform_order(source_id, transform_id):
+    direction = request.args.get("direction")
+
+    if direction not in ["up", "down"]:
+        flash("Invalid direction", "danger")
+        return redirect(url_for("routes.show_data_source", source_id=source_id))
+
+    transform = Transform.query.filter((DataSource.id == source_id) & (Transform.transform_id == transform_id)).first()
+    ds = transform.from_data_source
+    if direction == "up":
+        if transform.preference_order == min([s.preference_order for s in ds.transforms]):
+            flash("Transform already first for this source", "danger")
+            return redirect(url_for("routes.show_data_source", source_id=source_id))
+        else:
+            prev_transform = [t for t in ds.transforms if t.preference_order < transform.preference_order][-1]
+            prev_transform.preference_order, transform.preference_order = transform.preference_order, prev_transform.preference_order
+
+    elif direction == "down":
+        if transform.preference_order == max([s.preference_order for s in ds.transforms]):
+            flash("Transform already last for this source", "danger")
+            return redirect(url_for("routes.show_data_source", source_id=source_id))
+        else:
+            next_transform = [t for t in ds.transforms if t.preference_order > transform.preference_order][0]
+            next_transform.preference_order, transform.preference_order = transform.preference_order, next_transform.preference_order
+
+    try:
+        db_session.commit()
+        flash("Transforms reordered", "success")
+    except:
+        db_session.rollback()
+        flash("Failed to reorder transforms", "danger")
+        traceback.print_exc()
+
+    return redirect(url_for("routes.show_data_source", source_id=source_id))
 
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/delete", methods=["GET", "POST"])
