@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from .actions import test_files_action, transfer_action
 
@@ -20,3 +21,6 @@ def main():
         transfer_action.transfer_files(args, parser)
     elif args.action == "test-files":
         test_files_action.print_test_files(args, parser)
+    else:
+        parser.print_help(file=sys.stderr)
+        sys.exit(1)
