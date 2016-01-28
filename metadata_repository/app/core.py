@@ -6,13 +6,17 @@ from .models import UrlMatcher
 TransformResult = namedtuple("TransformResult", "original_url original_source transform_applied transformed_url")
 
 
+class UrlTransformException(Exception):
+    pass
+
+
 def matching_data_source(url):
     """
     Find the data source that matches a URL.
     """
     matchers = UrlMatcher.query.all()
     if not matchers:
-        raise Exception("No URL matchers configured")
+        raise UrlTransformException("No URL matchers configured")
 
     # Check URL against all matchers
     # Skip matchers for data sources that have already checked
@@ -39,6 +43,9 @@ def transform_url(url):
     """
     transform_results = []
     data_source = matching_data_source(url)
+
+    if not data_source:
+        raise UrlTransformException("No data source matches URL")
 
     # For all matching data sources, apply all transforms
     for transform in data_source.transforms:

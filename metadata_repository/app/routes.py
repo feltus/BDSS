@@ -8,7 +8,7 @@ from flask import abort, Blueprint, flash, jsonify, redirect, render_template, r
 from flask.ext.login import current_app, current_user, login_required, login_user, logout_user
 from passlib.context import CryptContext
 
-from .core import matching_data_source, transform_url
+from .core import matching_data_source, transform_url, UrlTransformException
 from .forms import DataSourceForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm
 from .forms import LoginForm, RegistrationForm
 from .models import db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
@@ -984,8 +984,11 @@ def get_transformed_urls():
         if form.validate():
             try:
                 results = transform_url(form.url.data)
+            except UrlTransformException as e:
+                error_message = e.args[0]
             except Exception as e:
-                error_message = e.message or "Unknown error"
+                traceback.print_exc()
+                error_message = "Unable to transform URL"
         else:
             error_message = "Validation error"
 
