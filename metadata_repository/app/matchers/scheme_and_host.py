@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunsplit
 
 from wtforms import Form
 from wtforms.fields import StringField
@@ -22,3 +22,7 @@ class OptionsForm(Form):
 
     host = StringField(label="Host",
                        validators=[InputRequired()])
+
+
+def render_description(options):
+    return "Match URL scheme and host \'" + urlunsplit((options["scheme"], options["host"], "", "", "")) + "\'"

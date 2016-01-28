@@ -4,6 +4,10 @@
 
 {% block content %}
 
+{{ render_transform_description(transform.transform_type, transform.transform_options) }}
+
+<hr>
+
 <p><strong>Transform type:</strong> {{ transform.transform_type }}</p>
 
 {% if transform.transform_options %}

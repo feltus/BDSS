@@ -19,3 +19,7 @@ class OptionsForm(Form):
     pattern = StringField(label="Pattern",
                           validators=[InputRequired()],
                           description="URLs will be matched against this pattern.")
+
+
+def render_description(options):
+    return "Match regular expression \'" + options["pattern"] + "\'"

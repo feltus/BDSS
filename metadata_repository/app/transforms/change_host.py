@@ -14,3 +14,7 @@ class OptionsForm(wtforms.Form):
 
     new_host = wtforms.fields.StringField(label="New Host",
                                           validators=[wtforms.validators.InputRequired()])
+
+
+def render_description(options):
+    return "Change URL host to \'" + options["new_host"] + "\'"

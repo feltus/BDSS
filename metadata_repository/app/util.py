@@ -57,6 +57,11 @@ def options_form_class_for_matcher_type(matcher_type):
     return _property_of_module("matchers." + matcher_type, "OptionsForm")
 
 
+def render_matcher_description(matcher_type, matcher_options):
+    """Text to show in list of matchers on show data source page."""
+    return _property_of_module("matchers." + matcher_type, "render_description")(matcher_options)
+
+
 ######################################################################################################
 #
 # URL Transforms
@@ -83,6 +88,11 @@ def transform_of_type(transform_type):
 def options_form_class_for_transform_type(transform_type):
     """Get options form for a transform type."""
     return _property_of_module("transforms." + transform_type, "OptionsForm")
+
+
+def render_transform_description(transform_type, transform_options):
+    """Text to show in list of transforms on show data source page."""
+    return _property_of_module("transforms." + transform_type, "render_description")(transform_options)
 
 
 ######################################################################################################

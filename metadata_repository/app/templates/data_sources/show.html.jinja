@@ -24,7 +24,11 @@
 
 <ul>
     {% for matcher in data_source.url_matchers %}
-        <li><a href="{{ url_for('routes.show_url_matcher', source_id=data_source.id, matcher_id=matcher.matcher_id) }}">{{ matcher.matcher_type }}</a></li>
+        <li>
+            <a href="{{ url_for('routes.show_url_matcher', source_id=data_source.id, matcher_id=matcher.matcher_id) }}">
+                {{- render_matcher_description(matcher.matcher_type, matcher.matcher_options) -}}
+            </a>
+        </li>
     {% else %}
         <li>No matchers</li>
     {% endfor %}
@@ -44,9 +48,12 @@
 <ul class="striped">
     {% for transform in data_source.transforms %}
         <li>
-            <a href="{{ url_for('routes.show_transform', source_id=data_source.id, transform_id=transform.transform_id) }}">{{ transform.transform_type }}</a>
+            <a href="{{ url_for('routes.show_transform', source_id=data_source.id, transform_id=transform.transform_id) }}">
+                {{- transform.to_data_source.label -}}<br>
+                {{- render_transform_description(transform.transform_type, transform.transform_options) -}}
+            </a>
             {%- if current_user.is_admin -%}
-                <span class="pull-right">
+                <span class="pull-right" style="margin-top:-9px;">
                     <span style="display:inline-block;width:16px;">
                         {%- if not loop.first -%}
                             <a href="{{ url_for('routes.edit_transform_order', source_id=data_source.id, transform_id=transform.transform_id, direction='up') }}">&#8679;</a>

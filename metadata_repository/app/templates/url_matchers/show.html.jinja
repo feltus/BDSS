@@ -4,6 +4,10 @@
 
 {% block content %}
 
+{{ render_matcher_description(url_matcher.matcher_type, url_matcher.matcher_options) }}
+
+<hr>
+
 <p><strong>Matcher type:</strong> {{ url_matcher.matcher_type }}</p>
 
 {% if url_matcher.matcher_options %}

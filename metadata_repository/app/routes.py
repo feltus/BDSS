@@ -12,9 +12,9 @@ from .core import matching_data_source, transform_url, UrlTransformException
 from .forms import DataSourceForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm
 from .forms import LoginForm, RegistrationForm
 from .models import db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
-from .util import available_matcher_types, options_form_class_for_matcher_type
+from .util import available_matcher_types, options_form_class_for_matcher_type, render_matcher_description
 from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
-from .util import available_transform_types, options_form_class_for_transform_type
+from .util import available_transform_types, options_form_class_for_transform_type, render_transform_description
 
 
 routes = Blueprint("routes", __name__)
@@ -263,7 +263,9 @@ def show_data_source(source_id):
     Show information about a specific data source.
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    return render_template("data_sources/show.html.jinja", data_source=data_source)
+    return render_template("data_sources/show.html.jinja", data_source=data_source,
+                           render_matcher_description=render_matcher_description,
+                           render_transform_description=render_transform_description)
 
 
 @routes.route("/data_sources/<source_id>/test_match", methods=["GET", "POST"])
@@ -450,7 +452,8 @@ def show_url_matcher(source_id, matcher_id):
     """
     url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first()
 
-    return render_template("url_matchers/show.html.jinja", data_source=url_matcher.data_source, url_matcher=url_matcher)
+    return render_template("url_matchers/show.html.jinja", data_source=url_matcher.data_source, url_matcher=url_matcher,
+                           render_matcher_description=render_matcher_description)
 
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>/edit", methods=["GET", "POST"])
@@ -628,7 +631,8 @@ def show_transform(source_id, transform_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
     transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first()
 
-    return render_template("transforms/show.html.jinja", from_data_source=data_source, transform=transform)
+    return render_template("transforms/show.html.jinja", from_data_source=data_source, transform=transform,
+                           render_transform_description=render_transform_description)
 
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>/edit", methods=["GET", "POST"])

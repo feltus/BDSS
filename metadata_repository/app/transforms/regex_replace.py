@@ -18,3 +18,7 @@ class OptionsForm(Form):
 
     repl = StringField(label="Replacement",
                        validators=[InputRequired()])
+
+
+def render_description(options):
+    return "Replace regular expression \'" + options["pattern"] + "\' with \'" + options["repl"] + "\'"
