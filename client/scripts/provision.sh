@@ -24,3 +24,9 @@ cat >> $HOME/.bashrc <<EOF
 
 export PATH=\$PATH:$HOME/.aspera/connect/bin
 EOF
+
+# Configure BDSS to talk to metadata repository on host machine
+cat > $HOME/.bdss.cfg <<EOF
+[metadata_repository]
+url=http://10.0.2.2:5000
+EOF
