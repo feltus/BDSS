@@ -1009,7 +1009,7 @@ def report_transfer_timing():
         if data_source:
             report = TimingReport(
                 data_source_id=data_source.id,
-                report_id=len(data_source.timing_reports) + 1)
+                report_id=max([r.report_id for r in data_source.timing_reports] + [0]) + 1)
             form.populate_obj(report)
 
             try:
