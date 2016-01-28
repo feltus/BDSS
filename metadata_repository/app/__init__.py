@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, redirect, request, url_for
 from flask.ext.login import LoginManager
+from htmlmin.minify import html_minify
 
 from .config import app_config
 from .models import db_session, User
@@ -15,6 +16,13 @@ def format_number(value):
         return "{:,d}".format(value)
     else:
         return "{:,.3f}".format(value)
+
+
+@app.after_request
+def minify_response(response):
+    if "text/html" in response.content_type:
+        response.set_data(html_minify(response.get_data(as_text=True)))
+    return response
 
 
 @app.teardown_appcontext
