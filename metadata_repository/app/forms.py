@@ -134,6 +134,7 @@ class TimingReportForm(wtforms.Form):
     """
 
     is_success = wtforms.BooleanField(
+        false_values=('false', 'False', ''),
         label="Successful Transfer",
         validators=[wtforms.validators.InputRequired()])
 
