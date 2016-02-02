@@ -116,6 +116,10 @@ class DataSource(BaseModel, TrackEditsMixin):
     transfer_mechanism_options = sa.Column(MutableDict.as_mutable(JSONEncodedDict), default={}, nullable=False)
 
     @property
+    def num_successful_transfers(self):
+        return len([r for r in self.timing_reports if r.is_success])
+
+    @property
     def mean_successful_transfer_rate(self):
         return statistics.mean([r.transfer_rate for r in self.timing_reports if r.is_success])
 
@@ -214,9 +218,12 @@ class TimingReport(BaseModel):
 
     @property
     def is_transfer_rate_outlier(self):
-        avg = self.data_source.mean_successful_transfer_rate
-        stdev = self.data_source.stdev_successful_transfer_rates
-        return math.fabs(self.transfer_rate - avg) > 3 * stdev
+        if self.data_source.num_successful_transfers < 3:
+            return False
+        else:
+            avg = self.data_source.mean_successful_transfer_rate
+            stdev = self.data_source.stdev_successful_transfer_rates
+            return math.fabs(self.transfer_rate - avg) > 3 * stdev
 
     file_checksum = sa.Column(sa.types.String(32), nullable=False)
 
