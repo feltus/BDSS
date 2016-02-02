@@ -22,7 +22,7 @@ def get_test_files(data_source_id):
     return response.json()["test_files"]
 
 
-def print_test_files(args, parser):
+def handle_action(args, parser):
     test_files = get_test_files(args.data_source_id)
     for f in test_files:
         print(f["url"])

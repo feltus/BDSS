@@ -96,7 +96,7 @@ def transfer_data_file(specs, output_path):
     return False
 
 
-def transfer_files(args, parser):
+def handle_action(args, parser):
     if args.manifest_file:
         args.urls = [line.strip() for line in args.manifest_file if line.strip()]
 

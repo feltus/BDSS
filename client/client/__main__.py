@@ -17,10 +17,17 @@ def main():
 
     args = parser.parse_args()
 
-    if args.action == "transfer":
-        transfer_action.transfer_files(args, parser)
-    elif args.action == "test-files":
-        test_files_action.print_test_files(args, parser)
+    available_actions = {
+        "transfer": transfer_action,
+        "test-files": test_files_action
+    }
+
+    if args.action in available_actions:
+        try:
+            available_actions[args.action].handle_action(args, parser)
+        except:
+            print("Failed", args.action, "action", file=sys.stderr)
+            sys.exit(1)
     else:
         parser.print_help(file=sys.stderr)
         sys.exit(1)
