@@ -109,6 +109,10 @@ def transfer_files(args, parser):
         output_path = url.partition("?")[0].rpartition("/")[2]
         transfer_specs = None
 
+        if os.path.isfile(output_path):
+            print("File at", url, "already exists at", output_path, file=sys.stderr)
+            continue
+
         try:
             response = requests.post("%s/transformed_urls" % metadata_repository_url,
                                      data={"url": url},
