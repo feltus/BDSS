@@ -87,8 +87,12 @@ def transfer_data_file(specs, output_path):
             traceback.print_exc()
         finally:
             time_elapsed = time.time() - start_time
-            file_size = os.stat(output_path).st_size
-            file_checksum = file_md5sum(output_path)
+            file_size = 0
+            file_checksum = None
+            if os.path.isfile(output_path):
+                file_size = os.stat(output_path).st_size
+                file_checksum = file_md5sum(output_path)
+            print("Send timing report", s.url, success)
             send_timing_report(success, s.url, file_size, time_elapsed, file_checksum, mechanism_output)
             if success:
                 return True

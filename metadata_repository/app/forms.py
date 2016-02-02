@@ -1,3 +1,5 @@
+import re
+
 import wtforms
 
 from .models import db_session, DataSource, User
@@ -151,8 +153,14 @@ class TimingReportForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
     file_checksum = wtforms.StringField(
-        label="MD5 Checksum",
-        validators=[wtforms.validators.InputRequired(), wtforms.validators.Regexp(r"[0-9A-Fa-f]{32}")])
+        label="MD5 Checksum")
+
+    def validate_file_checksum(form, field):
+        if form.file_size_bytes.data > 0:
+            if not field.data:
+                raise wtforms.ValidationError("This field is required")
+            if not re.match(r"[0-9A-Fa-f]{32}", field.data):
+                raise wtforms.ValidationError("Invalid checksum")
 
     mechanism_output = wtforms.fields.TextAreaField(
         label="Mechanism Output",
