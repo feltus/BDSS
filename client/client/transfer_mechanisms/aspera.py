@@ -18,7 +18,7 @@ def transfer_data_file(url, output_path, options):
 
     # Remove scheme from URL
     parts = urlparse(url)
-    url = parts[1] + urlunsplit(("", "", parts[2], parts[3], parts[4]))
+    url = parts[1] + ":" + urlunsplit(("", "", parts[2], parts[3], parts[4]))
 
     print(" ".join(["ascp"] + args + [options["username"] + "@" + url, output_path]))
     return transfer_data_file_with_subprocess(["ascp"] + args + [options["username"] + "@" + url, output_path])
