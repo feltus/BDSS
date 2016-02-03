@@ -376,6 +376,20 @@ def show_transfer_mechanism_options_form():
     else:
         return ""
 
+
+@routes.route("/data_sources/relations")
+def data_source_relations():
+    data_sources = DataSource.query.all()
+    nodes = []
+    links = []
+    for ds in data_sources:
+        nodes.append({"id": ds.id, "label": ds.label})
+        for t in ds.transforms:
+            links.append({"source": ds.id, "target": t.to_data_source_id})
+
+    return render_template("data_sources/links.html.jinja", nodes=nodes, links=links)
+
+
 ######################################################################################################
 #
 # Matchers
