@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+import logging
 import os
 import sys
 import time
@@ -7,9 +8,18 @@ import traceback
 from collections import namedtuple
 
 import requests
+from chalk import log
 
 from ..config import metadata_repository_url
 from ..transfer_mechanisms import default_mechanism, transfer_mechanism_module
+
+logger = logging.getLogger(__name__)
+handler = log.ChalkHandler()
+handler.setFormatter(log.ChalkFormatter("%(asctime)s %(levelname)s - %(message)s"))
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
+
 
 TransferSpec = namedtuple("TransferSpec", "url transfer_mechanism transfer_mechanism_options")
 
@@ -70,9 +80,14 @@ def transfer_data_file(specs, output_path):
     specs - TransferSpec[] - List of TransferSpecs for difference sources for the data file.
     output_path - String - The path to save the downloaded file to.
     """
-    print(specs)
     for s in specs:
         transfer_module = transfer_mechanism_module(s.transfer_mechanism)
+        logger.debug("Downloading %s using %s", s.url, s.transfer_mechanism)
+        if s.transfer_mechanism_options:
+            logger.debug("%s options:", s.transfer_mechanism)
+            for k, v in s.transfer_mechanism_options.items():
+                logger.debug("  %s: %s", k, str(v))
+
         start_time = time.time()
 
         # This assumes transfer_data_file returns an object with a "stdout" member containing the output of
@@ -83,8 +98,8 @@ def transfer_data_file(specs, output_path):
         try:
             (success, mechanism_output) = transfer_module.transfer_data_file(s.url, output_path, s.transfer_mechanism_options)
         except Exception:
-            print("Exception occurred in %s transfer mechanism", s.transfer_mechanism, file=sys.stderr)
-            traceback.print_exc()
+            logger.exception("Exception in transfer mechanism")
+            logger.exception()
         finally:
             time_elapsed = time.time() - start_time
             file_size = 0
@@ -92,10 +107,14 @@ def transfer_data_file(specs, output_path):
             if os.path.isfile(output_path):
                 file_size = os.stat(output_path).st_size
                 file_checksum = file_md5sum(output_path)
-            print("Send timing report", s.url, success)
             send_timing_report(success, s.url, file_size, time_elapsed, file_checksum, mechanism_output)
             if success:
+                logger.info("Success. Downloaded %d bytes in %d seconds", file_size, time_elapsed)
                 return True
+            else:
+                logger.warn("Unable to download file")
+                if file_size != 0:
+                    logger.warn("Failed after %d seconds. %d bytes downloaded", time_elapsed, file_size)
 
     return False
 
@@ -114,7 +133,7 @@ def handle_action(args, parser):
         transfer_specs = None
 
         if os.path.isfile(output_path):
-            print("File at", url, "already exists at", output_path, file=sys.stderr)
+            logger.warn("File at %s already exists at %s", url, output_path)
             continue
 
         try:
@@ -122,18 +141,26 @@ def handle_action(args, parser):
                                      data={"url": url},
                                      headers={"Accept": "application/json"})
 
-            print(response.text)
             response = response.json()
 
             transfer_specs = [TransferSpec(r["transformed_url"],
                               r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
                               r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
 
+            logger.info("Received alternate data sources")
+            logger.info("-------")
+            for r in response["results"]:
+                logger.info("%s", r["transform_applied"]["to_data_source"]["label"])
+                logger.info("  %s", r["transformed_url"])
+                logger.info("  %s", r["transform_applied"]["to_data_source"]["transfer_mechanism_type"])
+
         except Exception:
+            logger.warn("Unable to contact metadata repository")
             traceback.print_exc()
 
         if not transfer_specs:
+            logger.warn("Falling back to default transfer mechanism")
             transfer_specs = [TransferSpec(url, *default_mechanism(url))]
 
         if not transfer_data_file(transfer_specs, output_path):
-            print("Failed to download file", file=sys.stderr)
+            logger.error("Failed to download file")
