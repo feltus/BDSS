@@ -99,12 +99,6 @@ def logout():
     return redirect(url_for("routes.login"))
 
 
-@routes.route("/access_denied")
-@login_required
-def admin_permission_required():
-    return render_template("errors/admin_permission_required.html.jinja")
-
-
 def admin_required(func):
     """
     Decorator to require admin rights to access a route
@@ -116,7 +110,7 @@ def admin_required(func):
         elif current_app.login_manager._login_disabled:
             return func(*args, **kwargs)
         elif not current_user.is_admin:
-            return redirect(url_for("routes.admin_permission_required"))
+            return render_template("errors/admin_permission_required.html.jinja"), 403
         return func(*args, **kwargs)
     return decorated_view
 
