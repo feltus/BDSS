@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask.ext.login import LoginManager
 from htmlmin.minify import html_minify
 
@@ -32,6 +32,11 @@ def shutdown_session(exception=None):
     http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/#declarative
     """
     db_session.remove()
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template("errors/not_found.html.jinja"), 404
 
 
 login_manager = LoginManager()

@@ -102,7 +102,7 @@ def logout():
 @routes.route("/access_denied")
 @login_required
 def admin_permission_required():
-    return render_template("admin_permission_required.html.jinja")
+    return render_template("errors/admin_permission_required.html.jinja")
 
 
 def admin_required(func):
@@ -153,7 +153,7 @@ def show_user(user_id):
     """
     Show information about a specific user
     """
-    user = User.query.filter(User.user_id == user_id).first()
+    user = User.query.filter(User.user_id == user_id).first() or abort(404)
     return render_template("users/show.html.jinja", user=user)
 
 
@@ -164,7 +164,8 @@ def edit_user_permissions(user_id):
     """
     Grant/revoke admin permissions for a user
     """
-    user = User.query.filter(User.user_id == user_id).first()
+    user = User.query.filter(User.user_id == user_id).first() or abort(404)
+
     if request.method == "POST":
         user.is_admin = not user.is_admin
         try:
@@ -262,7 +263,7 @@ def show_data_source(source_id):
     """
     Show information about a specific data source.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     return render_template("data_sources/show.html.jinja", data_source=data_source,
                            render_matcher_description=render_matcher_description,
                            render_transform_description=render_transform_description)
@@ -274,7 +275,7 @@ def test_data_source_url_match(source_id):
     """
     Test whether or not a URL matches a data source.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     form = UrlForm(request.form)
 
     if request.method == "POST" and form.validate():
@@ -294,7 +295,7 @@ def edit_data_source(source_id):
     For GET requests, show form for editing a data source.
     For POST requests, process form and update data source in database.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
 
     form = DataSourceForm()
 
@@ -395,7 +396,7 @@ def add_url_matcher(source_id):
     """
     Add a new URL matcher to a data source
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     form = UrlMatcherForm()
 
     if request.method == "GET":
@@ -450,7 +451,7 @@ def show_url_matcher(source_id, matcher_id):
     """
     Show information about a specific matcher.
     """
-    url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first()
+    url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first() or abort(404)
 
     return render_template("url_matchers/show.html.jinja", data_source=url_matcher.data_source, url_matcher=url_matcher,
                            render_matcher_description=render_matcher_description)
@@ -463,8 +464,8 @@ def edit_url_matcher(source_id, matcher_id):
     """
     Edit a matcher
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+    url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first() or abort(404)
     form = UrlMatcherForm()
 
     if request.method == "GET":
@@ -515,8 +516,8 @@ def delete_url_matcher(source_id, matcher_id):
     """
     Delete a URL matcher. Prompt for confirmation first.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+    url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first() or abort(404)
 
     if request.method == "POST":
         try:
@@ -568,7 +569,7 @@ def add_transform(source_id):
     """
     Add a new URL transform to a data source
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     form = UrlTransformForm()
     form.to_data_source_id.choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
 
@@ -628,8 +629,8 @@ def show_transform(source_id, transform_id):
     """
     Show information about a specific transform.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+    transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first() or abort(404)
 
     return render_template("transforms/show.html.jinja", from_data_source=data_source, transform=transform,
                            render_transform_description=render_transform_description)
@@ -642,8 +643,8 @@ def edit_transform(source_id, transform_id):
     """
     Edit a transform
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+    transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first() or abort(404)
     form = UrlTransformForm()
     form.to_data_source_id.choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
 
@@ -702,7 +703,7 @@ def edit_transform_order(source_id, transform_id):
         flash("Invalid direction", "danger")
         return redirect(url_for("routes.show_data_source", source_id=source_id))
 
-    transform = Transform.query.filter((DataSource.id == source_id) & (Transform.transform_id == transform_id)).first()
+    transform = Transform.query.filter((DataSource.id == source_id) & (Transform.transform_id == transform_id)).first() or abort(404)
     ds = transform.from_data_source
     if direction == "up":
         if transform.preference_order == min([s.preference_order for s in ds.transforms]):
@@ -738,8 +739,8 @@ def delete_transform(source_id, transform_id):
     """
     Delete a URL transform. Prompt for confirmation first.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+    transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first() or abort(404)
 
     if request.method == "POST":
         try:
@@ -789,7 +790,7 @@ def list_test_files(source_id):
     """
     List test files for a particular data source
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
 
     if request.headers.get("Accept") == "application/json":
         return jsonify(test_files=data_source.transfer_test_files)
@@ -804,7 +805,7 @@ def add_test_file(source_id):
     """
     Add a new test file to a data source
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     form = TransferTestFileForm(request.form)
 
     if request.method == "POST" and form.validate():
@@ -837,8 +838,7 @@ def show_test_file(source_id, file_id):
     """
     Show information about a specific test file.
     """
-    test_file = TransferTestFile.query \
-        .filter((TransferTestFile.data_source_id == source_id) & (TransferTestFile.file_id == file_id)).first()
+    test_file = TransferTestFile.query.filter((TransferTestFile.data_source_id == source_id) & (TransferTestFile.file_id == file_id)).first() or abort(404)
 
     return render_template("test_files/show.html.jinja", test_file=test_file)
 
@@ -850,9 +850,8 @@ def edit_test_file(source_id, file_id):
     """
     Edit a test file
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    test_file = TransferTestFile.query \
-        .filter((TransferTestFile.data_source_id == source_id) & (TransferTestFile.file_id == file_id)).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+    test_file = TransferTestFile.query.filter((TransferTestFile.data_source_id == source_id) & (TransferTestFile.file_id == file_id)).first() or abort(404)
     form = TransferTestFileForm(request.form, test_file)
 
     if request.method == "POST" and form.validate():
@@ -882,9 +881,8 @@ def delete_test_file(source_id, file_id):
     """
     Delete a test file. Prompt for confirmation first.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
-    test_file = TransferTestFile.query \
-        .filter((TransferTestFile.data_source_id == source_id) & (TransferTestFile.file_id == file_id)).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+    test_file = TransferTestFile.query.filter((TransferTestFile.data_source_id == source_id) & (TransferTestFile.file_id == file_id)).first() or abort(404)
 
     if request.method == "POST":
         try:
@@ -913,11 +911,12 @@ def list_timing_reports(source_id):
     """
     Show timing reports for transfers from a data source.
     """
-    data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
 
     page_num = int(request.args.get("page", 1))
     num_reports_per_page = 25
-    reports = TimingReport.query.filter(TimingReport.data_source_id == source_id).order_by(TimingReport.created_at.desc()) \
+    reports = TimingReport.query.filter(TimingReport.data_source_id == source_id) \
+        .order_by(TimingReport.created_at.desc()) \
         .limit(num_reports_per_page).offset((page_num - 1) * num_reports_per_page).all()
     total_num_reports = TimingReport.query.filter(TimingReport.data_source_id == source_id).count()
     total_num_pages = math.ceil(total_num_reports / num_reports_per_page)
@@ -940,7 +939,7 @@ def show_timing_report(source_id, report_id):
     """
     Show information about a specific timing report.
     """
-    report = TimingReport.query.filter((TimingReport.data_source_id == source_id) & (TimingReport.report_id == report_id)).first()
+    report = TimingReport.query.filter((TimingReport.data_source_id == source_id) & (TimingReport.report_id == report_id)).first() or abort(404)
 
     return render_template("timing_reports/show.html.jinja", data_source=report.data_source, report=report)
 
@@ -952,7 +951,7 @@ def delete_timing_report(source_id, report_id):
     """
     Delete a timing report. Prompt for confirmation first.
     """
-    report = TimingReport.query.filter((TimingReport.data_source_id == source_id) & (TimingReport.report_id == report_id)).first()
+    report = TimingReport.query.filter((TimingReport.data_source_id == source_id) & (TimingReport.report_id == report_id)).first() or abort(404)
 
     if request.method == "POST":
         try:
