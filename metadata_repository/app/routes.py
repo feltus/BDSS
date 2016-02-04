@@ -233,6 +233,7 @@ def create_data_source():
         if form.validate():
             source = DataSource(
                 label=form.label.data,
+                description=form.description.data,
                 transfer_mechanism_type=form.transfer_mechanism_type.data
             )
             if "transfer_mechanism_options" in form._fields.keys() and form._fields["transfer_mechanism_options"]:
@@ -321,6 +322,7 @@ def edit_data_source(source_id):
 
         if form.validate():
             data_source.label = form.label.data
+            data_source.description = form.description.data
             data_source.transfer_mechanism_type = form.transfer_mechanism_type.data
             if "transfer_mechanism_options" in form._fields.keys() and form._fields["transfer_mechanism_options"]:
                 data_source.transfer_mechanism_options = form._fields["transfer_mechanism_options"].data
