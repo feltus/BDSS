@@ -11,5 +11,6 @@ class OptionsForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
     disable_encryption = wtforms.fields.BooleanField(
+        false_values=('false', 'False', ''),
         label="Disable Encryption",
         validators=[wtforms.validators.InputRequired()])
