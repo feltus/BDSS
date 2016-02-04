@@ -7,10 +7,12 @@ import wtforms
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask.ext.login import current_app, current_user, login_required, login_user, logout_user
 from passlib.context import CryptContext
+from wtforms import validators
 
 from .core import matching_data_source, transform_url, UrlTransformException
-from .forms import DataSourceForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm
-from .forms import LoginForm, RegistrationForm
+from .forms import DataSourceForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm, \
+    LoginForm, RegistrationForm, \
+    Unique
 from .models import db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
 from .util import available_matcher_types, options_form_class_for_matcher_type, render_matcher_description
 from .util import available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type
@@ -292,6 +294,7 @@ def edit_data_source(source_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
 
     form = DataSourceForm()
+    form.label.validators = [validators.InputRequired(), Unique(DataSource, "label", lambda q: q.filter(DataSource.id != source_id))]
 
     if request.method == "GET":
         options_form_class = options_form_class_for_transfer_mechanism_type(data_source.transfer_mechanism_type)
@@ -306,6 +309,7 @@ def edit_data_source(source_id):
         # Form after its process method is called, so a second form must be created.
         # https://wtforms.readthedocs.org/en/latest/forms.html#wtforms.form.BaseForm.__setitem__
         form2 = DataSourceForm()
+        form2.label.validators = [validators.InputRequired(), Unique(DataSource, "label", lambda q: q.filter(DataSource.id != source_id))]
         if form.transfer_mechanism_type.data:
             options_form_class = options_form_class_for_transfer_mechanism_type(form.transfer_mechanism_type.data)
             if options_form_class:

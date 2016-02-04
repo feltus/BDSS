@@ -13,21 +13,23 @@ class Unique(object):
     Custom validator to enforce unique values in database.
     """
 
-    def __init__(self, model, field, scope=None, message=None):
+    def __init__(self, model, field, scope_query=None, message=None):
         self.model = model
         self.field = field
-
-        if not scope:
-            scope = {}
-        self.scope = scope
+        self.scope_query = scope_query
 
         if not message:
             message = "%s already taken" % field.lower().capitalize()
         self.message = message
 
     def __call__(self, form, field):
-        self.scope[self.field] = field.data
-        if db_session.query(self.model).filter_by(**self.scope).first():
+        query = db_session.query(self.model)
+        if self.scope_query:
+            query = self.scope_query(query)
+
+        field_scope = {}
+        field_scope[self.field] = field.data
+        if query.filter_by(**field_scope).first():
             raise wtforms.validators.ValidationError(self.message)
 
 
