@@ -1,5 +1,6 @@
 {% extends "authenticated.html.jinja" %}
 {% import "form_macros.html.jinja" as form_macros %}
+{% from "form_handling_macros.html.jinja" import render_options_subform_js %}
 
 {% block page_header %}Edit {{ data_source.label }}{% endblock %}
 
@@ -14,31 +15,5 @@
 {% endblock %}
 
 {% block scripts %}
-
-<script>
-$('#transfer_mechanism_type').on('change', function(e) {
-
-    var select = $(this);
-    var module = select.val();
-
-    $.ajax({
-        url: "{{ url_for('routes.show_transfer_mechanism_options_form') }}",
-        data: {
-            "transfer_mechanism_type": module
-        },
-        dataType: "text",
-        success: function(data) {
-            var fieldset = $(data).find("fieldset");
-            var group = select.closest(".form-group");
-            group.next("fieldset").remove();
-            fieldset.insertAfter(group);
-        },
-        error: function(err) {
-            console.warn(err);
-        }
-    });
-
-});
-</script>
-
+{{ render_options_subform_js("transfer_mechanism_type", url_for('routes.show_transfer_mechanism_options_form')) }}
 {% endblock %}

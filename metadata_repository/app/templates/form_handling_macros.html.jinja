@@ -1,0 +1,29 @@
+{%- macro render_options_subform_js(type_field_id, options_form_url) -%}
+
+<script>
+$("#{{ type_field_id }}").on('change', function(e) {
+
+    var select = $(this);
+    var module = select.val();
+
+    $.ajax({
+        url: "{{ options_form_url }}",
+        data: {
+            "type": module
+        },
+        dataType: "text",
+        success: function(data) {
+            var fieldset = $(data).find("fieldset");
+            var group = select.closest(".form-group");
+            group.next("fieldset").remove();
+            fieldset.insertAfter(group);
+        },
+        error: function(err) {
+            console.warn(err);
+        }
+    });
+
+});
+</script>
+
+{%- endmacro -%}
