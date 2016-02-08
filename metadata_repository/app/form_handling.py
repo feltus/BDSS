@@ -14,10 +14,6 @@ def process_form_with_options_subform(form_class, type_field_name, options_field
     if form_init:
         form_init(form)
 
-    also_process = []
-    if editing_obj:
-        also_process = [editing_obj]
-
     if request.method == "GET":
         initial_type_field_value = getattr(form, type_field_name).choices[0][0]
         if editing_obj:
@@ -25,10 +21,10 @@ def process_form_with_options_subform(form_class, type_field_name, options_field
         options_form_class = subform_class_getter(initial_type_field_value)
         if options_form_class:
             wtforms.form.BaseForm.__setitem__(form, options_field_name, wtforms.fields.FormField(options_form_class))
-        form.process(request.form, *also_process)
+        form.process(request.form, obj=editing_obj)
 
     elif request.method == "POST":
-        form.process(request.form, *also_process)
+        form.process(request.form, obj=editing_obj)
 
         # Dynamically add subform for transform options. Fields cannot be added to a
         # Form after its process method is called, so a second form must be created.
@@ -43,7 +39,7 @@ def process_form_with_options_subform(form_class, type_field_name, options_field
 
         # Load request data into new form.
         form = form2
-        form.process(request.form, *also_process)
+        form.process(request.form, obj=editing_obj)
 
     return form
 
