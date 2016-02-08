@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<p>{{ data_source.description or "No description" }}</p>
+
 <p><strong>Transfer mechanism type:</strong> {{ data_source.transfer_mechanism_type }}</p>
 
 {% if data_source.transfer_mechanism_options %}

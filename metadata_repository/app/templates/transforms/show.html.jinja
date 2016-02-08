@@ -4,7 +4,9 @@
 
 {% block content %}
 
-{{ render_transform_description(transform.transform_type, transform.transform_options) }}
+<p>{{ transform.description or "No description" }}</p>
+
+<p>{{ render_transform_description(transform.transform_type, transform.transform_options) }}</p>
 
 <hr>
 
