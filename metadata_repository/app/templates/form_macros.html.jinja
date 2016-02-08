@@ -60,11 +60,20 @@
         {{ macros.render_checkbox_field(form.remember_me) }}
  #}
 {% macro render_checkbox_field(field) -%}
-    <div class="checkbox">
-        <label for="{{ field.id }}">
-            {{ field(type="checkbox", **kwargs) }} {{ field.label.text }}
-        </label>
-    </div>
+    {%- if field.errors -%}
+        <div class="has-error">
+    {%- endif -%}
+        <div class="checkbox">
+            <label for="{{ field.id }}">
+                {{ field(type="checkbox", **kwargs) }} {{ field.label.text }}
+            </label>
+        </div>
+    {%- if field.errors -%}
+        {%- for e in field.errors -%}
+            <p class="help-block">{{ e }}</p>
+        {%- endfor -%}
+        </div>
+    {%- endif -%}
 {%- endmacro %}
 
 {# Renders radio field
