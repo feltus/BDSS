@@ -6,6 +6,7 @@ from functools import wraps
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask.ext.login import current_app, current_user, login_required, login_user, logout_user
 from passlib.context import CryptContext
+from sqlalchemy import func
 from wtforms import validators
 
 from .core import matching_data_source, transform_url, UrlTransformException
@@ -344,6 +345,17 @@ def data_source_relations():
             links.append({"source": ds.id, "target": t.to_data_source_id})
 
     return render_template("data_sources/links.html.jinja", nodes=nodes, links=links)
+
+
+@routes.route("/data_sources/search")
+def search_data_sources():
+    query_str = request.args.get("q")
+    if not query_str:
+        abort(400)
+
+    data_sources = DataSource.query.filter(func.lower(DataSource.label).like("%%%s%%" % query_str.lower())).all()
+
+    return jsonify(data_sources=[{"id": d.id, "label": d.label} for d in data_sources])
 
 
 ######################################################################################################
