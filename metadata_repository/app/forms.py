@@ -84,6 +84,13 @@ class DataSourceForm(wtforms.Form):
     transfer_mechanism_options = None
 
 
+class DataSourceSearchForm(wtforms.Form):
+
+    q = wtforms.fields.StringField(
+        label="Query",
+        validators=[wtforms.validators.DataRequired()])
+
+
 class UrlMatcherForm(wtforms.Form):
     """
     Form for creating/editing a URL matcher.

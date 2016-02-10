@@ -33,6 +33,7 @@
     <p>No data sources found.</p>
 {% endif %}
 
+<p><a href="{{ url_for('routes.search_data_sources') }}">Search Data Sources</a></p>
 <p><a href="{{ url_for('routes.data_source_relations') }}">Show Relations</a></p>
 
 {% if current_user.is_admin %}

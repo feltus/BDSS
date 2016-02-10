@@ -10,7 +10,7 @@ from sqlalchemy import func
 from wtforms import validators
 
 from .core import matching_data_source, transform_url, UrlTransformException
-from .forms import DataSourceForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm, \
+from .forms import DataSourceForm, DataSourceSearchForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm, \
     LoginForm, RegistrationForm, \
     Unique
 from .models import db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
@@ -349,13 +349,20 @@ def data_source_relations():
 
 @routes.route("/data_sources/search")
 def search_data_sources():
-    query_str = request.args.get("q")
-    if not query_str:
-        abort(400)
+    form = DataSourceSearchForm(q=request.args.get("q"))
 
-    data_sources = DataSource.query.filter(func.lower(DataSource.label).like("%%%s%%" % query_str.lower())).all()
+    if form.validate():
+        data_sources = DataSource.query.filter(func.lower(DataSource.label).like("%%%s%%" % form.q.data.lower())).all()
 
-    return jsonify(data_sources=[{"id": d.id, "label": d.label} for d in data_sources])
+        if "application/json" in request.headers["Accept"]:
+            return jsonify(data_sources=[{"id": d.id, "label": d.label} for d in data_sources])
+        else:
+            return render_template("data_sources/search_results.html.jinja", data_sources=data_sources, form=form)
+    else:
+        if "application/json" in request.headers["Accept"]:
+            abort(400)
+        else:
+            return render_template("data_sources/search_results.html.jinja", data_sources=None, form=form)
 
 
 ######################################################################################################

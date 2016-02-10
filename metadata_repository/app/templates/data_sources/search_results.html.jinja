@@ -1,0 +1,29 @@
+{% extends "authenticated.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
+
+{% block page_header %}Search Results{% endblock %}
+
+{% block content %}
+
+{{ form_macros.render_form(form, action_url=url_for("routes.search_data_sources"), btn_class="btn btn-primary", method="GET") }}
+
+{% if data_sources != None %}
+    <h4 style="margin-top:20px;">Matching data sources</h4>
+    {% if data_sources|length > 0 %}
+        <ul>
+            {% for data_source in data_sources %}
+                <li>
+                    <a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}">{{ data_source.label }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No data sources found.</p>
+    {% endif %}
+{% endif %}
+
+<hr>
+
+<p style="margin-top:20px;"><a href="{{ url_for('routes.list_data_sources') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Data Sources</a></p>
+
+{% endblock %}
