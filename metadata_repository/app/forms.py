@@ -139,6 +139,20 @@ class UrlForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
 
+class TransformedUrlsForm(wtforms.Form):
+
+    available_mechanisms = wtforms.fields.FieldList(
+        wtforms.fields.StringField(
+            label="Mechanism",
+            validators=[wtforms.validators.InputRequired()]),
+        label="Available Mechanisms",
+        min_entries=1)
+
+    url = wtforms.fields.StringField(
+        label="URL",
+        validators=[wtforms.validators.InputRequired()])
+
+
 class TimingReportForm(wtforms.Form):
     """
     Form for reporting transfer times.

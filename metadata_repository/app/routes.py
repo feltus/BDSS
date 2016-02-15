@@ -10,7 +10,8 @@ from sqlalchemy import func
 from wtforms import validators
 
 from .core import matching_data_source, transform_url, UrlTransformException
-from .forms import DataSourceForm, DataSourceSearchForm, TimingReportForm, TransferTestFileForm, UrlForm, UrlMatcherForm, UrlTransformForm, \
+from .forms import DataSourceForm, DataSourceSearchForm, TimingReportForm, TransferTestFileForm, UrlMatcherForm, UrlTransformForm, \
+    UrlForm, TransformedUrlsForm, \
     LoginForm, RegistrationForm, \
     Unique
 from .models import db_session, DataSource, UrlMatcher, TimingReport, TransferTestFile, Transform, User
@@ -866,7 +867,7 @@ def get_transformed_urls():
     """
     Find transformed URLs for a URL.
     """
-    form = UrlForm(request.form)
+    form = TransformedUrlsForm(request.form)
 
     results = None
     if request.method == "POST":

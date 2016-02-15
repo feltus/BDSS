@@ -11,7 +11,7 @@ import requests
 from chalk import log
 
 from ..config import metadata_repository_url
-from ..transfer_mechanisms import default_mechanism, transfer_mechanism_module
+from ..transfer_mechanisms import available_mechanisms, default_mechanism, transfer_mechanism_module
 
 logger = logging.getLogger(__name__)
 handler = log.ChalkHandler()
@@ -137,8 +137,11 @@ def handle_action(args, parser):
             continue
 
         try:
+            data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(available_mechanisms())}
+            data["url"] = url
+
             response = requests.post("%s/transformed_urls" % metadata_repository_url,
-                                     data={"url": url},
+                                     data=data,
                                      headers={"Accept": "application/json"})
 
             response = response.json()
