@@ -1,127 +1,167 @@
-{# Renders field for Bootstrap 3 styles.
-
-    Params:
-        field - WTForm field
-        kwargs - pass any arguments you want in order to put them into the html attributes.
-        There are few exceptions: for - for_, class - class_, class__ - class_
-
-    Example usage:
-        {{ macros.render_field(form.email, placeholder='Input email', type='email') }}
-#}
-{% macro render_field(field, label_visible=true) -%}
-    {% if field.type == "BooleanField" %}
+{#  #}
+{%- macro render_field(field, label_visible=true) -%}
+    {%- if (field.type == "FormField") -%}
+        {{ render_form_field(field) }}
+    {%- elif field.type == "FieldList" -%}
+        {{ render_field_list(field) }}
+    {%- elif field.type == "BooleanField" -%}
         {{ render_checkbox_field(field) }}
-    {% elif field.type == "RadioField" %}
+    {%- elif field.type == "RadioField" -%}
         {{ render_radio_field(field) }}
-    {% else %}
+    {%- else -%}
         {{ render_default_field(field, label_visible) }}
-    {% endif %}
-{% endmacro %}
-
-{% macro render_default_field(field, label_visible) -%}
-    {% if (field.type == "FormField") %}
-        <fieldset id={{ field.id }} style="margin-bottom:15px;">
-            <legend>{{ field.label }}</legend>
-            {%- for subfield in field -%}
-                {{ render_field(subfield) }}
-            {%- else -%}
-                <p>No options available</p>
-            {%- endfor -%}
-        </fieldset>
-    {% else %}
-        <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
-            {% if field.type != "HiddenField" and field.type !="CSRFTokenField" and label_visible %}
-                <label for="{{ field.id }}" class="control-label">{{ field.label }}</label>
-            {% endif %}
-            {% if field.type == "FileField" %}{# File inputs do not get "form-control" class #}
-                {{ field(**kwargs) }}
-            {% else %}
-                {{ field(class_="form-control", **kwargs) }}
-            {% endif %}
-            {% if field.description %}
-                <p class="help-block" style="color:inherit;">{{ field.description }}</p>
-            {% endif %}
-            {% if field.errors %}
-                {% for e in field.errors %}
-                    <p class="help-block">{{ e }}</p>
-                {% endfor %}
-            {% endif %}
-        </div>
-    {% endif %}
-{%- endmacro %}
-
-{# Renders checkbox fields since they are represented differently in Bootstrap
-    Params:
-        field - WTForm field (there are no check, but you should put here only BooleanField.
-        kwargs - pass any arguments you want in order to put them into the html attributes.
-        There are few exceptions: for - for_, class - class_, class__ - class_
-
-    Example usage:
-        {{ macros.render_checkbox_field(form.remember_me) }}
- #}
-{% macro render_checkbox_field(field) -%}
-    {%- if field.errors -%}
-        <div class="has-error">
     {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_field_errors_list(errors) -%}
+    {%- for e in errors -%}
+        <p class="help-block">{{ e }}</p>
+    {%- endfor -%}
+{%- endmacro -%}
+
+{# Form fields #}
+{%- macro render_form_field(field) -%}
+    <fieldset id={{ field.id }} style="margin-bottom:15px;">
+        <legend>{{ field.label }}</legend>
+        {%- for subfield in field -%}
+            {{ render_field(subfield) }}
+        {%- else -%}
+            <p>No options available</p>
+        {%- endfor -%}
+    </fieldset>
+{%- endmacro -%}
+
+{# Field list #}
+{%- macro render_field_list(field) -%}
+    <div>
+        <label>{{ field.label.text }}</label>
+        <ul id="{{ field.id }}-list">
+            {%- for subfield in field -%}
+                <li>{{ render_default_field_with_group(subfield, true, "&minus;") }}</li>
+            {%- endfor -%}
+        </ul>
+        <div style="text-align:right;">
+            <button class="btn btn-default" id="{{ field.id }}-add" type="button">&plus;</button>
+        </div>
+        <script>
+        (function() {
+            var list = $("#{{ field.id }}-list");
+            var addButton = $("#{{ field.id }}-add");
+
+            var refresh = function() {
+                var removeButtons = list.find(".input-group-btn button");
+                if (removeButtons.length === 1) {
+                    removeButtons.attr("disabled", "disabled");
+                } else {
+                    removeButtons.removeAttr("disabled");
+                }
+
+                list.find("li").each(function(i) {
+                    console.log(i);
+                    $(this).find("input")
+                        .attr("id", "{{ field.id }}-" + i)
+                        .attr("name", "{{ field.id }}-" + i);
+                    $(this).find("label").attr("for", "{{ field.id }}-" + i);
+                });
+            }
+
+            var bindRemoveButtons = function() {
+                var removeButtons = list.find(".input-group-btn button");
+                removeButtons.click(function() {
+                    $(this).parents("li").remove();
+                    refresh();
+                });
+            };
+
+            addButton.click(function() {
+                var newInput = $('<li>{{ render_default_field_with_group(field.entries[0], true, "&minus;")|replace("\n", "") }}</li>');
+                newInput.find("input").val("");
+                list.append(newInput);
+                bindRemoveButtons();
+                refresh();
+            });
+
+            bindRemoveButtons();
+            refresh();
+        })();
+        </script>
+    </div>
+{%- endmacro -%}
+
+{# Checkbox fields #}
+{%- macro render_checkbox_field(field) -%}
+    <div class="{% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
         <div class="checkbox">
             <label for="{{ field.id }}">
                 {{ field(type="checkbox", **kwargs) }} {{ field.label.text }}
             </label>
         </div>
-    {%- if field.errors -%}
-        {%- for e in field.errors -%}
-            <p class="help-block">{{ e }}</p>
-        {%- endfor -%}
-        </div>
-    {%- endif -%}
-{%- endmacro %}
 
-{# Renders radio field
-    Params:
-        field - WTForm field (there are no check, but you should put here only BooleanField.
-        kwargs - pass any arguments you want in order to put them into the html attributes.
-        There are few exceptions: for - for_, class - class_, class__ - class_
+        {{ render_field_errors_list(field.errors) }}
+    </div>
+{%- endmacro -%}
 
-    Example usage:
-        {{ macros.render_radio_field(form.answers) }}
- #}
-{% macro render_radio_field(field) -%}
-    {% for value, label, _ in field.iter_choices() %}
+{# Radio fields #}
+{%- macro render_radio_field(field) -%}
+    {%- for value, label, _ in field.iter_choices() -%}
         <div class="radio">
             <label>
                 <input type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}">{{ label }}
             </label>
         </div>
-    {% endfor %}
+    {%- endfor -%}
+{%- endmacro -%}
+
+{%- macro render_default_field_with_group(field, label_visible, btn_label, btn_class="default") -%}
+    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
+        {%- if label_visible -%}
+            <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
+        {%- endif -%}
+
+        <div class="input-group">
+            {{ field(class_="form-control", **kwargs) }}
+            <span class="input-group-btn">
+                <button class="btn btn-{{ btn_class }}" type="button">{{ btn_label }}</button>
+            </span>
+        </div>
+
+        {%- if field.description -%}
+            <p class="help-block" style="color:inherit;">{{ field.description }}</p>
+        {%- endif -%}
+
+        {{ render_field_errors_list(field.errors) }}
+    </div>
+{%- endmacro -%}
+
+{%- macro render_default_field(field, label_visible) -%}
+    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
+        {%- if field.type != "HiddenField" and field.type !="CSRFTokenField" and label_visible -%}
+            <label for="{{ field.id }}" class="control-label">{{ field.label.text }}</label>
+        {%- endif -%}
+        {%- if field.type == "FileField" -%}{# File inputs do not get "form-control" class #}
+            {{ field(**kwargs) }}
+        {%- else -%}
+            {{ field(class_="form-control", **kwargs) }}
+        {%- endif -%}
+        {%- if field.description -%}
+            <p class="help-block" style="color:inherit;">{{ field.description }}</p>
+        {%- endif -%}
+        {{ render_field_errors_list(field.errors) }}
+    </div>
 {%- endmacro %}
 
-{# Renders WTForm in Bootstrap style. There are two ways to call function:
-     - as macros: it will render all field forms using cycle to iterate over them
-     - as call: it will insert form fields as you specify:
-     e.g. {% call macros.render_form(form, action_url=url_for('login_view'), action_text='Login',
-                                        class_='login-form') %}
-                {{ macros.render_field(form.email, placeholder='Input email', type='email') }}
-                {{ macros.render_field(form.password, placeholder='Input password', type='password') }}
-                {{ macros.render_checkbox_field(form.remember_me, type='checkbox') }}
-            {% endcall %}
 
-     Params:
-        form - WTForm class
-        action_url - url where to submit this form
-        action_text - text of submit button
-        class_ - sets a class for form
-    #}
-{% macro render_form(form, action_url="", action_text="Submit", class_="", btn_class="btn btn-default", enctype="application/x-www-form-urlencoded", method="POST") -%}
-
+{# Form #}
+{%- macro render_form(form, action_text="Submit", action_url="", btn_class="btn btn-default", class_="", enctype="application/x-www-form-urlencoded", method="POST") -%}
     <form method="{{ method }}" action="{{ action_url }}" role="form" class="{{ class_ }}" enctype="{{ enctype }}">
         {{ form.hidden_tag() if form.hidden_tag }}
-        {% if caller %}
+        {%- if caller -%}
             {{ caller() }}
-        {% else %}
-            {% for f in form %}
+        {%- else -%}
+            {%- for f in form -%}
                 {{ render_field(f) }}
-            {% endfor %}
-        {% endif %}
+            {%- endfor -%}
+        {%- endif -%}
         <input type="submit" class="{{ btn_class }}" value="{{ action_text }}">
     </form>
-{%- endmacro %}
+{%- endmacro -%}
