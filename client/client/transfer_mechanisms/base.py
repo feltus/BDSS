@@ -1,6 +1,19 @@
+import os
 import selectors
 import subprocess
 import sys
+
+
+def is_program_on_path(prog_name):
+    for path in os.get_exec_path():
+        if not path or not os.path.isdir(path):
+            continue
+
+        if prog_name in os.listdir(path):
+            prog_path = os.path.join(path, prog_name)
+            if os.access(prog_path, os.X_OK):
+                return True
+    return False
 
 
 def transfer_data_file_with_subprocess(subprocess_args):

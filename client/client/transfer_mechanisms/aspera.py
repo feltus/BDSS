@@ -1,7 +1,11 @@
 import os
 from urllib.parse import urlparse, urlunsplit
 
-from .base import transfer_data_file_with_subprocess
+from .base import is_program_on_path, transfer_data_file_with_subprocess
+
+
+def is_available():
+    return is_program_on_path("ascp")
 
 
 def transfer_data_file(url, output_path, options):

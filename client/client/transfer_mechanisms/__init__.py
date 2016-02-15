@@ -9,7 +9,8 @@ def available_mechanisms():
     """
     Names of all available transfer mechanisms.
     """
-    return [name for _, name, _ in pkgutil.iter_modules(__path__) if name not in EXCLUDE_MODULES]
+    all_mechanisms = [name for _, name, _ in pkgutil.iter_modules(__path__) if name not in EXCLUDE_MODULES]
+    return [m for m in all_mechanisms if transfer_mechanism_module(m).is_available()]
 
 
 def default_mechanism(url):
