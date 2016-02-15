@@ -37,7 +37,7 @@ def matching_data_source(url):
         return None
 
 
-def transform_url(url):
+def transform_url(url, available_mechanisms):
     """
     Query DB for alternate URLs for the data file at the given URL.
     """
@@ -53,7 +53,9 @@ def transform_url(url):
 
         # If transformed URL matches target data source, add to results
         # Include matcher and transform in result for display
-        if transform.to_data_source.matches_url(transformed_url):
+        if transform.to_data_source.matches_url(transformed_url) and \
+           transform.to_data_source.transfer_mechanism_type in available_mechanisms:
+
             transform_results.append(TransformResult(
                 original_url=url,
                 original_source=data_source,

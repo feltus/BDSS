@@ -874,7 +874,7 @@ def get_transformed_urls():
         error_message = None
         if form.validate():
             try:
-                results = transform_url(form.url.data)
+                results = transform_url(form.url.data, form.available_mechanisms.data)
             except UrlTransformException as e:
                 error_message = e.args[0]
             except Exception as e:
