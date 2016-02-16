@@ -145,12 +145,15 @@ def handle_action(args, parser):
                               r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
                               r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
 
-            logger.info("Received alternate data sources")
-            logger.info("-------")
-            for r in response["results"]:
-                logger.info("%s", r["transform_applied"]["to_data_source"]["label"])
-                logger.info("  %s", r["transformed_url"])
-                logger.info("  %s", r["transform_applied"]["to_data_source"]["transfer_mechanism_type"])
+            if transfer_specs:
+                logger.info("Received alternate data sources")
+                logger.info("-------")
+                for r in response["results"]:
+                    logger.info("%s", r["transform_applied"]["to_data_source"]["label"])
+                    logger.info("  %s", r["transformed_url"])
+                    logger.info("  %s", r["transform_applied"]["to_data_source"]["transfer_mechanism_type"])
+            else:
+                logger.warn("Received no alternate data sources")
 
         except Exception:
             logger.warn("Unable to contact metadata repository")
