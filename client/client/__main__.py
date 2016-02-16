@@ -4,7 +4,7 @@ import sys
 
 from chalk import log
 
-from .actions import sources_action, test_files_action, transfer_action
+from .actions import mechanisms_action, sources_action, test_files_action, transfer_action
 
 
 logger = logging.getLogger("bdss")
@@ -22,6 +22,9 @@ def main():
 
     subparsers = parser.add_subparsers(dest="action", metavar="action")
 
+    mechanisms_parser = subparsers.add_parser("mechanisms", help="List available transfer mechanisms")
+    mechanisms_action.configure_parser(mechanisms_parser)
+
     sources_parser = subparsers.add_parser("sources", help="Find data sources")
     sources_action.configure_parser(sources_parser)
 
@@ -35,6 +38,7 @@ def main():
     logger.setLevel(getattr(logging, args.log.upper()))
 
     available_actions = {
+        "mechanisms": mechanisms_action,
         "sources": sources_action,
         "transfer": transfer_action,
         "test-files": test_files_action
