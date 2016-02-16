@@ -47,6 +47,10 @@ def label_for_matcher_type(matcher_type):
     return label if label else matcher_type
 
 
+def description_for_matcher_type(matcher_type):
+    return _property_of_module("matchers." + matcher_type, "description") or ""
+
+
 def matcher_of_type(matcher_type):
     """Get matcher function for a matcher type."""
     return _property_of_module("matchers." + matcher_type, "matches_url")
@@ -80,6 +84,10 @@ def label_for_transform_type(transform_type):
     return label if label else transform_type
 
 
+def description_for_transform_type(transform_type):
+    return _property_of_module("transforms." + transform_type, "description") or ""
+
+
 def transform_of_type(transform_type):
     """Get matcher function for a transform type."""
     return _property_of_module("transforms." + transform_type, "transform_url")
@@ -111,6 +119,10 @@ def label_for_transfer_mechanism_type(transfer_mechanism_type):
     """Get user facing label for a transfer mechanism type."""
     label = _property_of_module("transfer_mechanisms." + transfer_mechanism_type, "label")
     return label if label else transfer_mechanism_type
+
+
+def description_for_transfer_mechanism_type(transfer_mechanism_type):
+    return _property_of_module("transfer_mechanisms." + transfer_mechanism_type, "description") or ""
 
 
 def options_form_class_for_transfer_mechanism_type(transfer_mechanism_type):

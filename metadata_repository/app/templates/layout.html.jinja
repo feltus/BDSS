@@ -68,5 +68,18 @@
     {% block scripts %}
     {% endblock %}
 
+    {# For select fields containing options with extended descriptions, show the description for the
+       selected option in a paragraph below the select #}
+    <script>
+    $(document).ready(function() {
+        var updateDescription = function() {
+            var group = $(this).closest(".form-group");
+            group.find("p.option-description").remove();
+            group.append($("<p class=\"option-description help-block\">" + $(this).find("option:selected").data("description") + "</p>"));
+        };
+        $("select.option-descriptions").on("change", updateDescription).each(updateDescription);
+    });
+    </script>
+
 </body>
 </html>
