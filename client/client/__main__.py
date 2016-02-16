@@ -1,11 +1,24 @@
 import argparse
+import logging
 import sys
+
+from chalk import log
 
 from .actions import sources_action, test_files_action, transfer_action
 
 
+logger = logging.getLogger("bdss")
+handler = log.ChalkHandler()
+handler.setFormatter(log.ChalkFormatter("%(asctime)s %(levelname)s - %(message)s"))
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+
 def main():
     parser = argparse.ArgumentParser(description="BDSS client")
+
+    parser.add_argument("--log", choices=["debug", "info", "warn", "error"], default="info")
 
     subparsers = parser.add_subparsers(dest="action", metavar="action")
 
@@ -19,6 +32,7 @@ def main():
     test_files_action.configure_parser(test_files_parser)
 
     args = parser.parse_args()
+    logger.setLevel(getattr(logging, args.log.upper()))
 
     available_actions = {
         "sources": sources_action,

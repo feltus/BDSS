@@ -8,17 +8,12 @@ import traceback
 from collections import namedtuple
 
 import requests
-from chalk import log
 
 from ..config import metadata_repository_url
 from ..transfer_mechanisms import available_mechanisms, default_mechanism, transfer_mechanism_module
 
-logger = logging.getLogger(__name__)
-handler = log.ChalkHandler()
-handler.setFormatter(log.ChalkFormatter("%(asctime)s %(levelname)s - %(message)s"))
-handler.setLevel(logging.DEBUG)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+
+logger = logging.getLogger("bdss")
 
 
 TransferSpec = namedtuple("TransferSpec", "url transfer_mechanism transfer_mechanism_options")
