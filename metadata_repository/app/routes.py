@@ -869,7 +869,7 @@ def get_transformed_urls():
     """
     form = TransformedUrlsForm(request.form)
 
-    results = None
+    results = []
     if request.method == "POST":
         error_message = None
         if form.validate():
