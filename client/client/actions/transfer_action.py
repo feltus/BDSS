@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+import json
 import logging
 import os
 import sys
@@ -24,6 +25,16 @@ def configure_parser(parser):
                         help="URLs of data files to download",
                         metavar="data-file-urls",
                         nargs="*")
+
+    parser.add_argument("-i", "--input",
+                        dest="spec_input_file",
+                        help="File containing transfer specs",
+                        type=argparse.FileType("r"))
+
+    parser.add_argument("-o", "--output",
+                        dest="spec_output_file",
+                        help="Path to output succesful transfer specs",
+                        type=argparse.FileType("w"))
 
     parser.add_argument("-m", "--url-manifest",
                         dest="manifest_file",
@@ -67,7 +78,7 @@ def send_timing_report(success, data_file_url, file_size_bytes, transfer_duratio
                   })
 
 
-def transfer_data_file(specs, output_path):
+def transfer_data_file(specs, output_path, spec_output_file=None):
     """
     Transfer a data file.
 
@@ -105,6 +116,12 @@ def transfer_data_file(specs, output_path):
             send_timing_report(success, s.url, file_size, time_elapsed, file_checksum, mechanism_output)
             if success:
                 logger.info("Success. Downloaded %d bytes in %d seconds", file_size, time_elapsed)
+                if spec_output_file:
+                    spec_output_file.write(json.dumps({
+                        "url": s.url,
+                        "transfer_mechanism": s.transfer_mechanism,
+                        "transfer_mechanism_options": s.transfer_mechanism_options
+                    }))
                 return True
             else:
                 logger.warn("Unable to download file")
@@ -114,54 +131,74 @@ def transfer_data_file(specs, output_path):
     return False
 
 
+def output_path_for_url(url):
+    return url.partition("?")[0].rpartition("/")[2]
+
+
+def request_transfer_specs(url):
+    transfer_specs = None
+
+    data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(available_mechanisms())}
+    data["url"] = url
+
+    response = requests.post("%s/transformed_urls" % metadata_repository_url,
+                             data=data,
+                             headers={"Accept": "application/json"})
+
+    response = response.json()
+
+    transfer_specs = [TransferSpec(r["transformed_url"],
+                      r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
+                      r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
+
+    if transfer_specs:
+        logger.info("Received alternate data sources")
+        logger.info("-------")
+        for r in response["results"]:
+            logger.info("%s", r["transform_applied"]["to_data_source"]["label"])
+            logger.info("  %s", r["transformed_url"])
+            logger.info("  %s", r["transform_applied"]["to_data_source"]["transfer_mechanism_type"])
+    else:
+        logger.warn("Received no alternate data sources")
+
+    return transfer_specs
+
+
 def handle_action(args, parser):
     if args.manifest_file:
         args.urls = [line.strip() for line in args.manifest_file if line.strip()]
 
-    if not args.urls:
+    if not args.urls and not args.spec_input_file:
         parser.print_help(file=sys.stderr)
         sys.exit(1)
 
-    for url in args.urls:
+    if args.urls:
+        for url in args.urls:
+            output_path = output_path_for_url(url)
+            if os.path.isfile(output_path):
+                logger.warn("File at %s already exists at %s", url, output_path)
+                continue
 
-        output_path = url.partition("?")[0].rpartition("/")[2]
-        transfer_specs = None
+            try:
+                transfer_specs = request_transfer_specs(url)
+            except Exception:
+                logger.warn("Failed to load transfer specs from metadata repository")
+                traceback.print_exc()
 
-        if os.path.isfile(output_path):
-            logger.warn("File at %s already exists at %s", url, output_path)
-            continue
+            if not transfer_specs:
+                logger.warn("Falling back to default transfer mechanism")
+                transfer_specs = [TransferSpec(url, *default_mechanism(url))]
 
-        try:
-            data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(available_mechanisms())}
-            data["url"] = url
+            if not transfer_data_file(transfer_specs, output_path, args.spec_output_file):
+                logger.error("Failed to download file")
 
-            response = requests.post("%s/transformed_urls" % metadata_repository_url,
-                                     data=data,
-                                     headers={"Accept": "application/json"})
-
-            response = response.json()
-
-            transfer_specs = [TransferSpec(r["transformed_url"],
-                              r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
-                              r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
-
-            if transfer_specs:
-                logger.info("Received alternate data sources")
-                logger.info("-------")
-                for r in response["results"]:
-                    logger.info("%s", r["transform_applied"]["to_data_source"]["label"])
-                    logger.info("  %s", r["transformed_url"])
-                    logger.info("  %s", r["transform_applied"]["to_data_source"]["transfer_mechanism_type"])
-            else:
-                logger.warn("Received no alternate data sources")
-
-        except Exception:
-            logger.warn("Unable to contact metadata repository")
-            traceback.print_exc()
-
-        if not transfer_specs:
-            logger.warn("Falling back to default transfer mechanism")
-            transfer_specs = [TransferSpec(url, *default_mechanism(url))]
-
-        if not transfer_data_file(transfer_specs, output_path):
-            logger.error("Failed to download file")
+    elif args.spec_input_file:
+        for line in args.spec_input_file:
+            s = json.loads(line.rstrip())
+            output_path = output_path_for_url(s["url"])
+            if os.path.isfile(output_path):
+                logger.warn("File at %s already exists at %s", s["url"], output_path)
+                continue
+            spec = TransferSpec._make([s["url"], s["transfer_mechanism"], s["transfer_mechanism_options"]])
+            if not transfer_data_file([spec], output_path, args.spec_output_file):
+                logger.error("Failed to download file")
