@@ -45,7 +45,7 @@ class SelectWithOptionDescription(wtforms.widgets.Select):
         if self.multiple:
             kwargs["multiple"] = True
         html = ["<select %s>" % wtforms.widgets.html_params(name=field.name, **kwargs)]
-        for val, label, selected, option_description in field.iter_choices():
+        for val, label, selected, option_description in field.iter_choices_with_description():
             html.append(self.render_option(val, label, selected, data_description=option_description))
         html.append("</select>")
         return wtforms.widgets.HTMLString("".join(html))
@@ -55,9 +55,16 @@ class SelectWithOptionDescriptionField(wtforms.fields.SelectField):
 
     widget = SelectWithOptionDescription()
 
-    def iter_choices(self):
-        for value, label, option_kwargs in self.choices:
-            yield (value, label, self.coerce(value) == self.data, option_kwargs)
+    def __init__(self, label=None, validators=None, coerce=wtforms.compat.text_type, choices=None, option_descriptions=None, **kwargs):
+        super(SelectWithOptionDescriptionField, self).__init__(label, validators, coerce, choices, **kwargs)
+        if option_descriptions:
+            self.option_descriptions = option_descriptions
+        else:
+            self.option_descriptions = ["" for c in choices]
+
+    def iter_choices_with_description(self):
+        for (i, (value, label)) in enumerate(self.choices):
+            yield (value, label, self.coerce(value) == self.data, self.option_descriptions[i])
 
 
 class LoginForm(wtforms.Form):
@@ -105,7 +112,8 @@ class DataSourceForm(wtforms.Form):
 
     transfer_mechanism_type = SelectWithOptionDescriptionField(
         label="Transfer Mechanism",
-        choices=[(t, label_for_transfer_mechanism_type(t), description_for_transfer_mechanism_type(t)) for t in available_transfer_mechanism_types()],
+        choices=[(t, label_for_transfer_mechanism_type(t)) for t in available_transfer_mechanism_types()],
+        option_descriptions=[description_for_transfer_mechanism_type(t) for t in available_transfer_mechanism_types()],
         validators=[wtforms.validators.InputRequired()])
 
     transfer_mechanism_options = None
@@ -126,7 +134,8 @@ class UrlMatcherForm(wtforms.Form):
 
     matcher_type = SelectWithOptionDescriptionField(
         label="Matcher Type",
-        choices=[(t, label_for_matcher_type(t), description_for_matcher_type(t)) for t in available_matcher_types()],
+        choices=[(t, label_for_matcher_type(t)) for t in available_matcher_types()],
+        option_descriptions=[description_for_matcher_type(t) for t in available_matcher_types()],
         validators=[wtforms.validators.InputRequired()])
 
     matcher_options = None
@@ -150,7 +159,8 @@ class UrlTransformForm(wtforms.Form):
 
     transform_type = SelectWithOptionDescriptionField(
         label="Transform Type",
-        choices=[(t, label_for_transform_type(t), description_for_transform_type(t)) for t in available_transform_types()],
+        choices=[(t, label_for_transform_type(t)) for t in available_transform_types()],
+        option_descriptions=[description_for_transform_type(t) for t in available_transform_types()],
         validators=[wtforms.validators.InputRequired()])
 
     transform_options = None
