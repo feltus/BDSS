@@ -21,6 +21,7 @@ import logging
 import pkg_resources
 import sys
 import textwrap
+import traceback
 
 from chalk import log
 
@@ -66,4 +67,5 @@ def main():
         action_module(args.action).handle_action(args, parser)
     except:
         print("Failed", args.action, "action", file=sys.stderr)
+        logger.debug(traceback.format_exc())
         sys.exit(1)
