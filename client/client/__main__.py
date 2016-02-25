@@ -39,7 +39,8 @@ logger.setLevel(logging.INFO)
 def main():
     parser = argparse.ArgumentParser(description="BDSS client")
 
-    parser.add_argument("--log", choices=["debug", "info", "warn", "error"], default="info")
+    parser.add_argument("--log", choices=["debug", "info", "warn", "error"], default="info",
+                        help="Level of log messages to print. One of debug, info, warn, error.", metavar="level")
     parser.add_argument("--version", "-v", action="store_true")
 
     subparsers = parser.add_subparsers(dest="action",
