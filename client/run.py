@@ -19,6 +19,6 @@
 # PyInstaller won't work directly on client/__main__.py because it needs
 # client to be loaded as a module. Thus, this wrapper script.
 
-import client
+from client.__main__ import main
 
-client.__main__.main()
+main()

@@ -19,10 +19,10 @@
 block_cipher = None
 
 
-a = Analysis(['run.py'],
-             pathex=['/vagrant'],
+a = Analysis(["run.py"],
+             pathex=["/vagrant"],
              binaries=None,
-             datas=None,
+             datas=[("client/defaults.cfg", "client")],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -37,7 +37,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='bdss',
+          name="bdss",
           debug=False,
           strip=False,
           upx=True,

@@ -16,20 +16,26 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import importlib
-import pkgutil
-import re
+from . import mechanisms_action
+from . import sources_action
+from . import test_files_action
+from . import transfer_action
+
+
+_actions = {
+    "mechanisms": mechanisms_action,
+    "sources": sources_action,
+    "test_files": test_files_action,
+    "transfer": transfer_action
+}
 
 
 def all_actions():
-    return [re.sub(r"_action$", "", name) for _, name, _ in pkgutil.iter_modules(__path__)]
+    return list(_actions.keys())
 
 
 def action_module(action_name):
-    try:
-        return importlib.import_module(__package__ + "." + action_name + "_action")
-    except ImportError:
-        return None
+    return _actions[action_name]
 
 
 def available_action_info():

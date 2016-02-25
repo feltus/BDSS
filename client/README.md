@@ -19,7 +19,7 @@ Build:
 
 ```Shell
 cd /path/to/bdss/client
-pyinstaller --onefile client.spec
+pyinstaller --clean --onefile client.spec
 ```
 
 Executable is output in `dist/bdss`

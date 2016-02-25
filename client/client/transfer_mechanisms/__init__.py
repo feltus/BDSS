@@ -16,19 +16,21 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import importlib
-import pkgutil
+from . import aspera
+from . import curl
 
 
-EXCLUDE_MODULES = ("base",)
+_mechanisms = {
+    "aspera": aspera,
+    "curl": curl
+}
 
 
 def available_mechanisms():
     """
     Names of all available transfer mechanisms.
     """
-    all_mechanisms = [name for _, name, _ in pkgutil.iter_modules(__path__) if name not in EXCLUDE_MODULES]
-    return [m for m in all_mechanisms if transfer_mechanism_module(m).is_available()]
+    return list(_mechanisms.keys())
 
 
 def default_mechanism(url):
@@ -46,7 +48,4 @@ def transfer_mechanism_module(mechanism_name):
     """
     The Python module for a transfer mechanism.
     """
-    try:
-        return importlib.import_module(__package__ + "." + mechanism_name)
-    except ImportError:
-        return None
+    return _mechanisms[mechanism_name]
