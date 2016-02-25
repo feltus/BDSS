@@ -30,3 +30,7 @@ def action_module(action_name):
         return importlib.import_module(__package__ + "." + action_name + "_action")
     except ImportError:
         return None
+
+
+def available_action_info():
+    return [(action, getattr(action_module(action), "cli_help", "")) for action in all_actions()]

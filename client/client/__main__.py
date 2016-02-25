@@ -25,7 +25,7 @@ import traceback
 
 from chalk import log
 
-from .actions import all_actions, action_module
+from .actions import action_module, available_action_info
 
 
 logger = logging.getLogger("bdss")
@@ -42,10 +42,13 @@ def main():
     parser.add_argument("--log", choices=["debug", "info", "warn", "error"], default="info")
     parser.add_argument("--version", "-v", action="store_true")
 
-    subparsers = parser.add_subparsers(dest="action", metavar="action")
+    subparsers = parser.add_subparsers(dest="action",
+                                       help="description",
+                                       metavar="action",
+                                       title="available actions")
 
-    for action in all_actions():
-        action_parser = subparsers.add_parser(action)
+    for action, help_text in available_action_info():
+        action_parser = subparsers.add_parser(action, help=help_text)
         action_module(action).configure_parser(action_parser)
 
     args = parser.parse_args()

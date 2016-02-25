@@ -19,6 +19,9 @@
 from ..transfer_mechanisms import available_mechanisms
 
 
+cli_help = "List transfer mechanisms available on this machine."
+
+
 def configure_parser(parser):
     pass
 

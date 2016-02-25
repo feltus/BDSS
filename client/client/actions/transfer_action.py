@@ -32,6 +32,9 @@ from ..config import metadata_repository_url
 from ..transfer_mechanisms import available_mechanisms, default_mechanism, transfer_mechanism_module
 
 
+cli_help = "Download data file(s)."
+
+
 logger = logging.getLogger("bdss")
 
 

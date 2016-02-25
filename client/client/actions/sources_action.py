@@ -21,6 +21,9 @@ import requests
 from ..config import metadata_repository_url
 
 
+cli_help = "Search data sources in metadata repository by label."
+
+
 def configure_parser(parser):
     parser.add_argument("query",
                         help="Search for data sources matching this label")

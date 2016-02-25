@@ -21,6 +21,9 @@ import requests
 from ..config import metadata_repository_url
 
 
+cli_help = "List test files for a specific data source."
+
+
 def configure_parser(parser):
     parser.add_argument("data_source_id",
                         help="ID of data source to get test files for",
