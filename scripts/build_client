@@ -1,0 +1,12 @@
+#!/bin/bash
+
+SCRIPT_PATH=$(dirname $0)
+
+CLIENT_PATH=$(readlink -f "$SCRIPT_PATH/../client")
+
+cd "$CLIENT_PATH"
+
+pyinstaller --clean --onefile client.spec
+
+echo -e "\e[32mClient executable at $CLIENT_PATH/dist/bdss\e[0m"
+
