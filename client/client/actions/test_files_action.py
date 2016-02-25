@@ -16,12 +16,16 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+import logging
 import requests
 
 from ..config import metadata_repository_url
 
 
 cli_help = "List test files for a specific data source."
+
+
+logger = logging.getLogger("bdss")
 
 
 def configure_parser(parser):
@@ -40,7 +44,13 @@ def get_test_files(data_source_id):
     response = requests.get("/".join([metadata_repository_url, "data_sources", data_source_id, "test_files"]), headers={
         "accept": "application/json"
     })
-    return response.json()["test_files"]
+    if response.status_code == 200:
+        return response.json()["test_files"]
+    elif response.status_code == 404:
+        logger.warn("Data source ID #%s not found" % data_source_id)
+        return []
+    else:
+        response.raise_for_status()
 
 
 def handle_action(args, parser):

@@ -73,7 +73,8 @@ def main():
 
     try:
         action_module(args.action).handle_action(args, parser)
-    except:
-        print("Failed", args.action, "action", file=sys.stderr)
+    except Exception as e:
+        logger.error("Failed %s action" % args.action)
+        logger.error(e)
         logger.debug(traceback.format_exc())
         sys.exit(1)
