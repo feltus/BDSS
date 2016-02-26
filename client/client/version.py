@@ -16,24 +16,4 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import textwrap
-
-from ..version import __version__
-
-
-cli_help = "Print version and license information."
-
-
-def configure_parser(parser):
-    pass
-
-
-def handle_action(args, parser):
-    version_text = """
-    bdss {version}
-    Copyright (C) 2016 Clemson University
-    License GPLv2: GNU GPL version 2 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
-    This is free software: you are free to change and redistribute it.
-    There is NO WARRANTY, to the extent permitted by law.
-    """.format(version=__version__)
-    print(textwrap.dedent(version_text).strip())
+__version__ = "0.0.1"

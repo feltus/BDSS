@@ -16,6 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+import os
 import uuid
 
 from pip.req import parse_requirements
@@ -25,8 +26,11 @@ requirements = [str(r.req) for r in parse_requirements("requirements.txt", sessi
 
 # https://pythonhosted.org/setuptools/setuptools.html
 
+# Load version from client/version.py
+exec(open(os.path.join("client", "version.py")).read())
+
 setup(name="bdss_client",
-      version="0.0.1",
+      version=__version__,  # noqa
       description="",
       classifiers=[
           "Development Status :: 1 - Planning",
