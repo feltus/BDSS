@@ -49,13 +49,15 @@ def main():
         action_parser = subparsers.add_parser(action, help=help_text)
         action_module(action).configure_parser(action_parser)
 
+    subparsers.add_parser("help", help="Show this help message and exit")
+
     args = parser.parse_args()
 
     logger.setLevel(getattr(logging, args.log.upper()))
 
-    if not args.action:
+    if not args.action or args.action == "help":
         parser.print_help(file=sys.stderr)
-        sys.exit(1)
+        sys.exit(0)
 
     try:
         action_module(args.action).handle_action(args, parser)
