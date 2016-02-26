@@ -16,29 +16,23 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from . import mechanisms_action
-from . import sources_action
-from . import test_files_action
-from . import transfer_action
-from . import version_action
+import pkg_resources
+import textwrap
 
 
-_actions = {
-    "mechanisms": mechanisms_action,
-    "sources": sources_action,
-    "test_files": test_files_action,
-    "transfer": transfer_action,
-    "version": version_action
-}
+cli_help = "Print version and license information."
 
 
-def all_actions():
-    return list(_actions.keys())
+def configure_parser(parser):
+    pass
 
 
-def action_module(action_name):
-    return _actions[action_name]
-
-
-def available_action_info():
-    return [(action, getattr(action_module(action), "cli_help", "")) for action in all_actions()]
+def handle_action(args, parser):
+    version_text = """
+    bdss {version}
+    Copyright (C) 2016 Clemson University
+    License GPLv2: GNU GPL version 2 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
+    This is free software: you are free to change and redistribute it.
+    There is NO WARRANTY, to the extent permitted by law.
+    """.format(version=pkg_resources.require("bdss_client")[0].version)
+    print(textwrap.dedent(version_text).strip())

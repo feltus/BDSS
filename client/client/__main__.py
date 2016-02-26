@@ -18,9 +18,7 @@
 
 import argparse
 import logging
-import pkg_resources
 import sys
-import textwrap
 import traceback
 
 from chalk import log
@@ -41,7 +39,6 @@ def main():
 
     parser.add_argument("--log", choices=["debug", "info", "warn", "error"], default="info",
                         help="Level of log messages to print. One of debug, info, warn, error.", metavar="level")
-    parser.add_argument("--version", "-v", action="store_true")
 
     subparsers = parser.add_subparsers(dest="action",
                                        help="description",
@@ -53,17 +50,6 @@ def main():
         action_module(action).configure_parser(action_parser)
 
     args = parser.parse_args()
-
-    if args.version:
-        version_text = """
-        bdss {version}
-        Copyright (C) 2016 Clemson University
-        License GPLv2: GNU GPL version 2 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>.
-        This is free software: you are free to change and redistribute it.
-        There is NO WARRANTY, to the extent permitted by law.
-        """.format(version=pkg_resources.require("bdss_client")[0].version)
-        print(textwrap.dedent(version_text).strip())
-        sys.exit(1)
 
     logger.setLevel(getattr(logging, args.log.upper()))
 
