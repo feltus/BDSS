@@ -37,8 +37,7 @@ logger.setLevel(logging.INFO)
 def main():
     parser = argparse.ArgumentParser(description="BDSS client")
 
-    parser.add_argument("--log", choices=["debug", "info", "warn", "error"], default="info",
-                        help="Level of log messages to print. One of debug, info, warn, error.", metavar="level")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Produce verbose log messages")
 
     subparsers = parser.add_subparsers(dest="action",
                                        help="description",
@@ -53,7 +52,8 @@ def main():
 
     args = parser.parse_args()
 
-    logger.setLevel(getattr(logging, args.log.upper()))
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
 
     if not args.action or args.action == "help":
         parser.print_help(file=sys.stderr)
