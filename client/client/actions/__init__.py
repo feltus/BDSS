@@ -33,7 +33,7 @@ _actions = {
 
 
 def all_actions():
-    return list(_actions.keys())
+    return sorted(list(_actions.keys()))
 
 
 def action_module(action_name):
