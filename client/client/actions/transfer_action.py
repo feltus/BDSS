@@ -42,25 +42,29 @@ TransferSpec = namedtuple("TransferSpec", "url transfer_mechanism transfer_mecha
 
 
 def configure_parser(parser):
-    parser.add_argument("urls",
-                        help="URLs of data files to download",
-                        metavar="data-file-urls",
-                        nargs="*")
 
-    parser.add_argument("-i", "--input",
-                        dest="spec_input_file",
-                        help="File containing transfer specs",
-                        type=argparse.FileType("r"))
+    group = parser.add_mutually_exclusive_group(required=True)
 
-    parser.add_argument("-o", "--output",
+    group.add_argument("manifest_file",
+                       help="File containing a list of URLs to transfer",
+                       nargs="?",
+                       type=argparse.FileType("r"))
+
+    group.add_argument("--urls", "-u",
+                       dest="urls",
+                       help="URL(s) of data files to transfer",
+                       metavar="URL",
+                       nargs="+")
+
+    group.add_argument("--input-spec", "-i",
+                       dest="spec_input_file",
+                       help="File containing transfer specs to run",
+                       type=argparse.FileType("r"))
+
+    parser.add_argument("--output-spec", "-o",
                         dest="spec_output_file",
                         help="Path to output succesful transfer specs",
                         type=argparse.FileType("w"))
-
-    parser.add_argument("-m", "--url-manifest",
-                        dest="manifest_file",
-                        help="Path to file containing a list of URLs of data files to download.",
-                        type=argparse.FileType("r"))
 
 
 def file_md5sum(filename):
