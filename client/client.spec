@@ -20,7 +20,7 @@ block_cipher = None
 
 
 a = Analysis(["run.py"],
-             pathex=["/vagrant"],
+             pathex=[],
              binaries=None,
              datas=[("client/defaults.cfg", "client")],
              hiddenimports=[],
