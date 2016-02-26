@@ -68,7 +68,7 @@ def main():
     logger.setLevel(getattr(logging, args.log.upper()))
 
     if not args.action:
-        parser.print_usage(file=sys.stderr)
+        parser.print_help(file=sys.stderr)
         sys.exit(1)
 
     try:
