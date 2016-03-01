@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--verbose", "-v", action="store_true", help="Produce verbose log messages")
 
     subparsers = parser.add_subparsers(dest="action",
-                                       help="description",
+                                       help="See `bdss <action> -h` to read about a specific action",
                                        metavar="action",
                                        title="available actions")
 
