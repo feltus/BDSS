@@ -17,3 +17,7 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
    * Consumes information from metadata repository
    * Invokes transfer clients
    * Reports analytics to metadata repository
+
+For more information, see the documentation.
+   * [Metadata repository](/metadata_repository/README.md)
+   * [Client](/client/README.md)
