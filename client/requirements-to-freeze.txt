@@ -1,0 +1,3 @@
+# http://www.kennethreitz.org/essays/a-better-pip-workflow
+pychalk
+requests

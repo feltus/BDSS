@@ -1,0 +1,13 @@
+# http://www.kennethreitz.org/essays/a-better-pip-workflow
+alembic
+bcrypt
+django-htmlmin
+flake8
+Flask
+flask-jsontools
+Flask-Login
+passlib
+PyYAML
+simplejson
+SQLAlchemy
+WTForms
