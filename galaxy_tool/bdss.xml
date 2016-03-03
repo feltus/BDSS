@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<tool id="bdss" name="BDSS" version="0.0.1">
+    <description>Download files</description>
+    <command>
+        <![CDATA[
+            /path/to/bdss.exe transfer --destination data_files $manifest > /path/to/bdss.log 2>&1
+        ]]>
+    </command>
+    <inputs>
+        <param format="txt" name="manifest" type="data" label="Data Manifest"/>
+    </inputs>
+    <outputs>
+        <collection type="list" label="output" name="output1">
+            <discover_datasets pattern="(?P&lt;name&gt;.*)" directory="data_files"/>
+        </collection>
+    </outputs>
+    <help></help>
+</tool>
