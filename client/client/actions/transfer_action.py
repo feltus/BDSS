@@ -61,6 +61,11 @@ def configure_parser(parser):
                        help="File containing transfer specs to run",
                        type=argparse.FileType("r"))
 
+    parser.add_argument("--destination", "-d",
+                        dest="destination_directory",
+                        default=os.getcwd(),
+                        help="Path to directory to store downloaded files in")
+
     parser.add_argument("--output-spec", "-o",
                         dest="spec_output_file",
                         help="Path to output succesful transfer specs",
@@ -156,7 +161,7 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
     return False
 
 
-def output_path_for_url(url):
+def output_file_name(url):
     return url.partition("?")[0].rpartition("/")[2]
 
 
@@ -198,8 +203,9 @@ def handle_action(args, parser):
         sys.exit(1)
 
     if args.urls:
+        os.makedirs(args.destination_directory, exist_ok=True)
         for url in args.urls:
-            output_path = output_path_for_url(url)
+            output_path = os.path.join(args.destination_directory, output_file_name(url))
             if os.path.isfile(output_path):
                 logger.warn("File at %s already exists at %s", url, output_path)
                 continue
@@ -218,9 +224,10 @@ def handle_action(args, parser):
                 logger.error("Failed to download file")
 
     elif args.spec_input_file:
+        os.makedirs(args.destination_directory, exist_ok=True)
         for line in args.spec_input_file:
             s = json.loads(line.rstrip())
-            output_path = output_path_for_url(s["url"])
+            output_path = os.path.join(args.destination_directory, output_file_name(s["url"]))
             if os.path.isfile(output_path):
                 logger.warn("File at %s already exists at %s", s["url"], output_path)
                 continue
