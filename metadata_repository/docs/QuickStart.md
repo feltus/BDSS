@@ -12,4 +12,4 @@ Launch an instance of the metadata repository in a virtual machine.
    vagrant up
    ```
 
-3. Open http://localhost:8000 in a web browser
+3. Open [http://localhost:8000](http://localhost:8000) in a web browser
