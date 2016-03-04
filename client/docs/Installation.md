@@ -1,10 +1,21 @@
 # Installation
 
+The BDSS client requires Python 3.4+.
+
 ## Development
 
-```
-cd /path/to/bdss/client
+```Shell
+git clone https://github.com/feltus/BDSS.git
+cd BDSS/client
 python3 setup.py develop
+```
+
+## Install from PyPI
+
+_Not available yet_ (See [#105](https://github.com/feltus/BDSS/issues/105))
+
+```Shell
+pip install bdss-client
 ```
 
 ## Stand alone executable
@@ -17,14 +28,13 @@ Requirements:
 
 ```Shell
 apt-get install python3-dev
-python3 setup.py install
 pip install pyinstaller
 ```
 
 Build:
 
 ```Shell
-cd /path/to/bdss/client
+cd /path/to/BDSS/client
 pyinstaller --clean --onefile client.spec
 ```
 
