@@ -31,3 +31,6 @@ pyinstaller --clean --onefile client.spec
 ## Transfer mechanisms
 
 The BDSS client invokes other programs to transfer files. These must be installed individually.
+
+* [Aspera](/client/docs/transfer_mechanisms/Aspera.md#Installation)
+* [curl](/client/docs/transfer_mechanisms/curl.md#Installation)
