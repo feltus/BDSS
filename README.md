@@ -6,7 +6,7 @@ many researchers continue familiar but suboptimal practices: using slow transfer
 transferring data over wireless networks, etc.
 
 BDSS aims to alleviate this problem by shifting the burden of learning about alternative file mirrors, transfer
-clients, tuning parameters, etc. from the end user researcher to a group of "data curators". It consists of two parts:
+clients, tuning parameters, etc. from the end user researcher to a group of "data curators". It consists of three parts:
 
 1. Metadata repository
    * Central database managed by data curators
@@ -18,6 +18,10 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
    * Invokes transfer clients
    * Reports analytics to metadata repository
 
+3. Galaxy tool
+   * Run the BDSS client as part of a [Galaxy](https://galaxyproject.org/) workflow
+
 For more information, see the documentation.
    * [Metadata repository](/metadata_repository/README.md)
    * [Client](/client/README.md)
+   * [Galaxy tool](/galaxy_tool/README.md)
