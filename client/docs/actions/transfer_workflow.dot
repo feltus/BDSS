@@ -1,0 +1,81 @@
+digraph {
+
+    start[
+        label="Client is invoked\nto download a file"
+    ]
+
+    start -> request_alternate_urls
+
+    request_alternate_urls[
+        label="Request alternate URLs\nfrom metadata repository"
+    ]
+
+    request_alternate_urls -> append_defaults
+
+    append_defaults[
+        label="Append original URL and\ndefault mechanism to list"
+    ]
+
+    append_defaults -> first_url
+
+    first_url[
+        label="Select first\nURL, mechanism, options"
+    ]
+
+    first_url -> attempt_transfer
+
+    attempt_transfer[
+        label="Attempt transfer with specified\nURL, mechanism, options"
+    ]
+
+    next_url[
+        label="Select next\nURL, mechanism, options"
+    ]
+
+    attempt_transfer -> is_checksum_available[label="Success"]
+    attempt_transfer -> report_failure[label="Failure"]
+
+    report_failure[
+        label="Report failure to\nmetadata repository"
+    ]
+
+    report_failure -> remaining_urls
+
+    remaining_urls[
+        label="Are there URLs\nremaining to try?"
+    ]
+
+    remaining_urls -> next_url[label="Yes"]
+    remaining_urls -> done_failure[label="No"]
+
+    next_url -> attempt_transfer
+
+    is_checksum_available[
+        label="Is checksum available?"
+    ]
+
+    is_checksum_available -> verify_checksum[label="Yes"]
+    is_checksum_available -> report_timing[label="No"]
+
+    verify_checksum[
+        label="Verify checksum"
+    ]
+
+    verify_checksum -> report_timing[label="Success"]
+    verify_checksum -> report_failure[label="Failure"]
+
+    report_timing[
+        label="Report transfer rate to\nmetadata repository"
+    ]
+
+    report_timing -> done_success
+
+    done_failure[
+        label="Done - Failure"
+    ]
+
+    done_success[
+        label="Done - Success"
+    ]
+
+}
