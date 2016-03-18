@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SCRIPTS_DIR=$( cd $(dirname $0); pwd -P )
+PROJECT_DIR=$( cd "${SCRIPTS_DIR}/.."; pwd -P )
+
+if [ -z "$1" ]; then
+    echo "Usage: new_transfer_mechanism mechanism_name"
+    exit 1
+fi
+
+MECHANISM_NAME="$1"
+
+CLIENT_TEMPLATE="${PROJECT_DIR}/templates/client_transfer_mechanism.py"
+CLIENT_TARGET="${PROJECT_DIR}/client/client/transfer_mechanisms/${MECHANISM_NAME}.py"
+
+sed -e "s/MECH_NAME/${MECHANISM_NAME}/" "${CLIENT_TEMPLATE}" > "${CLIENT_TARGET}"
+echo -e "\033[01;32mCreated ${CLIENT_TARGET}\033[00m"
+
+# FIXME: This can be automated
+echo -e "\033[01;93mAdd import to client/client/transfer_mechanisms/__init__.py\033[00m"
+
+MD_REPO_TEMPLATE="${PROJECT_DIR}/templates/md_repo_transfer_mechanism.py"
+MD_REPO_TARGET="${PROJECT_DIR}/metadata_repository/app/transfer_mechanisms/${MECHANISM_NAME}.py"
+
+sed -e "s/MECH_NAME/${MECHANISM_NAME}/" "${MD_REPO_TEMPLATE}" > "${MD_REPO_TARGET}"
+echo -e "\033[01;32mCreated ${MD_REPO_TARGET}\033[00m"
