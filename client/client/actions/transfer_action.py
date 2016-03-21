@@ -230,7 +230,10 @@ def handle_action(args, parser):
     elif args.spec_input_file:
         os.makedirs(args.destination_directory, exist_ok=True)
         for line in args.spec_input_file:
-            s = json.loads(line.rstrip())
+            line = line.rstrip()
+            if not line:
+                continue
+            s = json.loads(line)
             output_path = os.path.join(args.destination_directory, output_file_name(s["url"]))
             if os.path.isfile(output_path):
                 logger.warn("File at %s already exists at %s", s["url"], output_path)
