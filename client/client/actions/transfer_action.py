@@ -143,7 +143,11 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
             if os.path.isfile(output_path):
                 file_size = os.stat(output_path).st_size
                 file_checksum = file_md5sum(output_path)
-            send_timing_report(success, s.url, file_size, time_elapsed, file_checksum, mechanism_output)
+            try:
+                send_timing_report(success, s.url, file_size, time_elapsed, file_checksum, mechanism_output)
+            except:
+                logger.warn("Failed to send timing report")
+                logger.debug(traceback.format_exc())
             if success:
                 logger.info("Success. Downloaded %d bytes in %d seconds", file_size, time_elapsed)
                 if spec_output_file:
