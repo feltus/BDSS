@@ -16,38 +16,11 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from . import aspera
-from . import curl
-from . import gridftp_lite
+from wtforms import Form
 
 
-_mechanisms = {
-    "aspera": aspera,
-    "curl": curl,
-    "gridftp_lite": gridftp_lite
-}
+label = "GridFTP-Lite"
 
 
-def available_mechanisms():
-    """
-    Names of all available transfer mechanisms.
-    """
-    return [m for m in list(_mechanisms.keys()) if transfer_mechanism_module(m).is_available()]
-
-
-def default_mechanism(url):
-    """
-    Name of the default transfer mechanism for a URL.
-    This is used if the metadata repository doesn't specify a mechanism.
-
-    Returns
-    Tuple of mechanism name and options.
-    """
-    return ("curl", None)
-
-
-def transfer_mechanism_module(mechanism_name):
-    """
-    The Python module for a transfer mechanism.
-    """
-    return _mechanisms[mechanism_name]
+class OptionsForm(Form):
+    pass

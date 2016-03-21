@@ -16,38 +16,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from . import aspera
-from . import curl
-from . import gridftp_lite
+from .base import is_program_on_path, transfer_data_file_with_subprocess
 
 
-_mechanisms = {
-    "aspera": aspera,
-    "curl": curl,
-    "gridftp_lite": gridftp_lite
-}
+def is_available():
+    return is_program_on_path("globus-url-copy")
 
 
-def available_mechanisms():
-    """
-    Names of all available transfer mechanisms.
-    """
-    return [m for m in list(_mechanisms.keys()) if transfer_mechanism_module(m).is_available()]
-
-
-def default_mechanism(url):
-    """
-    Name of the default transfer mechanism for a URL.
-    This is used if the metadata repository doesn't specify a mechanism.
-
-    Returns
-    Tuple of mechanism name and options.
-    """
-    return ("curl", None)
-
-
-def transfer_mechanism_module(mechanism_name):
-    """
-    The Python module for a transfer mechanism.
-    """
-    return _mechanisms[mechanism_name]
+def transfer_data_file(url, output_path, options):
+    return transfer_data_file_with_subprocess(["globus-url-copy", url, output_path])
