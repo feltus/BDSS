@@ -19,12 +19,14 @@
 from . import aspera
 from . import curl
 from . import gridftp_lite
+from . import scp
 
 
 _mechanisms = {
     "aspera": aspera,
     "curl": curl,
-    "gridftp_lite": gridftp_lite
+    "gridftp_lite": gridftp_lite,
+    "scp": scp
 }
 
 
