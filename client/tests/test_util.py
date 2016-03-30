@@ -43,9 +43,17 @@ class TestTransferSpec(unittest.TestCase):
     def _write_file_data(self, output_path):
         with open(output_path, "w+b") as f:
             f.write(self.file_data)
+        return (True, "")
 
     def test_get_transfer_data(self):
         with patch.object(self.spec, "run_transfer", side_effect=self._write_file_data) as mock_run_transfer:
             data = self.spec.get_transfer_data()
             mock_run_transfer.assert_called_once_with(ANY)
             self.assertEqual(data, self.file_data)
+
+    def test_raises_if_unable_to_transfer(self):
+        """
+        TransferSpec#get_transfer_data should raise a TransferFailedError if run_transfer reported failure.
+        """
+        with patch.object(self.spec, "run_transfer", return_value=(False, "")):
+            self.assertRaises(util.TransferFailedError, self.spec.get_transfer_data)

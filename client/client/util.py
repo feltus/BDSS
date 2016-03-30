@@ -22,6 +22,10 @@ from tempfile import NamedTemporaryFile
 from .transfer_mechanisms import transfer_mechanism_module
 
 
+class TransferFailedError(Exception):
+    pass
+
+
 TransferSpecBase = namedtuple("TransferSpecBase", "url transfer_mechanism transfer_mechanism_options")
 
 
@@ -33,5 +37,7 @@ class TransferSpec(TransferSpecBase):
 
     def get_transfer_data(self):
         with NamedTemporaryFile() as temp_f:
-            self.run_transfer(temp_f.name)
+            success, _ = self.run_transfer(temp_f.name)
+            if not success:
+                raise TransferFailedError()
             return temp_f.read()
