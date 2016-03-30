@@ -1,0 +1,2 @@
+nose2==0.6.4
+requests_mock==0.7.0
