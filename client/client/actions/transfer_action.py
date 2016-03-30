@@ -24,21 +24,18 @@ import os
 import sys
 import time
 import traceback
-from collections import namedtuple
 
 import requests
 
 from ..config import metadata_repository_url
-from ..transfer_mechanisms import available_mechanisms, default_mechanism, transfer_mechanism_module
+from ..transfer_mechanisms import available_mechanisms, default_mechanism
+from ..util import TransferSpec
 
 
 cli_help = "Download data file(s)."
 
 
 logger = logging.getLogger("bdss")
-
-
-TransferSpec = namedtuple("TransferSpec", "url transfer_mechanism transfer_mechanism_options")
 
 
 def configure_parser(parser):
@@ -117,7 +114,6 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
     output_path - String - The path to save the downloaded file to.
     """
     for s in specs:
-        transfer_module = transfer_mechanism_module(s.transfer_mechanism)
         logger.debug("Downloading %s using %s", s.url, s.transfer_mechanism)
         if s.transfer_mechanism_options:
             logger.debug("%s options:", s.transfer_mechanism)
@@ -132,7 +128,7 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
         success = False
         mechanism_output = ""
         try:
-            (success, mechanism_output) = transfer_module.transfer_data_file(s.url, output_path, s.transfer_mechanism_options)
+            (success, mechanism_output) = s.run_transfer(output_path)
         except Exception:
             logger.exception("Exception in transfer mechanism")
             logger.exception()
@@ -238,6 +234,6 @@ def handle_action(args, parser):
             if os.path.isfile(output_path):
                 logger.warn("File at %s already exists at %s", s["url"], output_path)
                 continue
-            spec = TransferSpec._make([s["url"], s["transfer_mechanism"], s["transfer_mechanism_options"]])
+            spec = TransferSpec(s["url"], s["transfer_mechanism"], s["transfer_mechanism_options"])
             if not transfer_data_file([spec], output_path, args.spec_output_file):
                 logger.error("Failed to download file")
