@@ -17,6 +17,7 @@
 #
 
 from collections import namedtuple
+from tempfile import NamedTemporaryFile
 
 from .transfer_mechanisms import transfer_mechanism_module
 
@@ -29,3 +30,8 @@ class TransferSpec(TransferSpecBase):
     def run_transfer(self, output_path):
         transfer_module = transfer_mechanism_module(self.transfer_mechanism)
         return transfer_module.transfer_data_file(self.url, output_path, self.transfer_mechanism_options)
+
+    def get_transfer_data(self):
+        with NamedTemporaryFile() as temp_f:
+            self.run_transfer(temp_f.name)
+            return temp_f.read()
