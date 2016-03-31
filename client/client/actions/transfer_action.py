@@ -211,11 +211,12 @@ def handle_action(args, parser):
                 logger.warn("File at %s already exists at %s", url, output_path)
                 continue
 
+            transfer_specs = None
             try:
                 transfer_specs = request_transfer_specs(url)
             except Exception:
                 logger.warn("Failed to load transfer specs from metadata repository")
-                traceback.print_exc()
+                logger.debug(traceback.format_exc())
 
             if not transfer_specs:
                 logger.warn("Falling back to default transfer mechanism")
