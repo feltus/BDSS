@@ -29,4 +29,4 @@ def calculate_file_checksum(algorithm, path, blocksize=65536):
     with open(path, "rb") as f:
         for block in iter(lambda: f.read(blocksize), b""):
             h.update(block)
-    return h.hexdigest()
+    return h.hexdigest().lower()

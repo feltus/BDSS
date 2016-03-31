@@ -30,6 +30,7 @@ import requests
 from ..config import metadata_repository_url
 from ..transfer_mechanisms import available_mechanisms, default_mechanism
 from ..util import TransferSpec
+from ..verification import verify_transfer
 
 
 cli_help = "Download data file(s)."
@@ -152,7 +153,7 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
                         "transfer_mechanism": s.transfer_mechanism,
                         "transfer_mechanism_options": s.transfer_mechanism_options
                     }))
-                return True
+                return verify_transfer(s, output_path)
             else:
                 logger.warn("Unable to download file")
                 if file_size != 0:
