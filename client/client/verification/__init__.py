@@ -20,13 +20,15 @@ import logging
 import traceback
 
 from . import md5_checksum_verification
+from . import sra_toolkit_vdb_validate_verification
 
 
 logger = logging.getLogger("bdss")
 
 
 verification_methods = [
-    md5_checksum_verification
+    md5_checksum_verification,
+    sra_toolkit_vdb_validate_verification
 ]
 
 
