@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from .util import is_program_on_path
+from ...util import is_program_on_path
 
 
 def is_available():

@@ -20,7 +20,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from client.util import TransferFailedError, TransferSpec
+from client.transfer import TransferFailedError, TransferSpec
 from client.verification import md5_checksum_verification as md5_cv
 
 

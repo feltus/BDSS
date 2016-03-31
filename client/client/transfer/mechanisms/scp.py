@@ -16,30 +16,16 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import os
-from urllib.parse import urlparse, urlunsplit
+from urllib.parse import urlsplit, urlunsplit
 
-from .util import is_program_on_path
+from ...util import is_program_on_path
 
 
 def is_available():
-    return is_program_on_path("ascp")
+    return is_program_on_path("scp")
 
 
 def transfer_command(url, output_path, options):
-
-    default_path_to_key = os.path.expandvars(os.path.join("$HOME", ".aspera", "connect", "etc", "asperaweb_id_dsa.openssh"))
-    args = ["-i", default_path_to_key]
-
-    # Require encryption?
-    try:
-        if options["disable_encryption"]:
-            args.append("-T")
-    except KeyError:
-        pass
-
-    # Remove scheme from URL
-    parts = urlparse(url)
-    url = parts[1] + ":" + urlunsplit(("", "", parts[2], parts[3], parts[4]))
-
-    return ["ascp"] + args + [options["username"] + "@" + url, output_path]
+    # Strip scheme from URL
+    url = urlunsplit(("", *urlsplit(url)[1:]))[2:]
+    return ["scp", url, output_path]

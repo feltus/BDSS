@@ -19,7 +19,7 @@
 import unittest
 from unittest.mock import ANY, patch
 
-from client import util
+from client.transfer import TransferFailedError, TransferSpec
 
 
 class TestTransferSpec(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestTransferSpec(unittest.TestCase):
         self.output_path = "/tmp/test.txt"
         self.file_data = b"hello world"
 
-        self.spec = util.TransferSpec(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
+        self.spec = TransferSpec(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
 
     def _write_file_data(self, output_path):
         with open(output_path, "w+b") as f:
@@ -49,4 +49,4 @@ class TestTransferSpec(unittest.TestCase):
         TransferSpec#get_transfer_data should raise a TransferFailedError if run_transfer reported failure.
         """
         with patch.object(self.spec, "run_transfer", return_value=(False, "")):
-            self.assertRaises(util.TransferFailedError, self.spec.get_transfer_data)
+            self.assertRaises(TransferFailedError, self.spec.get_transfer_data)

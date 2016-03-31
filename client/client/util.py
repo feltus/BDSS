@@ -16,62 +16,16 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import selectors
-import subprocess
-import sys
-from collections import namedtuple
-from tempfile import NamedTemporaryFile
-
-from .transfer_mechanisms import all_mechanisms
+import os
 
 
-class TransferFailedError(Exception):
-    pass
+def is_program_on_path(prog_name):
+    for path in os.get_exec_path():
+        if not path or not os.path.isdir(path):
+            continue
 
-
-TransferSpecBase = namedtuple("TransferSpecBase", "url transfer_mechanism transfer_mechanism_options")
-
-
-class TransferSpec(TransferSpecBase):
-
-    def transfer_command(self, output_path):
-        transfer_module = all_mechanisms[self.transfer_mechanism]
-        return transfer_module.transfer_command(self.url, output_path, self.transfer_mechanism_options)
-
-    def run_transfer(self, output_path):
-        return _run_in_subprocess(self.transfer_command(output_path))
-
-    def get_transfer_data(self):
-        with NamedTemporaryFile() as temp_f:
-            success, _ = self.run_transfer(temp_f.name)
-            if not success:
-                raise TransferFailedError()
-            return temp_f.read()
-
-
-def _run_in_subprocess(subprocess_args, successful_return_codes=(0,)):
-    process = subprocess.Popen(subprocess_args, bufsize=1,
-                               stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
-
-    output = ""
-
-    def select_callback(stream, mask):
-        nonlocal output
-        line = stream.readline()
-        output += line
-        sys.stdout.write(line)
-
-    selector = selectors.DefaultSelector()
-    selector.register(process.stdout, selectors.EVENT_READ, select_callback)
-    while process.poll() is None:
-        events = selector.select()
-        for key, mask in events:
-            callback = key.data
-            callback(key.fileobj, mask)
-
-    return_code = process.wait()
-    selector.close()
-
-    success = return_code in successful_return_codes
-
-    return (success, output)
+        if prog_name in os.listdir(path):
+            prog_path = os.path.join(path, prog_name)
+            if os.access(prog_path, os.X_OK):
+                return True
+    return False

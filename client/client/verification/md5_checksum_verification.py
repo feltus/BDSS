@@ -20,7 +20,7 @@ import logging
 import string
 from urllib.parse import urlparse, urlunparse
 
-from ..util import TransferSpec
+from ..transfer import TransferSpec
 from .util import calculate_file_checksum
 
 

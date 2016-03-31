@@ -28,8 +28,8 @@ import traceback
 import requests
 
 from ..config import metadata_repository_url
-from ..transfer_mechanisms import available_mechanisms, default_mechanism
-from ..util import TransferSpec
+from ..transfer import TransferSpec
+from ..transfer.mechanisms import available_mechanisms, default_mechanism
 from ..verification import verify_transfer
 
 

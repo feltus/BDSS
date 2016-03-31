@@ -17,15 +17,29 @@
 #
 
 import os
+from urllib.parse import urlparse, urlunsplit
+
+from ...util import is_program_on_path
 
 
-def is_program_on_path(prog_name):
-    for path in os.get_exec_path():
-        if not path or not os.path.isdir(path):
-            continue
+def is_available():
+    return is_program_on_path("ascp")
 
-        if prog_name in os.listdir(path):
-            prog_path = os.path.join(path, prog_name)
-            if os.access(prog_path, os.X_OK):
-                return True
-    return False
+
+def transfer_command(url, output_path, options):
+
+    default_path_to_key = os.path.expandvars(os.path.join("$HOME", ".aspera", "connect", "etc", "asperaweb_id_dsa.openssh"))
+    args = ["-i", default_path_to_key]
+
+    # Require encryption?
+    try:
+        if options["disable_encryption"]:
+            args.append("-T")
+    except KeyError:
+        pass
+
+    # Remove scheme from URL
+    parts = urlparse(url)
+    url = parts[1] + ":" + urlunsplit(("", "", parts[2], parts[3], parts[4]))
+
+    return ["ascp"] + args + [options["username"] + "@" + url, output_path]

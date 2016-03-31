@@ -16,16 +16,4 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from ..transfer.mechanisms import available_mechanisms
-
-
-cli_help = "List transfer mechanisms available on this machine."
-
-
-def configure_parser(parser):
-    pass
-
-
-def handle_action(args, parser):
-    for m in available_mechanisms():
-        print(m)
+from .transfer_spec import TransferFailedError, TransferSpec  # noqa
