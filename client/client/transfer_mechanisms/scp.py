@@ -18,14 +18,14 @@
 
 from urllib.parse import urlsplit, urlunsplit
 
-from .base import is_program_on_path, transfer_data_file_with_subprocess
+from .util import is_program_on_path
 
 
 def is_available():
     return is_program_on_path("scp")
 
 
-def transfer_data_file(url, output_path, options):
+def transfer_command(url, output_path, options):
     # Strip scheme from URL
     url = urlunsplit(("", *urlsplit(url)[1:]))[2:]
-    return transfer_data_file_with_subprocess(["scp", url, output_path])
+    return ["scp", url, output_path]

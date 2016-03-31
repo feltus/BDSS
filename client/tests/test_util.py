@@ -17,7 +17,7 @@
 #
 
 import unittest
-from unittest.mock import ANY, Mock, patch
+from unittest.mock import ANY, patch
 
 from client import util
 
@@ -32,13 +32,6 @@ class TestTransferSpec(unittest.TestCase):
         self.file_data = b"hello world"
 
         self.spec = util.TransferSpec(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
-
-    def test_run_transfer(self):
-        mock_transfer_mechanism = Mock()
-        with patch.object(util, "transfer_mechanism_module", return_value=mock_transfer_mechanism) as mock_transfer_mechanism_module:
-            self.spec.run_transfer(self.output_path)
-            mock_transfer_mechanism_module.assert_called_once_with(self.transfer_mechanism)
-            mock_transfer_mechanism.transfer_data_file.assert_called_once_with(self.file_url, self.output_path, self.transfer_mechanism_options)
 
     def _write_file_data(self, output_path):
         with open(output_path, "w+b") as f:

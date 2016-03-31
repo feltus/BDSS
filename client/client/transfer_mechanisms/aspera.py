@@ -19,14 +19,14 @@
 import os
 from urllib.parse import urlparse, urlunsplit
 
-from .base import is_program_on_path, transfer_data_file_with_subprocess
+from .util import is_program_on_path
 
 
 def is_available():
     return is_program_on_path("ascp")
 
 
-def transfer_data_file(url, output_path, options):
+def transfer_command(url, output_path, options):
 
     default_path_to_key = os.path.expandvars(os.path.join("$HOME", ".aspera", "connect", "etc", "asperaweb_id_dsa.openssh"))
     args = ["-i", default_path_to_key]
@@ -42,5 +42,4 @@ def transfer_data_file(url, output_path, options):
     parts = urlparse(url)
     url = parts[1] + ":" + urlunsplit(("", "", parts[2], parts[3], parts[4]))
 
-    print(" ".join(["ascp"] + args + [options["username"] + "@" + url, output_path]))
-    return transfer_data_file_with_subprocess(["ascp"] + args + [options["username"] + "@" + url, output_path])
+    return ["ascp"] + args + [options["username"] + "@" + url, output_path]

@@ -22,7 +22,7 @@ from . import gridftp_lite
 from . import scp
 
 
-_mechanisms = {
+all_mechanisms = {
     "aspera": aspera,
     "curl": curl,
     "gridftp_lite": gridftp_lite,
@@ -34,7 +34,7 @@ def available_mechanisms():
     """
     Names of all available transfer mechanisms.
     """
-    return [m for m in list(_mechanisms.keys()) if transfer_mechanism_module(m).is_available()]
+    return [name for name, module in all_mechanisms.items() if module.is_available()]
 
 
 def default_mechanism(url):
@@ -46,10 +46,3 @@ def default_mechanism(url):
     Tuple of mechanism name and options.
     """
     return ("curl", None)
-
-
-def transfer_mechanism_module(mechanism_name):
-    """
-    The Python module for a transfer mechanism.
-    """
-    return _mechanisms[mechanism_name]
