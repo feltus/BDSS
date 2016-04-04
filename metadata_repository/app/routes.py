@@ -245,7 +245,7 @@ def create_data_source():
             db_session.add(source)
             db_session.commit()
             flash("Data source saved", "success")
-            return redirect(url_for("routes.list_data_sources"))
+            return redirect(url_for("routes.show_data_source", source_id=source.id))
         except:
             db_session.rollback()
             flash("Failed to save data source", "danger")
