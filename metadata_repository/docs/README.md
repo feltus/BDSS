@@ -1,3 +1,7 @@
 # Table of Contents
 
-* [Quick Start](/metadata_repository/docs/QuickStart.md)
+## Users
+
+## Developers
+
+* [Set up a development environment](/metadata_repository/docs/developer/DevelopmentEnvironment.md)
