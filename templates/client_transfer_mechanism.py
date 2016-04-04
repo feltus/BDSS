@@ -20,5 +20,5 @@ def is_available():
     raise NotImplementedError("is_available not implemented for MECH_NAME transfer mechanism")
 
 
-def transfer_data_file(url, output_path, options):
-    raise NotImplementedError("transfer_data_file not implemented for MECH_NAME transfer mechanism")
+def transfer_command(url, output_path, options):
+    raise NotImplementedError("transfer_command not implemented for MECH_NAME transfer mechanism")
