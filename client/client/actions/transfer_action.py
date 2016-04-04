@@ -129,6 +129,7 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
         success = False
         mechanism_output = ""
         try:
+            logger.info(" ".join(s.transfer_command(output_path)))
             (success, mechanism_output) = s.run_transfer(output_path)
         except Exception:
             logger.exception("Exception in transfer mechanism")
