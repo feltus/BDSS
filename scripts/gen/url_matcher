@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SCRIPTS_DIR=$( cd $(dirname $0); pwd -P )
+PROJECT_DIR=$( cd "${SCRIPTS_DIR}/../.."; pwd -P )
+
+if [ -z "$1" ]; then
+    echo "Usage: url_matcher matcher_name"
+    exit 1
+fi
+
+MATCHER_NAME="$1"
+
+TEMPLATE="${PROJECT_DIR}/templates/md_repo_url_matcher.py"
+TARGET="${PROJECT_DIR}/metadata_repository/app/matchers/${MATCHER_NAME}.py"
+
+sed -e "s/MATCHER_NAME/${MATCHER_NAME}/" "${TEMPLATE}" > "${TARGET}"
+echo -e "\033[01;32mCreated ${TARGET}\033[00m"

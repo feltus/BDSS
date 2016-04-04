@@ -1,10 +1,10 @@
 #!/bin/bash
 
 SCRIPTS_DIR=$( cd $(dirname $0); pwd -P )
-PROJECT_DIR=$( cd "${SCRIPTS_DIR}/.."; pwd -P )
+PROJECT_DIR=$( cd "${SCRIPTS_DIR}/../.."; pwd -P )
 
 if [ -z "$1" ]; then
-    echo "Usage: new_transfer_mechanism mechanism_name"
+    echo "Usage: transfer_mechanism mechanism_name"
     exit 1
 fi
 

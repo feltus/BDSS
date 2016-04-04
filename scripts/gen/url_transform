@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SCRIPTS_DIR=$( cd $(dirname $0); pwd -P )
+PROJECT_DIR=$( cd "${SCRIPTS_DIR}/../.."; pwd -P )
+
+if [ -z "$1" ]; then
+    echo "Usage: url_transform transform_name"
+    exit 1
+fi
+
+TRANSFORM_NAME="$1"
+
+TEMPLATE="${PROJECT_DIR}/templates/md_repo_url_transform.py"
+TARGET="${PROJECT_DIR}/metadata_repository/app/transforms/${TRANSFORM_NAME}.py"
+
+sed -e "s/TRANSFORM_NAME/${TRANSFORM_NAME}/" "${TEMPLATE}" > "${TARGET}"
+echo -e "\033[01;32mCreated ${TARGET}\033[00m"
