@@ -19,6 +19,13 @@ available matcher types when adding or editing a matcher.
 """
 
 
+description = "Matches based on something"
+"""
+Human readable description of how the matcher operates. This will be displayed
+when the user selects this type when adding or editing a matcher.
+"""
+
+
 def matches_url(options, url):
     """
     Check if a URL matches or not. Returns True or False.

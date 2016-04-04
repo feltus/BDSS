@@ -22,7 +22,10 @@ from wtforms import Form
 from wtforms.fields import StringField
 from wtforms.validators import InputRequired
 
-label = "Scheme and Host"
+label = "Scheme and Hostname"
+
+
+description = "Match URLs with a specific scheme and hostname"
 
 
 def matches_url(options, url):
@@ -36,11 +39,13 @@ def matches_url(options, url):
 class OptionsForm(Form):
 
     scheme = StringField(label="Scheme",
-                         validators=[InputRequired()])
+                         validators=[InputRequired()],
+                         description="The URL scheme to match")
 
-    host = StringField(label="Host",
-                       validators=[InputRequired()])
+    host = StringField(label="Hostname",
+                       validators=[InputRequired()],
+                       description="The hostname to match")
 
 
 def render_description(options):
-    return "Match URL scheme and host \'" + urlunsplit((options["scheme"], options["host"], "", "", "")) + "\'"
+    return "Match URL's scheme and hostname \'" + urlunsplit((options["scheme"], options["host"], "", "", "")) + "\'"

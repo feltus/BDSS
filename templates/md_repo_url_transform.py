@@ -22,6 +22,9 @@ import wtforms
 label = "TRANSFORM_NAME"
 
 
+description = "Transforms URLs somehow"
+
+
 def transform_url(options, url):
     return url
 

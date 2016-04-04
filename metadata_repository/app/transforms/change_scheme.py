@@ -23,6 +23,9 @@ import wtforms
 label = "Change Scheme"
 
 
+description = "Replace the scheme of the original URL"
+
+
 def transform_url(options, url):
     parts = urlparse(url)
     return urlunsplit((options["new_scheme"], parts.netloc, parts.path, parts.query, parts.fragment))
@@ -31,7 +34,8 @@ def transform_url(options, url):
 class OptionsForm(wtforms.Form):
 
     new_scheme = wtforms.fields.StringField(label="New scheme",
-                                            validators=[wtforms.validators.InputRequired()])
+                                            validators=[wtforms.validators.InputRequired()],
+                                            description="The new scheme for the transformed URL")
 
 
 def render_description(options):

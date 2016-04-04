@@ -25,6 +25,9 @@ from wtforms.validators import InputRequired
 label = "Regex Search and Replace"
 
 
+description = "Substitute with a regular expression"
+
+
 def transform_url(options, url):
     return re.sub(options["pattern"], options["repl"], url)
 
@@ -32,10 +35,12 @@ def transform_url(options, url):
 class OptionsForm(Form):
 
     pattern = StringField(label="Search Pattern",
-                          validators=[InputRequired()])
+                          validators=[InputRequired()],
+                          description="Pattern to replace")
 
     repl = StringField(label="Replacement",
-                       validators=[InputRequired()])
+                       validators=[InputRequired()],
+                       description="Replace occurrences of 'Search Pattern' with this")
 
 
 def render_description(options):

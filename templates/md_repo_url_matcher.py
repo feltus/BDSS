@@ -22,6 +22,9 @@ from wtforms import Form
 label = "MATCHER_NAME"
 
 
+description = "Matches based on something"
+
+
 def matches_url(options, url):
     return False
 

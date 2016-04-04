@@ -19,6 +19,13 @@ available transform types when adding or editing a transform.
 """
 
 
+description = "Transforms URL somehow"
+"""
+Human readable description of how the transform operates. This will be displayed
+when the user selects this type when adding or editing a transform.
+"""
+
+
 def transform_url(options, url):
     """
     Transform a URL into another URL based on the given transform options. Returns

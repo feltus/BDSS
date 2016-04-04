@@ -20,7 +20,10 @@ from urllib.parse import urlparse, urlunsplit
 
 import wtforms
 
-label = "Change Scheme and Host"
+label = "Change Scheme and Hostname"
+
+
+description = "Replace the original URL's scheme and hostname"
 
 
 def transform_url(options, url):
@@ -31,11 +34,13 @@ def transform_url(options, url):
 class OptionsForm(wtforms.Form):
 
     new_scheme = wtforms.fields.StringField(label="New scheme",
-                                            validators=[wtforms.validators.InputRequired()])
+                                            validators=[wtforms.validators.InputRequired()],
+                                            description="The new scheme for the transformed URL")
 
-    new_host = wtforms.fields.StringField(label="New host",
-                                          validators=[wtforms.validators.InputRequired()])
+    new_host = wtforms.fields.StringField(label="New hostname",
+                                          validators=[wtforms.validators.InputRequired()],
+                                          description="The new hostname for the transformed URL")
 
 
 def render_description(options):
-    return "Change URL scheme to \'" + options["new_scheme"] + "\' and host to \'" + options["new_host"] + "\'"
+    return "Change URL scheme to \'" + options["new_scheme"] + "\' and hostname to \'" + options["new_host"] + "\'"

@@ -25,6 +25,9 @@ from wtforms.validators import InputRequired
 label = "Regular Expression"
 
 
+description = "Match based on a regular expression"
+
+
 def matches_url(options, url):
     if re.match(options["pattern"], url):
         return True
