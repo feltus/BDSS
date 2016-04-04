@@ -1,0 +1,57 @@
+digraph {
+
+    start[
+        label="Alternate URLs requested\nfor a file"
+    ]
+
+    start -> select_sources
+
+    select_sources[
+        label="Select data sources where\nat least one URL matcher\nmatches the file URL"
+    ]
+
+    select_sources -> for_each_source
+
+    for_each_source[
+        label="For each source"
+    ]
+
+    for_each_source -> for_each_transform
+
+    for_each_transform[
+        label="For each transform\nconfigured for source"
+    ]
+
+    for_each_transform -> apply_transform
+
+    apply_transform[
+        label="Apply transform"
+    ]
+
+    apply_transform -> add_url_to_results
+
+    add_url_to_results[
+        label="Add transform output\nto results"
+    ]
+
+    add_url_to_results -> remaining_transforms
+
+    remaining_transforms[
+        label="More transforms?"
+    ]
+
+    remaining_transforms -> for_each_transform[label="Yes"]
+    remaining_transforms -> remaining_sources[label="No"]
+
+    remaining_sources[
+        label="More sources?"
+    ]
+
+    remaining_sources -> for_each_source[label="Yes"]
+    remaining_sources -> output_results[label="No"]
+
+    output_results[
+        label="Output results"
+    ]
+
+}

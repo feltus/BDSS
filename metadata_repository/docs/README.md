@@ -1,6 +1,6 @@
 # Table of Contents
 
-## Users
+* [Overview](/metadata_repository/docs/Overview.md)
 
 ## Developers
 
