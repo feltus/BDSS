@@ -49,7 +49,7 @@ The BDSS metadata repository is a map of alternate locations for a specific file
 
 ## Workflow
 
-   See the [workflow diagram](/metadata_repository/docs/user/workflow.svg) for a visual explanation.
+   See the [workflow diagram](/metadata_repository/docs/workflow.svg) for a visual explanation.
 
    When a client requests alternate sources for a file, it sends the file URL. The metadata
    repository identifies which (if any) known data sources match the URL using the data sources'
