@@ -38,4 +38,8 @@ def can_attempt_verification(transfer_spec, output_path):
 
 
 def verify_transfer(transfer_spec, output_path):
-    return subprocess.run(["vdb-validate", output_path]).returncode == 0
+    try:
+        subprocess.check_output(["vdb-validate", output_path])
+        return True
+    except subprocess.CalledProcessError:
+        return False
