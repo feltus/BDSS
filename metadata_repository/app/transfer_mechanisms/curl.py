@@ -22,5 +22,8 @@ from wtforms import Form
 label = "curl"
 
 
+description = "Transfer files with <a href=\"https://curl.haxx.se/\">curl</a>"
+
+
 class OptionsForm(Form):
     pass

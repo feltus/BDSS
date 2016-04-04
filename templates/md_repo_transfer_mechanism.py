@@ -22,5 +22,8 @@ import wtforms
 label = "MECH_NAME"
 
 
+description = "Transfer files using some program"
+
+
 class OptionsForm(wtforms.Form):
     pass

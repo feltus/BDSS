@@ -22,6 +22,9 @@ import wtforms
 label = "Aspera"
 
 
+description = "Transfer files with Aspera Connect's <a href=\"http://download.asperasoft.com/download/docs/ascp/3.5.2/html/index.html/\">ascp</a>"
+
+
 class OptionsForm(wtforms.Form):
 
     username = wtforms.fields.StringField(

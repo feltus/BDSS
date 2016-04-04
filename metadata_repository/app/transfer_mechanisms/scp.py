@@ -22,5 +22,8 @@ import wtforms
 label = "scp"
 
 
+description = "Transfer files using scp"
+
+
 class OptionsForm(wtforms.Form):
     pass

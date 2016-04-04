@@ -22,5 +22,8 @@ from wtforms import Form
 label = "GridFTP-Lite"
 
 
+description = "Transfer files with <a href=\"http://toolkit.globus.org/toolkit/data/gridftp/quickstart.html\">GridFTP-Lite</a> (GridFTP with SSH authentication)"
+
+
 class OptionsForm(Form):
     pass

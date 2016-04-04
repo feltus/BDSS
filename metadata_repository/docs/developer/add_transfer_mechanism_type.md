@@ -23,6 +23,13 @@ available mechanisms when adding or editing a data source.
 """
 
 
+description = "Transfer files with some program"
+"""
+Human readable description of how the mechanism operates. This will be displayed
+when the user selects this mechanism when adding or editing a data source.
+"""
+
+
 class OptionsForm(wtforms.Form):
     """
     Mechanism options form displayed when adding/editing a data source.
