@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Build the client into a single executable using PyInstaller
+# Downloads Python 3.5 so there's no dependency on the version
+# of the systems' Python.
+
+# SSL is required for ensurepip to work correctly when creating a virtualenv
+# Debian/Ubuntu
+# apt-get install openssl libssl-dev
+
+set -e
+set -x
+
+PYTHON_VERSION="3.5.1"
+
+# Path to this folder
+SCRIPTS_DIR="$(cd $(dirname $0); pwd -P)"
+CLIENT_DIR="$(cd "${SCRIPTS_DIR}/.."; pwd -P)"
+
+# Directory to save temporary files in
+if [ -z "${BUNDLE_DIR}" ]; then
+    BUNDLE_DIR="${CLIENT_DIR}/bundle"
+fi
+mkdir -p "${BUNDLE_DIR}"
+
+# Download Python
+if [ ! -f "${BUNDLE_DIR}/Python-${PYTHON_VERSION}.tgz" ]; then
+    echo "Downloading Python ${PYTHON_VERSION}"
+    wget -O "${BUNDLE_DIR}/Python-${PYTHON_VERSION}.tgz" "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
+fi
+
+PYTHON_DIR="${BUNDLE_DIR}/Python-${PYTHON_VERSION}"
+if [ ! -d "${PYTHON_DIR}" ]; then
+    echo "Extracting Python-${PYTHON_VERSION}.tgz"
+    cd "${BUNDLE_DIR}"
+    tar -zxf "Python-${PYTHON_VERSION}.tgz"
+fi
+
+# Build Python
+cd "${PYTHON_DIR}"
+if [ ! -f Makefile ]; then
+    echo "Configuring Python"
+    ./configure --enable-shared --prefix="${PYTHON_DIR}"
+fi
+if [ ! -f "${PYTHON_DIR}/bin/python3" ]; then
+    echo "Building Python"
+    make
+    make install
+fi
+
+echo "Setting environment variables"
+export LD_LIBRARY_PATH="${PYTHON_DIR}/lib":$LD_LIBRARY_PATH
+export LIBRARY_PATH="${PYTHON_DIR}/lib":$LIBRARY_PATH
+export C_INCLUDE_PATH="${PYTHON_DIR}/include":$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH="${PYTHON_DIR}/include":$CPLUS_INCLUDE_PATH
+export PATH="${PYTHON_DIR}/bin":$PATH
+
+ACTIVATE_PYTHON_SCRIPT="${BUNDLE_DIR}/activate-python-${PYTHON_VERSION}"
+if [ ! -f "${ACTIVATE_PYTHON_SCRIPT}" ]; then
+cat <<EOF > "${ACTIVATE_PYTHON_SCRIPT}"
+export LD_LIBRARY_PATH="${PYTHON_DIR}/lib":\$LD_LIBRARY_PATH
+export LIBRARY_PATH="${PYTHON_DIR}/lib":\$LIBRARY_PATH
+export C_INCLUDE_PATH="${PYTHON_DIR}/include":\$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH="${PYTHON_DIR}/include":\$CPLUS_INCLUDE_PATH
+export PATH="${PYTHON_DIR}/bin":\$PATH
+
+EOF
+fi
+
+if [ ! -d "${BUNDLE_DIR}/venv" ]; then
+    echo "Creating virtualenv"
+    cd "${BUNDLE_DIR}"
+    "${PYTHON_DIR}/bin/pyvenv" venv
+fi
+
+source "${BUNDLE_DIR}/venv/bin/activate"
+
+pip install --upgrade pip
+
+cd "${CLIENT_DIR}"
+pip install -r requirements.txt
+pip install pyinstaller
+
+pyinstaller --clean --onefile client.spec
+
+echo -e "\e[32mBDSS client executable at ${CLIENT_PATH}/dist/bdss\e[0m"
