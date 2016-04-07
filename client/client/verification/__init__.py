@@ -50,9 +50,10 @@ def verify_transfer(transfer_spec, output_path):
             else:
                 logger.error("Failed verification by %s" % method.label)
             verification_results.append(verified)
-        except Exception:
+        except Exception as e:
             logger.warn("Unable to verify with %s" % method.label)
-            logger.warn(traceback.format_exc())
+            logger.warn(str(e))
+            logger.debug(traceback.format_exc())
             verification_results.append(None)
 
     if [r for r in verification_results if r is False]:

@@ -45,7 +45,7 @@ class TransferSpec(TransferSpecBase):
         with NamedTemporaryFile() as temp_f:
             success, _ = self.run_transfer(temp_f.name)
             if not success:
-                raise TransferFailedError()
+                raise TransferFailedError("Transfer of %s failed" % self.url)
             return temp_f.read()
 
 
