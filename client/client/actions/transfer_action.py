@@ -204,16 +204,13 @@ def handle_action(args, parser):
         parser.print_help(file=sys.stderr)
         sys.exit(1)
 
-    if args.urls:
-        os.makedirs(args.destination_directory, exist_ok=True)
-        for url in args.urls:
-            output_path = os.path.join(args.destination_directory, output_file_name(url))
-            if os.path.isfile(output_path):
-                logger.warn("File at %s already exists at %s", url, output_path)
-                continue
+    urls_to_transfer = []
 
+    if args.urls:
+        for url in args.urls:
             transfer_specs = None
             try:
+                logger.info("Requesting alternate sources for %s" % url)
                 transfer_specs = request_transfer_specs(url)
             except Exception:
                 logger.warn("Failed to load transfer specs from metadata repository")
@@ -223,20 +220,28 @@ def handle_action(args, parser):
                 logger.warn("Falling back to default transfer mechanism")
                 transfer_specs = [TransferSpec(url, *default_mechanism(url))]
 
-            if not transfer_data_file(transfer_specs, output_path, args.spec_output_file):
-                logger.error("Failed to download file")
+            urls_to_transfer.append({
+                "url": url,
+                "transfer_specs": transfer_specs
+            })
 
     elif args.spec_input_file:
-        os.makedirs(args.destination_directory, exist_ok=True)
         for line in args.spec_input_file:
-            line = line.rstrip()
-            if not line:
+            if not line.rstrip():
                 continue
             s = json.loads(line)
-            output_path = os.path.join(args.destination_directory, output_file_name(s["url"]))
-            if os.path.isfile(output_path):
-                logger.warn("File at %s already exists at %s", s["url"], output_path)
-                continue
-            spec = TransferSpec(s["url"], s["transfer_mechanism"], s["transfer_mechanism_options"])
-            if not transfer_data_file([spec], output_path, args.spec_output_file):
-                logger.error("Failed to download file")
+            transfer_spec = TransferSpec(s["url"], s["transfer_mechanism"], s["transfer_mechanism_options"])
+            urls_to_transfer.append({
+                "url": s["url"],
+                "transfer_specs": [transfer_spec]
+            })
+
+    os.makedirs(args.destination_directory, exist_ok=True)
+    for u in urls_to_transfer:
+        output_path = os.path.join(args.destination_directory, output_file_name(u["url"]))
+        if os.path.isfile(output_path):
+            logger.warn("File at %s already exists at %s", u["url"], output_path)
+            continue
+
+        if not transfer_data_file(u["transfer_specs"], output_path, args.spec_output_file):
+            logger.error("Failed to download file")
