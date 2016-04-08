@@ -16,6 +16,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+from urllib.parse import urlparse
+
 from . import aspera
 from . import curl
 from . import gridftp_lite
@@ -45,4 +47,9 @@ def default_mechanism(url):
     Returns
     Tuple of mechanism name and options.
     """
-    return ("curl", None)
+    method_for_scheme = {
+        "aspera": "aspera",
+        "sshftp": "gridftp_lite",
+        "scp": "scp"
+    }
+    return (method_for_scheme.get(urlparse(url).scheme, "curl"), None)
