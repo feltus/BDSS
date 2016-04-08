@@ -1,0 +1,19 @@
+#!/bin/bash
+
+SCRIPTS_DIR=$( cd $(dirname $0); pwd -P )
+PROJECT_DIR=$( cd "${SCRIPTS_DIR}/../.."; pwd -P )
+
+if [ -z "$1" ]; then
+    echo "Usage: verification method_name"
+    exit 1
+fi
+
+METHOD_NAME="$1"
+
+TEMPLATE="${PROJECT_DIR}/templates/client_verification_method.py"
+TARGET="${PROJECT_DIR}/client/client/verification/${METHOD_NAME}.py"
+
+sed -e "s/METHOD_NAME/${METHOD_NAME}/" "${TEMPLATE}" > "${TARGET}"
+echo -e "\033[01;32mCreated ${TARGET}\033[00m"
+# FIXME: This can be automated
+echo -e "\033[01;93mAdd import to client/client/verification/__init__.py\033[00m"
