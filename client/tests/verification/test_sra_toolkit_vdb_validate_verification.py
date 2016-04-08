@@ -17,6 +17,7 @@
 #
 
 import unittest
+from unittest.mock import patch
 
 from client.verification import sra_toolkit_vdb_validate_verification as vdbval_verification
 
@@ -24,5 +25,10 @@ from client.verification import sra_toolkit_vdb_validate_verification as vdbval_
 class TestSRAToolkitVDBValidateVerification(unittest.TestCase):
 
     def test_attempts_verification_only_for_sra_files(self):
-        self.assertTrue(vdbval_verification.can_attempt_verification(None, "/tmp/files/test.sra"))
-        self.assertFalse(vdbval_verification.can_attempt_verification(None, "/tmp/files/test.txt"))
+        with patch.object(vdbval_verification, "is_program_on_path", return_value=True):
+            self.assertTrue(vdbval_verification.can_attempt_verification(None, "/tmp/files/test.sra"))
+            self.assertFalse(vdbval_verification.can_attempt_verification(None, "/tmp/files/test.txt"))
+
+    def test_does_not_attempt_verification_if_vdb_validate_not_on_path(self):
+        with patch.object(vdbval_verification, "is_program_on_path", return_value=False):
+            self.assertFalse(vdbval_verification.can_attempt_verification(None, "/tmp/files/test.sra"))
