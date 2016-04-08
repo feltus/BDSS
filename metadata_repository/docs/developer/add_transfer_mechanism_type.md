@@ -9,11 +9,12 @@ from the BDSS project root, replacing `id` with the ID of the new transfer mecha
 will create files at `metadata_repository/app/transfer_mechanisms/id.py` and
 `client/client/transfer/mechanisms/id.py` with stubs for the required functions.
 
+See the [client documentation](/client/docs/developer/add_transfer_mechanism.md)
+for information on the client's transfer mechanism module.
+
 ## Transfer Mechanism API
 
-The transfer mechanism modules must have the following functions defined:
-
-### Metadata Repository Module
+The metadata repository's transfer mechanism module must have the following functions defined:
 
 ```Python
 label = "Mechanism Name"
@@ -37,29 +38,4 @@ class OptionsForm(wtforms.Form):
     """
     pass
 
-```
-
-### Client Module
-
-```Python
-def is_available():
-    """
-    Check if the mechanism is available on the client's machine. Returns True or False.
-    Usually involves checking if a specific program is found on the PATH.
-    """
-    return True
-
-
-def transfer_command(url, output_path, options):
-    """
-    Return the command used to transfer a file with this mechanism and the given options.
-    Returns a list (to be passed to subprocess.Popen).
-
-    Arguments:
-    url - str - URL of the file to transfer.
-    output_path - str - Path to save the file data to.
-    options - dict - Mechanism options from the OptionsForm at the metatdata repository.
-                     Keys match field names in the form and values are form input values.
-    """
-    return ["curl", "-o", output_path, url]
 ```
