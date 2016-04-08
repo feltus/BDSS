@@ -83,4 +83,4 @@ pip install pyinstaller
 
 pyinstaller --clean --onefile client.spec
 
-echo -e "\e[32mBDSS client executable at ${CLIENT_PATH}/dist/bdss\e[0m"
+echo -e "\e[32mBDSS client executable at ${CLIENT_DIR}/dist/bdss\e[0m"
