@@ -22,7 +22,10 @@ block_cipher = None
 a = Analysis(["run.py"],
              pathex=[],
              binaries=None,
-             datas=[("client/defaults.cfg", "client")],
+             datas=[
+                ("client/defaults.cfg", "client"),
+                ("client/transfer/script_template.py", "client/transfer")
+             ],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

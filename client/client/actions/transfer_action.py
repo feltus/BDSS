@@ -30,6 +30,7 @@ import requests
 from ..config import metadata_repository_url
 from ..transfer import TransferSpec
 from ..transfer.mechanisms import available_mechanisms, default_mechanism
+from ..transfer.script import generate_script
 from ..verification import verify_transfer
 
 
@@ -41,33 +42,39 @@ logger = logging.getLogger("bdss")
 
 def configure_parser(parser):
 
-    group = parser.add_mutually_exclusive_group(required=True)
+    input_group = parser.add_mutually_exclusive_group(required=True)
 
-    group.add_argument("manifest_file",
-                       help="File containing a list of URLs to transfer",
-                       nargs="?",
-                       type=argparse.FileType("r"))
+    input_group.add_argument("manifest_file",
+                             help="File containing a list of URLs to transfer",
+                             nargs="?",
+                             type=argparse.FileType("r"))
 
-    group.add_argument("--urls", "-u",
-                       dest="urls",
-                       help="URL(s) of data files to transfer",
-                       metavar="URL",
-                       nargs="+")
+    input_group.add_argument("--urls", "-u",
+                             dest="urls",
+                             help="URL(s) of data files to transfer",
+                             metavar="URL",
+                             nargs="+")
 
-    group.add_argument("--input-spec", "-i",
-                       dest="spec_input_file",
-                       help="File containing transfer specs to run",
-                       type=argparse.FileType("r"))
+    input_group.add_argument("--input-spec", "-i",
+                             dest="spec_input_file",
+                             help="File containing transfer specs to run",
+                             type=argparse.FileType("r"))
 
     parser.add_argument("--destination", "-d",
                         dest="destination_directory",
                         default=os.getcwd(),
                         help="Path to directory to store downloaded files in")
 
-    parser.add_argument("--output-spec", "-o",
-                        dest="spec_output_file",
-                        help="Path to output succesful transfer specs",
-                        type=argparse.FileType("w"))
+    output_group = parser.add_mutually_exclusive_group(required=False)
+
+    output_group.add_argument("--output-script",
+                              action="store_true",
+                              help="Instead of transferring files, output shell script that can be used to transfer them")
+
+    output_group.add_argument("--output-spec", "-o",
+                              dest="spec_output_file",
+                              help="Path to output succesful transfer specs",
+                              type=argparse.FileType("w"))
 
 
 def file_md5sum(filename):
@@ -168,7 +175,7 @@ def output_file_name(url):
 
 
 def request_transfer_specs(url):
-    transfer_specs = None
+    transfer_specs = []
 
     data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(available_mechanisms())}
     data["url"] = url
@@ -208,7 +215,7 @@ def handle_action(args, parser):
 
     if args.urls:
         for url in args.urls:
-            transfer_specs = None
+            transfer_specs = []
             try:
                 logger.info("Requesting alternate sources for %s" % url)
                 transfer_specs = request_transfer_specs(url)
@@ -216,12 +223,11 @@ def handle_action(args, parser):
                 logger.warn("Failed to load transfer specs from metadata repository")
                 logger.debug(traceback.format_exc())
 
-            if not transfer_specs:
-                logger.warn("Falling back to default transfer mechanism")
-                transfer_specs = [TransferSpec(url, *default_mechanism(url))]
+            transfer_specs.append(TransferSpec(url, *default_mechanism(url)))
 
             urls_to_transfer.append({
                 "url": url,
+                "output_file_name": output_file_name(url),
                 "transfer_specs": transfer_specs
             })
 
@@ -233,15 +239,20 @@ def handle_action(args, parser):
             transfer_spec = TransferSpec(s["url"], s["transfer_mechanism"], s["transfer_mechanism_options"])
             urls_to_transfer.append({
                 "url": s["url"],
+                "output_file_name": output_file_name(s["url"]),
                 "transfer_specs": [transfer_spec]
             })
 
-    os.makedirs(args.destination_directory, exist_ok=True)
-    for u in urls_to_transfer:
-        output_path = os.path.join(args.destination_directory, output_file_name(u["url"]))
-        if os.path.isfile(output_path):
-            logger.warn("File at %s already exists at %s", u["url"], output_path)
-            continue
+    if args.output_script:
+        print(generate_script(urls_to_transfer))
 
-        if not transfer_data_file(u["transfer_specs"], output_path, args.spec_output_file):
-            logger.error("Failed to download file")
+    else:
+        os.makedirs(args.destination_directory, exist_ok=True)
+        for u in urls_to_transfer:
+            output_path = os.path.join(args.destination_directory, u["output_file_name"])
+            if os.path.isfile(output_path):
+                logger.warn("File at %s already exists at %s", u["url"], output_path)
+                continue
+
+            if not transfer_data_file(u["transfer_specs"], output_path, args.spec_output_file):
+                logger.error("Failed to download file")
