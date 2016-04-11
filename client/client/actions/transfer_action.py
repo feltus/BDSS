@@ -69,7 +69,7 @@ def configure_parser(parser):
 
     output_group.add_argument("--output-script",
                               action="store_true",
-                              help="Instead of transferring files, output shell script that can be used to transfer them")
+                              help="Instead of transferring files, output script that can be used to transfer them")
 
     output_group.add_argument("--output-spec", "-o",
                               dest="spec_output_file",
