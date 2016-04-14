@@ -140,7 +140,6 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
             (success, mechanism_output) = s.run_transfer(output_path)
         except Exception:
             logger.exception("Exception in transfer mechanism")
-            logger.exception()
         finally:
             time_elapsed = time.time() - start_time
             file_size = 0
