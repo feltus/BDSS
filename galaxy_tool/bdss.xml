@@ -4,7 +4,7 @@
     <description>Download files</description>
     <command>
         <![CDATA[
-            /path/to/bdss.exe transfer --destination data_files $manifest > /path/to/bdss.log 2>&1
+            /path/to/bdss.exe transfer --destination data_files $manifest
         ]]>
     </command>
     <inputs>
