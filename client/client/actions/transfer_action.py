@@ -65,6 +65,11 @@ def configure_parser(parser):
                         default=os.getcwd(),
                         help="Path to directory to store downloaded files in")
 
+    parser.add_argument("--timing-report", "-t",
+                        dest="timing_report_file",
+                        help="Path to write transfer timing report to",
+                        type=argparse.FileType("w"))
+
     output_group = parser.add_mutually_exclusive_group(required=False)
 
     output_group.add_argument("--output-script",
@@ -113,13 +118,15 @@ def send_timing_report(success, data_file_url, file_size_bytes, transfer_duratio
                   })
 
 
-def transfer_data_file(specs, output_path, spec_output_file=None):
+def transfer_data_file(specs, output_path, spec_output_file=None, timing_report_file=None):
     """
     Transfer a data file.
 
     Parameters:
     specs - TransferSpec[] - List of TransferSpecs for difference sources for the data file.
     output_path - String - The path to save the downloaded file to.
+
+    timing_report_file - File - The file to write timing reports to
     """
     for s in specs:
         logger.debug("Downloading %s using %s", s.url, s.transfer_mechanism)
@@ -160,6 +167,9 @@ def transfer_data_file(specs, output_path, spec_output_file=None):
                         "transfer_mechanism": s.transfer_mechanism,
                         "transfer_mechanism_options": s.transfer_mechanism_options
                     }))
+                if timing_report_file:
+                    timing_report_file.write("%s,%f,%d,%f\n" % (s.url, time_elapsed, file_size, file_size / time_elapsed))
+
                 return verify_transfer(s, output_path)
             else:
                 logger.warn("Unable to download file")
@@ -247,11 +257,14 @@ def handle_action(args, parser):
 
     else:
         os.makedirs(args.destination_directory, exist_ok=True)
+        if args.timing_report_file:
+            args.timing_report_file.write("URL,Transfer Time (s),Transfer Size (bytes),Transfer Rate(bytes/s)\n")
+
         for u in urls_to_transfer:
             output_path = os.path.join(args.destination_directory, u["output_file_name"])
             if os.path.isfile(output_path):
                 logger.warn("File at %s already exists at %s", u["url"], output_path)
                 continue
 
-            if not transfer_data_file(u["transfer_specs"], output_path, args.spec_output_file):
+            if not transfer_data_file(u["transfer_specs"], output_path, args.spec_output_file, args.timing_report_file):
                 logger.error("Failed to download file")
