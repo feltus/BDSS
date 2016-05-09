@@ -26,16 +26,10 @@ from chalk import log
 from .actions import action_module, available_action_info
 
 
-logger = logging.getLogger("bdss")
-handler = log.ChalkHandler()
-handler.setFormatter(log.ChalkFormatter("%(asctime)s %(levelname)s - %(message)s"))
-handler.setLevel(logging.DEBUG)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
-
-
 def main():
     parser = argparse.ArgumentParser(description="BDSS client")
+
+    parser.add_argument("--no-color", action="store_true", help="Do not colorize log messages")
 
     parser.add_argument("--verbose", "-v", action="store_true", help="Produce verbose log messages")
 
@@ -51,6 +45,19 @@ def main():
     subparsers.add_parser("help", help="Show this help message and exit")
 
     args = parser.parse_args()
+
+    logger = logging.getLogger("bdss")
+    logger.setLevel(logging.INFO)
+
+    handler = None
+    if args.no_color:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s - %(message)s"))
+    else:
+        handler = log.ChalkHandler()
+        handler.setFormatter(log.ChalkFormatter("%(asctime)s %(levelname)s - %(message)s"))
+    handler.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
 
     if args.verbose:
         logger.setLevel(logging.DEBUG)
