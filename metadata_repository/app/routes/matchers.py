@@ -18,7 +18,7 @@
 
 import traceback
 
-from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
+from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask.ext.login import login_required
 
 from .auth import admin_required
@@ -29,6 +29,21 @@ from ..util import available_matcher_types, options_form_class_for_matcher_type,
 
 
 routes = Blueprint("matchers", __name__)
+
+
+@routes.route("/data_sources/<source_id>/matchers")
+@login_required
+def list_url_matchers(source_id):
+    """
+    List matcher descriptions for a data source.
+    """
+    if "application/json" not in request.headers["Accept"]:
+        return redirect(url_for("data_sources.show_data_source", source_id=source_id))
+
+    data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
+
+    descriptions = [render_matcher_description(m.matcher_type, m.matcher_options) for m in data_source.url_matchers]
+    return jsonify(matchers=descriptions)
 
 
 @routes.route("/data_sources/<source_id>/matchers/new", methods=["GET", "POST"])

@@ -16,4 +16,5 @@
 
 {% block scripts %}
 {{ render_options_subform_js("transform_type", url_for('transforms.show_transform_options_form')) }}
+{% include "transforms/matcher_descriptions_js.html.jinja" %}
 {% endblock %}

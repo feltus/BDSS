@@ -1,0 +1,22 @@
+<script>
+var update_matcher_descriptions = function() {
+    var s = $('#to_data_source_id');
+    var target_source_id = s.val();
+    var group = s.closest('.form-group');
+    $.ajax({
+        url: '/data_sources/' + target_source_id + '/matchers',
+        dataType: 'json',
+        success: function(data) {
+            group.find('.help-block').remove();
+            var p = $('<p class="help-block">The transform should result in a URL that matches one of the following:</p>').appendTo(group);
+            var ul = $('<ul>').appendTo(p);
+            data.matchers.forEach(function(m) { ul.append($('<li>' + m + '</li>')); });
+        },
+        error: function(err) {
+            console.warn(err);
+        }
+    });
+};
+$('#to_data_source_id').on('change', update_matcher_descriptions);
+update_matcher_descriptions();
+</script>
