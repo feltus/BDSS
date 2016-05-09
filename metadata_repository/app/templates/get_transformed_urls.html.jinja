@@ -5,7 +5,7 @@
 
 {% block content %}
 
-{{ form_macros.render_form(form, action_url=url_for("routes.get_transformed_urls"), btn_class="btn btn-primary") }}
+{{ form_macros.render_form(form, action_url=url_for("core.get_transformed_urls"), btn_class="btn btn-primary") }}
 
 {% if results %}
     {% if results|length > 0 %}
@@ -25,6 +25,6 @@
 
 <hr>
 
-<p style="margin-top:20px;"><a href="{{ url_for('routes.index') }}"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></p>
+<p style="margin-top:20px;"><a href="{{ url_for('core.index') }}"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></p>
 
 {% endblock %}

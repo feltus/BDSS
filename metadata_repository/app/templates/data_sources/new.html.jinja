@@ -6,14 +6,14 @@
 
 {% block content %}
 
-{{ form_macros.render_form(form, action_url=url_for("routes.create_data_source"), btn_class="btn btn-primary") }}
+{{ form_macros.render_form(form, action_url=url_for("data_sources.create_data_source"), btn_class="btn btn-primary") }}
 
 <hr>
 
-<a href="{{ url_for('routes.list_data_sources') }}" class="btn btn-default">Cancel</a>
+<a href="{{ url_for('data_sources.list_data_sources') }}" class="btn btn-default">Cancel</a>
 
 {% endblock %}
 
 {% block scripts %}
-{{ render_options_subform_js("transfer_mechanism_type", url_for('routes.show_transfer_mechanism_options_form')) }}
+{{ render_options_subform_js("transfer_mechanism_type", url_for('data_sources.show_transfer_mechanism_options_form')) }}
 {% endblock %}

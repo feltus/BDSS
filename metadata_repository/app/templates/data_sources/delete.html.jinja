@@ -6,10 +6,10 @@
 
 <p>Are you sure you want to delete this data source? This cannot be undone.</p>
 
-<form action="{{ url_for('routes.delete_data_source', source_id=data_source.id) }}" method="POST">
+<form action="{{ url_for('data_sources.delete_data_source', source_id=data_source.id) }}" method="POST">
     <button type="submit" class="btn btn-danger">Delete</button>
 </form>
 
-<p style="margin-top:20px;"><a class="btn btn-default" href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}">Cancel</a></p>
+<p style="margin-top:20px;"><a class="btn btn-default" href="{{ url_for('data_sources.show_data_source', source_id=data_source.id) }}">Cancel</a></p>
 
 {% endblock %}

@@ -8,7 +8,7 @@
     <ul>
         {% for data_source in data_sources %}
             <li>
-                <a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}">{{ data_source.label }}</a>
+                <a href="{{ url_for('data_sources.show_data_source', source_id=data_source.id) }}">{{ data_source.label }}</a>
             </li>
         {% endfor %}
     </ul>
@@ -17,14 +17,14 @@
         <nav style="text-align:center;">
             <ul class="pagination">
                 {% if page_range[0] > 1 %}
-                    <li><a href="{{ url_for('routes.list_data_sources', page=(page_range[0] - 1)) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    <li><a href="{{ url_for('data_sources.list_data_sources', page=(page_range[0] - 1)) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
                 {% endif %}
                 {% for p in page_range %}
                     {% if p == page_num %}<li class="active">{% else %}<li>{% endif %}
-                    <a href="{{ url_for('routes.list_data_sources', page=p) }}">{{ p }}</a></li>
+                    <a href="{{ url_for('data_sources.list_data_sources', page=p) }}">{{ p }}</a></li>
                 {% endfor %}
                 {% if page_range[-1] < total_num_pages %}
-                    <li><a href="{{ url_for('routes.list_data_sources', page=(page_range[-1] + 1)) }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    <li><a href="{{ url_for('data_sources.list_data_sources', page=(page_range[-1] + 1)) }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -33,12 +33,12 @@
     <p>No data sources found.</p>
 {% endif %}
 
-<p><a href="{{ url_for('routes.search_data_sources') }}">Search Data Sources</a></p>
-<p><a href="{{ url_for('routes.data_source_relations') }}">Show Relations</a></p>
+<p><a href="{{ url_for('data_sources.search_data_sources') }}">Search Data Sources</a></p>
+<p><a href="{{ url_for('data_sources.data_source_relations') }}">Show Relations</a></p>
 
 {% if current_user.is_admin %}
-<p><a href="{{ url_for('routes.create_data_source') }}">Add New Data Source</a></p>
+<p><a href="{{ url_for('data_sources.create_data_source') }}">Add New Data Source</a></p>
 {% endif %}
-<p><a href="{{ url_for('routes.get_transformed_urls') }}">Find Alternate Data Sources</a></p>
+<p><a href="{{ url_for('core.get_transformed_urls') }}">Find Alternate Data Sources</a></p>
 
 {% endblock %}

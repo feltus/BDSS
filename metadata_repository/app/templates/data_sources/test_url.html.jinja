@@ -6,13 +6,13 @@
 {% block content %}
 
 {% if data_source.url_matchers|length > 0 %}
-    {{ form_macros.render_form(form, action_url=url_for("routes.test_data_source_url_match", source_id=data_source.id), btn_class="btn btn-primary") }}
+    {{ form_macros.render_form(form, action_url=url_for("data_sources.test_data_source_url_match", source_id=data_source.id), btn_class="btn btn-primary") }}
 {% else %}
     <p>This data source has no URL matchers.</p>
 {% endif %}
 
 <hr>
 
-<p style="margin-top:20px;"><a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></p>
+<p style="margin-top:20px;"><a href="{{ url_for('data_sources.show_data_source', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></p>
 
 {% endblock %}

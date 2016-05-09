@@ -6,14 +6,14 @@
 
 {% block content %}
 
-{{ form_macros.render_form(form, action_url=url_for("routes.edit_url_matcher", source_id=data_source.id, matcher_id=url_matcher.matcher_id), btn_class="btn btn-primary") }}
+{{ form_macros.render_form(form, action_url=url_for("matchers.edit_url_matcher", source_id=data_source.id, matcher_id=url_matcher.matcher_id), btn_class="btn btn-primary") }}
 
 <hr>
 
-<a href="{{ url_for('routes.show_url_matcher', source_id=data_source.id, matcher_id=url_matcher.matcher_id) }}" class="btn btn-default">Cancel</a>
+<a href="{{ url_for('matchers.show_url_matcher', source_id=data_source.id, matcher_id=url_matcher.matcher_id) }}" class="btn btn-default">Cancel</a>
 
 {% endblock %}
 
 {% block scripts %}
-{{ render_options_subform_js("matcher_type", url_for('routes.show_matcher_options_form')) }}
+{{ render_options_subform_js("matcher_type", url_for('matchers.show_matcher_options_form')) }}
 {% endblock %}

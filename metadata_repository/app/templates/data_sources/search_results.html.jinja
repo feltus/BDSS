@@ -5,7 +5,7 @@
 
 {% block content %}
 
-{{ form_macros.render_form(form, action_url=url_for("routes.search_data_sources"), btn_class="btn btn-primary", method="GET") }}
+{{ form_macros.render_form(form, action_url=url_for("data_sources.search_data_sources"), btn_class="btn btn-primary", method="GET") }}
 
 {% if data_sources != None %}
     <h4 style="margin-top:20px;">Matching data sources</h4>
@@ -13,7 +13,7 @@
         <ul>
             {% for data_source in data_sources %}
                 <li>
-                    <a href="{{ url_for('routes.show_data_source', source_id=data_source.id) }}">{{ data_source.label }}</a>
+                    <a href="{{ url_for('data_sources.show_data_source', source_id=data_source.id) }}">{{ data_source.label }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -24,6 +24,6 @@
 
 <hr>
 
-<p style="margin-top:20px;"><a href="{{ url_for('routes.list_data_sources') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Data Sources</a></p>
+<p style="margin-top:20px;"><a href="{{ url_for('data_sources.list_data_sources') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Data Sources</a></p>
 
 {% endblock %}

@@ -6,14 +6,14 @@
 
 {% block content %}
 
-{{ form_macros.render_form(form, action_url=url_for("routes.edit_transform", source_id=from_data_source.id, transform_id=transform.transform_id), btn_class="btn btn-primary") }}
+{{ form_macros.render_form(form, action_url=url_for("transforms.edit_transform", source_id=from_data_source.id, transform_id=transform.transform_id), btn_class="btn btn-primary") }}
 
 <hr>
 
-<a href="{{ url_for('routes.show_transform', source_id=from_data_source.id, transform_id=transform.transform_id) }}" class="btn btn-default">Cancel</a>
+<a href="{{ url_for('transforms.show_transform', source_id=from_data_source.id, transform_id=transform.transform_id) }}" class="btn btn-default">Cancel</a>
 
 {% endblock %}
 
 {% block scripts %}
-{{ render_options_subform_js("transform_type", url_for('routes.show_transform_options_form')) }}
+{{ render_options_subform_js("transform_type", url_for('transforms.show_transform_options_form')) }}
 {% endblock %}

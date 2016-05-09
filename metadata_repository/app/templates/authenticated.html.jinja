@@ -10,7 +10,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url_for('routes.index') }}">BDSS</a>
+                <a class="navbar-brand" href="{{ url_for('core.index') }}">BDSS</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -18,10 +18,10 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             {%- if current_user.is_admin -%}
-                                <li><a href="{{ url_for('routes.list_users') }}">Registered Users</a></li>
+                                <li><a href="{{ url_for('users.list_users') }}">Registered Users</a></li>
                                 <li role="separator" class="divider"></li>
                             {%- endif -%}
-                            <li><a href="{{ url_for('routes.logout') }}">Logout</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                         </ul>
                     </li>
                 </ul>

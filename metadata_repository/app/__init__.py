@@ -22,7 +22,9 @@ from htmlmin.minify import html_minify
 
 from .config import app_config
 from .models import db_session, User
-from .routes import routes
+from .routes import auth_routes, core_routes, data_source_routes, \
+    matcher_routes, test_file_routes, timing_report_routes, transform_routes, \
+    user_routes
 
 app = Flask(__name__)
 app.secret_key = app_config["secret_key"]
@@ -60,7 +62,7 @@ def not_found(error):
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
 login_manager.init_app(app)
-login_manager.login_view = "routes.login"
+login_manager.login_view = "auth.login"
 
 
 @login_manager.user_loader
@@ -75,7 +77,14 @@ def unauthorized():
         response.status_code = 401
         return response
     else:
-        return redirect(url_for("routes.login"))
+        return redirect(url_for("auth.login"))
 
 
-app.register_blueprint(routes)
+app.register_blueprint(auth_routes)
+app.register_blueprint(core_routes)
+app.register_blueprint(data_source_routes)
+app.register_blueprint(matcher_routes)
+app.register_blueprint(test_file_routes)
+app.register_blueprint(timing_report_routes)
+app.register_blueprint(transform_routes)
+app.register_blueprint(user_routes)

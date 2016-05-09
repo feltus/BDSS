@@ -18,8 +18,8 @@
 {% endif %}
 
 {% if current_user.is_admin %}
-<p><a href="{{ url_for('routes.edit_data_source', source_id=data_source.id) }}">Edit this data source</a></p>
-<p><a href="{{ url_for('routes.delete_data_source', source_id=data_source.id) }}">Delete this data source</a></p>
+<p><a href="{{ url_for('data_sources.edit_data_source', source_id=data_source.id) }}">Edit this data source</a></p>
+<p><a href="{{ url_for('data_sources.delete_data_source', source_id=data_source.id) }}">Delete this data source</a></p>
 {% endif %}
 
 <h4>URL Matchers</h4>
@@ -27,7 +27,7 @@
 <ul>
     {% for matcher in data_source.url_matchers %}
         <li>
-            <a href="{{ url_for('routes.show_url_matcher', source_id=data_source.id, matcher_id=matcher.matcher_id) }}">
+            <a href="{{ url_for('matchers.show_url_matcher', source_id=data_source.id, matcher_id=matcher.matcher_id) }}">
                 {{- render_matcher_description(matcher.matcher_type, matcher.matcher_options) -}}
             </a>
         </li>
@@ -37,10 +37,10 @@
 </ul>
 
 {% if current_user.is_admin %}
-<p><a href="{{ url_for('routes.add_url_matcher', source_id=data_source.id) }}">Add URL matcher</a></p>
+<p><a href="{{ url_for('matchers.add_url_matcher', source_id=data_source.id) }}">Add URL matcher</a></p>
 {% endif %}
 
-<p><a href="{{ url_for('routes.test_data_source_url_match', source_id=data_source.id) }}">Test a URL</a></p>
+<p><a href="{{ url_for('data_sources.test_data_source_url_match', source_id=data_source.id) }}">Test a URL</a></p>
 
 <hr>
 
@@ -50,7 +50,7 @@
 <ul class="striped">
     {% for transform in data_source.transforms %}
         <li>
-            <a href="{{ url_for('routes.show_transform', source_id=data_source.id, transform_id=transform.transform_id) }}">
+            <a href="{{ url_for('transforms.show_transform', source_id=data_source.id, transform_id=transform.transform_id) }}">
                 {{- transform.to_data_source.label -}}<br>
                 {{- render_transform_description(transform.transform_type, transform.transform_options) -}}
             </a>
@@ -58,12 +58,12 @@
                 <span class="pull-right" style="margin-top:-9px;">
                     <span style="display:inline-block;width:16px;">
                         {%- if not loop.first -%}
-                            <a href="{{ url_for('routes.edit_transform_order', source_id=data_source.id, transform_id=transform.transform_id, direction='up') }}">&#8679;</a>
+                            <a href="{{ url_for('transforms.edit_transform_order', source_id=data_source.id, transform_id=transform.transform_id, direction='up') }}">&#8679;</a>
                         {%- endif -%}
                     </span>
                     <span style="display:inline-block;width:16px;">
                         {%- if not loop.last -%}
-                            <a href="{{ url_for('routes.edit_transform_order', source_id=data_source.id, transform_id=transform.transform_id, direction='down') }}">&#8681;</a>
+                            <a href="{{ url_for('transforms.edit_transform_order', source_id=data_source.id, transform_id=transform.transform_id, direction='down') }}">&#8681;</a>
                         {%- endif -%}
                     </span>
                 </span>
@@ -75,7 +75,7 @@
 </ul>
 
 {% if current_user.is_admin %}
-<p><a href="{{ url_for('routes.add_transform', source_id=data_source.id) }}">Add URL transform</a></p>
+<p><a href="{{ url_for('transforms.add_transform', source_id=data_source.id) }}">Add URL transform</a></p>
 {% endif %}
 
 <hr>
@@ -84,24 +84,24 @@
 
 <ul>
     {% for test_file in data_source.transfer_test_files %}
-        <li><a href="{{ url_for('routes.show_test_file', source_id=data_source.id, file_id=test_file.file_id) }}">{{ test_file.url }}</a></li>
+        <li><a href="{{ url_for('test_files.show_test_file', source_id=data_source.id, file_id=test_file.file_id) }}">{{ test_file.url }}</a></li>
     {% else %}
         <li>No test files</li>
     {% endfor %}
 </ul>
 
 {% if current_user.is_admin %}
-<p><a href="{{ url_for('routes.add_test_file', source_id=data_source.id) }}">Add test file</a></p>
+<p><a href="{{ url_for('test_files.add_test_file', source_id=data_source.id) }}">Add test file</a></p>
 {% endif %}
 
 <hr>
 
 <h4>Timing Reports</h4>
 
-<p><a href="{{ url_for('routes.list_timing_reports', source_id=data_source.id) }}">View timing reports</a></p>
+<p><a href="{{ url_for('timing_reports.list_timing_reports', source_id=data_source.id) }}">View timing reports</a></p>
 
 <hr>
 
-<p style="margin-top:20px;"><a href="{{ url_for('routes.list_data_sources') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Data Sources</a></p>
+<p style="margin-top:20px;"><a href="{{ url_for('data_sources.list_data_sources') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Data Sources</a></p>
 
 {% endblock %}

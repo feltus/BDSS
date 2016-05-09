@@ -8,10 +8,10 @@
 
 <br>
 
-<a href="{{ url_for('routes.edit_user_permissions', user_id=user.user_id) }}">{%- if not user.is_admin -%}Grant{%- else -%}Revoke{%- endif %} Admin Permissions</a>
+<a href="{{ url_for('users.edit_user_permissions', user_id=user.user_id) }}">{%- if not user.is_admin -%}Grant{%- else -%}Revoke{%- endif %} Admin Permissions</a>
 
 <hr>
 
-<p style="margin-top:20px;"><a href="{{ url_for('routes.list_users') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Users</a></p>
+<p style="margin-top:20px;"><a href="{{ url_for('users.list_users') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Users</a></p>
 
 {% endblock %}

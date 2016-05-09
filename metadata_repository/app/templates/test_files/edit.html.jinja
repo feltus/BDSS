@@ -5,10 +5,10 @@
 
 {% block content %}
 
-{{ form_macros.render_form(form, action_url=url_for("routes.edit_test_file", source_id=test_file.data_source_id, file_id=test_file.file_id), btn_class="btn btn-primary") }}
+{{ form_macros.render_form(form, action_url=url_for("test_files.edit_test_file", source_id=test_file.data_source_id, file_id=test_file.file_id), btn_class="btn btn-primary") }}
 
 <hr>
 
-<a href="{{ url_for('routes.show_test_file', source_id=test_file.data_source_id, file_id=test_file.file_id) }}" class="btn btn-default">Cancel</a>
+<a href="{{ url_for('test_files.show_test_file', source_id=test_file.data_source_id, file_id=test_file.file_id) }}" class="btn btn-default">Cancel</a>
 
 {% endblock %}
