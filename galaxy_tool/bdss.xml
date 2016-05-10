@@ -4,7 +4,7 @@
     <description>Download files</description>
     <command>
         <![CDATA[
-            xargs -n 1 -P $maxprocs /path/to/bdss.exe transfer --destination data_files --urls < $manifest
+            xargs -n 1 -P $maxprocs /path/to/bdss.exe --no-color transfer --destination data_files --urls < $manifest
         ]]>
     </command>
     <inputs>
