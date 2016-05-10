@@ -4,11 +4,12 @@
     <description>Download files</description>
     <command>
         <![CDATA[
-            /path/to/bdss.exe transfer --destination data_files $manifest
+            xargs -n 1 -P $maxprocs /path/to/bdss.exe transfer --destination data_files --urls < $manifest
         ]]>
     </command>
     <inputs>
         <param format="txt" name="manifest" type="data" label="Data Manifest"/>
+        <param name="maxprocs" label="Max number of parallel processes" type="integer" value="2" min="1"/>
     </inputs>
     <outputs>
         <collection type="list" label="output" name="output1">
