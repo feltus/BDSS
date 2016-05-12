@@ -4,11 +4,13 @@
     <description>Download files</description>
     <command>
         <![CDATA[
-            xargs -n 1 -P $maxprocs /path/to/bdss.exe --no-color transfer --destination data_files --urls < $manifest
+            echo "$manifest" | xargs -n 1 -P $maxprocs /path/to/bdss.exe --no-color transfer --destination data_files --urls
         ]]>
     </command>
     <inputs>
-        <param format="txt" name="manifest" type="data" label="Data Manifest"/>
+        <param name="manifest" label="URLs of data files" type="text" area="True" size="5x35">
+            <sanitizer sanitize="False"/>
+        </param>
         <param name="maxprocs" label="Max number of parallel processes" type="integer" value="2" min="1"/>
     </inputs>
     <outputs>
