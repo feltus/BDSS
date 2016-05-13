@@ -27,7 +27,7 @@ from .actions import action_module, available_action_info
 
 
 def main():
-    parser = argparse.ArgumentParser(description="BDSS client")
+    parser = argparse.ArgumentParser(prog="bdss", description="BDSS client")
 
     parser.add_argument("--no-color", action="store_true", help="Do not colorize log messages")
 
