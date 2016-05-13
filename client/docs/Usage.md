@@ -4,6 +4,14 @@ To see information about the BDSS client's command line interface, run `bdss hel
 
 This will show a list of available actions to take. Run `bdss <action> -h` to read about a specific action.
 
+## Docker
+
+To run bdss from the Docker container:
+
+```Shell
+docker run --rm --interactive --tty --volume="$PWD":/wd --workdir=/wd bdss-client help
+```
+
 ## Actions
 
 * mechanisms - [List available transfer mechanisms](/client/docs/actions/mechanisms.md)

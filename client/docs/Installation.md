@@ -64,3 +64,12 @@ apt-get install openssl libssl-dev
 
 The BDSS client invokes other programs to transfer files. These must be installed individually. See the
 [list of supported transfer mechanisms](/client/docs/transfer_mechanisms/README.md) for more information.
+
+## Docker
+
+To build a Docker container with the BDSS client:
+
+```Shell
+cd /path/to/bdss/client
+docker build -t bdss-client .
+```
