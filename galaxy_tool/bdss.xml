@@ -14,9 +14,9 @@
         <param name="maxprocs" label="Max number of parallel processes" type="integer" value="2" min="1"/>
     </inputs>
     <outputs>
-        <collection type="list" label="output" name="output1">
-            <discover_datasets pattern="(?P&lt;name&gt;.*)" directory="data_files"/>
-        </collection>
+        <data name="output">
+            <discover_datasets pattern="(?P&lt;name&gt;.*)" directory="data_files" visible="true"/>
+        </data>
     </outputs>
     <stdio>
         <exit_code range="1:" level="fatal" description="Error"/>
