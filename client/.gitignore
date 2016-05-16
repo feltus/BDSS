@@ -2,8 +2,6 @@ __pycache__
 
 *.egg-info/
 
-/.vagrant
-
 /bundle
 # Created by PyInstaller
 /build
