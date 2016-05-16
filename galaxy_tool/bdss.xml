@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 
 <tool id="bdss" name="BDSS" version="0.0.1">
-    <description>Download files</description>
+    <description>file transfer</description>
     <command>
         <![CDATA[
             echo "$manifest" | xargs -n 1 -P $maxprocs /path/to/bdss.exe --no-color transfer --destination data_files --urls
         ]]>
     </command>
     <inputs>
-        <param name="manifest" label="URLs of data files" type="text" area="True" size="5x35">
+        <param name="manifest" label="Data URLs" type="text" area="True" size="5x35" help="Download data by entering URLs in this box (one URL per line).">
             <sanitizer sanitize="False"/>
         </param>
-        <param name="maxprocs" label="Max number of parallel processes" type="integer" value="2" min="1"/>
+        <param name="maxprocs" label="Max number of parallel processes" type="integer" value="2" min="1" help="The tool will download data using up to this number of parallel processes."/>
     </inputs>
     <outputs>
         <data name="output">
@@ -21,5 +21,11 @@
     <stdio>
         <exit_code range="1:" level="fatal" description="Error"/>
     </stdio>
-    <help></help>
+    <help><![CDATA[
+
+.. class:: warningmark
+
+Files downloaded using this tool will not automatically appear in the history. You must manually refresh your history after the job completes to see downloaded files.
+
+    ]]></help>
 </tool>
