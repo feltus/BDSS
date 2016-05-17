@@ -10,17 +10,16 @@
 * [Make Galaxy aware of the new tool](https://wiki.galaxyproject.org/Admin/Tools/AddToolTutorial#A4._Make_Galaxy_aware_of_the_new_tool:).
 * Restart Galaxy.
 
-
 ## Usage
 
-The Galaxy tool takes one input: the data manifest as a text dataset.
+The Galaxy tool takes two inputs: the manifest of URLs of data files and the maximum number of parallel processes
+to use to download files.
 
-* Your data manifest should be a plain text file with one data file URL per line.
-* Select the `Get Data -> Upload File` tool.
-* Click `Choose Local File`, select a file, and upload your data manifest.
-* Select the `Get Data -> BDSS` tool.
-* Choose the file uploaded by the `Upload File` tool for the `Data Manifest` option and execute.
+* Select the "BDSS file transfer" tool under the "Get Data" section.
+* Enter the list of data file URLs into the "Data URLs" text box and select the desired number of parallel processes.
 * The tool will complete once all the files in the manifest are downloaded.
+* Downloaded files may not automatically appear in the Galaxy history. You must manually refresh your history to
+  see the files.
 
 ## References
 
