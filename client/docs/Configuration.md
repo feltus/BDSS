@@ -20,4 +20,4 @@ url=http://localhost:5000
 
 * `metadata_repository`
 
-    * `url` The URL of the metadata repository to use.
+    * `url` The URL of the metadata repository to use. Defaults to http://bdss.bioinfo.wsu.edu/.
