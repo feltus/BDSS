@@ -62,6 +62,8 @@ To set up a development environment for the metadata repository, follow these st
    By default, this server will only be accessible at `localhost`. To make it publicly accessible, run
    the script with the `--public` option.
 
+9. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
+
 # Vagrant
 
 Alternatively, you can launch an instance of the metadata repository in a virtual machine. The VM is
