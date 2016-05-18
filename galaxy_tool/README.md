@@ -5,7 +5,7 @@
 * Copy `bdss.xml` into `/path/to/galaxy/tools/data_source`.
 * [Build the BDSS client into a standalone executable](/client/docs/Installation.md).
 * Set the path to the client executable in `bdss.xml`.
-* [Configure the client](/client/docs/Configuration.md) to use the correct metadata repository.
+* [Configure the client](/client/docs/Configuration.md) to use the correct [metadata repository](/metadata_repository).
   The `.bdss.cfg` configuration file should be placed in the home directory of the user running the Galaxy server.
 * [Make Galaxy aware of the new tool](https://wiki.galaxyproject.org/Admin/Tools/AddToolTutorial#A4._Make_Galaxy_aware_of_the_new_tool:).
 * Restart Galaxy.
