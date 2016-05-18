@@ -1,7 +1,7 @@
 The increasing size of datasets used in scientific computing has made it difficult or impossible for a researcher
 to store all their data at the compute site they are using to process it. This has necessitated that a data transfer
 step become a key consideration in experimental design. Accordingly, scientific data repositories such as NCBI have
-begun to offer services such as dedicated data transfer machines and advanced transfer clients. But despite this,
+begun to offer services such as dedicated data transfer machines and advanced transfer clients. Despite this,
 many researchers continue familiar but suboptimal practices: using slow transfer clients like a web browser or `scp`,
 transferring data over wireless networks, etc.
 
