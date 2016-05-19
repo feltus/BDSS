@@ -1,0 +1,16 @@
+docs
+README.md
+
+.git
+.gitignore
+
+client.spec
+run.py
+scripts
+
+requirements-to-freeze.txt
+setup.py
+
+tests
+test-requirements.txt
+unittest.cfg
