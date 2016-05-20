@@ -1,0 +1,72 @@
+# http://www.graphviz.org/Documentation/dotguide.pdf
+# To generate SVG:
+# dot -Tsvg workflow.dot > workflow.svg
+#
+digraph {
+
+    start[
+        label="Alternate sources requested\nfor a data file"
+    ]
+
+    start -> select_sources
+
+    select_sources[
+        label="Select data sources with\nat least one URL matcher\nthat matches the file URL"
+    ]
+
+    select_sources -> select_first_source
+
+    select_first_source[
+        label="Select first\ndata source"
+    ]
+
+    select_first_source -> select_first_transform
+
+    select_first_transform[
+        label="Select source's \nfirst URL transform"
+    ]
+    select_next_source -> select_first_transform
+
+    select_next_source[
+        label="Select next\ndata source"
+    ]
+
+    select_first_transform -> apply_transform
+
+    apply_transform[
+        label="Apply transform"
+    ]
+
+    apply_transform -> add_url_to_results
+
+    select_next_transform[
+        label="Select next\nURL transform"
+    ]
+
+    select_next_transform -> apply_transform
+
+    add_url_to_results[
+        label="Add transform output\nto results"
+    ]
+
+    add_url_to_results -> remaining_transforms
+
+    remaining_transforms[
+        label="Current data source\nhas more transforms?"
+    ]
+
+    remaining_transforms -> select_next_transform[label="  Yes"]
+    remaining_transforms -> remaining_sources[label="  No"]
+
+    remaining_sources[
+        label="More matching\ndata sources?"
+    ]
+
+    remaining_sources -> select_next_source[label="  Yes"]
+    remaining_sources -> output_results[label="  No"]
+
+    output_results[
+        label="Done.\nSend response\nwith results"
+    ]
+
+}

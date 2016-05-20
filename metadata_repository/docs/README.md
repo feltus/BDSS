@@ -17,6 +17,9 @@
 ## Developers
 
 * [Set up a development environment](/metadata_repository/docs/developer/DevelopmentEnvironment.md)
-* [Add a URL matcher type](/metadata_repository/docs/developer/add_url_matcher_type.md)
-* [Add a transfer mechanism type](/metadata_repository/docs/developer/add_transfer_mechanism_type.md)
-* [Add a URL transform type](/metadata_repository/docs/developer/add_url_transform_type.md)
+* [Code structure](/metadata_repository/docs/developer/CodeStructure.md)
+* [Dependencies](/metadata_repository/docs/developer/Dependencies.md)
+* How to add:
+   * [URL matcher types](/metadata_repository/docs/developer/add_url_matcher_type.md)
+   * [Transfer mechanisms](/metadata_repository/docs/developer/add_transfer_mechanism_type.md)
+   * [URL transform types](/metadata_repository/docs/developer/add_url_transform_type.md)
