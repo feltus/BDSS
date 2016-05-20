@@ -1,0 +1,12 @@
+docs
+README.md
+
+.git
+.gitignore
+
+app.wsgi
+
+requirements-to-freeze.txt
+tox.ini
+
+Vagrantfile

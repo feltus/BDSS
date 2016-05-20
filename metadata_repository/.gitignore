@@ -3,5 +3,6 @@ __pycache__
 app/app_config.yml
 
 *.sqlite
+pgdata
 
 .vagrant
