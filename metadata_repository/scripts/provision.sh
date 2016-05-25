@@ -86,14 +86,8 @@ EOF
 ln --symbolic /etc/apache2/sites-available/bdss.conf /etc/apache2/sites-enabled/bdss.conf
 
 # Configuration
-# FIXME: Generate configuration variables in app.wsgi
-# if [[ ! -e /vagrant/app/app_config.yml ]]; then
-#     cd /vagrant
-#     cat > app/app_config.yml <<EOF
-# database_url: postgresql+psycopg2://bdss:bdss@localhost/bdss
-# EOF
-#     sh ./scripts/generate_flask_key
-# fi
+sed -i 's/os.environ\["DATABASE_URL"\] = .*/os.environ["DATABASE_URL"] = "postgresql+psycopg2:\/\/bdss:bdss@localhost\/bdss"/' app.wsgi
+sed -i "s/os.environ\\[\"SESSION_KEY\"\\] = .*/os.environ[\"SESSION_KEY\"] = \"$(./scripts/generate_flask_key)\"/" app.wsgi
 
 # Create database schema
 cd /vagrant
