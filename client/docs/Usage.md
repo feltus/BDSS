@@ -12,6 +12,10 @@ To run bdss from the Docker container:
 docker run --rm --interactive --tty --volume="$PWD":/wd --workdir=/wd bdss-client help
 ```
 
+Because the client runs inside the container, any file manifests or target directories passed as arguments to
+transfer must be contained in the directory that is mounted as the container's working directory volume. Paths
+should be relative to that directory.
+
 ## Actions
 
 * mechanisms - [List available transfer mechanisms](/client/docs/actions/mechanisms.md)
