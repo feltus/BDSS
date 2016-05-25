@@ -15,29 +15,32 @@ Install Docker and Docker Compose.
    directory and runs the [Flask development server in debug mode](http://flask.pocoo.org/docs/0.10/quickstart/#debug-mode).
    This allows for files to be edited on the host and the container to detect changes and restart the app server.
 
-2. Run database migrations and generate a [secret key for Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions)
+2. Generate a secret key for [Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions).
    ```
-   docker-compose run app /bin/bash
-   alembic upgrade head
-   ./scripts/generate_flask_key
+   docker-compose run --rm app ./scripts/generate_flask_key
+   ```
+
+   Save the key in the `SESSION_KEY` environment variable in `docker-compose.yml`. Restart the `app` container after
+   changing the session key configuration.
+
+3. Run database migrations.
+   ```
+   docker-compose run --rm app alembic upgrade head
    ```
 
    This only needs to be run when the containers are created the first time you run `docker-compose up`. Database
-   data is persisted by mounting `./pgdata` as PostgreSQL's data directory on the `db` container. And the Flask session
-   key is saved in `app/app_config.yml`.
+   data is persisted by mounting `./pgdata` as PostgreSQL's data directory on the `db` container.
 
-3. Open [http://localhost](http://localhost) in a browser
+4. Open [http://localhost](http://localhost) in a browser.
 
 ## Vagrant
 
 Alternatively, you can launch an instance of the metadata repository in a virtual machine. The VM is
 configured to use [PostgreSQL](http://www.postgresql.org/) for the database and
-[Apache](https://httpd.apache.org/) for the web server.
+[Apache](https://httpd.apache.org/) with [mod_wsgi](https://modwsgi.readthedocs.io/) for the web server.
 
-**Note**: The VM setup requires your `database_url` in `app/app_config.yml` to be set to
-`postgresql+psycopg2://bdss:bdss@localhost/bdss`. The VM provision script will set this value if
-`app/app_config.yml` does not exist, but it will not overwrite an existing file so you may have to
-change the value manually.
+**Note**: The VM provision script sets environment variables in `app.wsgi`. Be careful about committing them to
+version control.
 
 1. Install VirtualBox and Vagrant
 
@@ -82,15 +85,15 @@ To manually set up a development environment, follow these steps:
 
 5. Configure the application.
 
-   ```Shell
-   cp app/app_config.example.yml app/app_config.yml
-   ```
+   Two configuration values are read from environment variables:
 
-   Edit `app/app_config.yml` and replace the `database_url` value with the URL of your database.
-   If you use a path to an SQLite database, it will be automatically created if it doesn't exist.
-   For other database types, you may have to install an additional driver. See the
-   [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls)
-   for more information.
+   * DATABASE_URL - Location of the database to use. See the
+     [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls) for more
+     information. If you use a path to an SQLite database, it will be automatically created if it doesn't exist.
+     For other database types, you may have to install an additional driver.
+
+   * SESSION_KEY - Secret key for [Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions). To
+     generate a random key, run `./scripts/generate_flask_key`.
 
 6. Create the database schema.
 
@@ -101,16 +104,7 @@ To manually set up a development environment, follow these steps:
    alembic upgrade head
    ```
 
-7. Generate a [secret key for Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions).
-
-   This will generate a new secret key using the method described in the Flask documentation and store
-   it in your `app/app_config.yml` file.
-
-   ```Shell
-   ./scripts/generate_flask_key
-   ```
-
-8. Start the development server.
+7. Start the development server.
 
    ```Shell
    ./scripts/serve
@@ -119,4 +113,4 @@ To manually set up a development environment, follow these steps:
    By default, this server will only be accessible at `localhost`. To make it publicly accessible, run
    the script with the `--public` option.
 
-9. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
+8. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.

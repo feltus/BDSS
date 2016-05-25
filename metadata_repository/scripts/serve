@@ -7,11 +7,9 @@ project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, project_dir)
 
 from app import app as application
-from app.config import config_path
 
 args = {
     "debug": True,
-    "extra_files": [config_path]
 }
 
 if len(sys.argv) > 1 and sys.argv[1] == "--public":

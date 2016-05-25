@@ -19,7 +19,6 @@ pep8==1.5.7
 pycparser==2.14
 pyflakes==1.0.0
 python-editor==0.4
-PyYAML==3.11
 simplejson==3.8.1
 six==1.10.0
 SQLAlchemy==1.0.9

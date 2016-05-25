@@ -11,6 +11,9 @@ services:
       - ./pgdata:/var/lib/postgresql/data/pgdata
   app:
     build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg2://bdss:topsecret@db/bdss
+      SESSION_KEY:
     links:
       - db
     ports:

@@ -16,18 +16,28 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+import binascii
+import os
+
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask.ext.login import LoginManager
 from htmlmin.minify import html_minify
 
-from .config import app_config
 from .models import db_session, User
 from .routes import auth_routes, core_routes, data_source_routes, \
     matcher_routes, test_file_routes, timing_report_routes, transform_routes, \
     user_routes
 
 app = Flask(__name__)
-app.secret_key = app_config["secret_key"]
+
+
+secret_key = os.getenv("SESSION_KEY", "")
+if secret_key:
+    secret_key = binascii.unhexlify(secret_key.encode("ascii"))
+else:
+    secret_key = os.urandom(32)
+
+app.secret_key = secret_key
 
 
 @app.template_filter("format_number")

@@ -35,10 +35,6 @@ The metadata repository code is organized into:
 
    Initialization of Flask application.
 
-* config.py
-
-   Load application configuration.
-
 * core.py
 
    Core functionality of the metadata repository: identifying alternate URLs for data.

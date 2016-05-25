@@ -7,7 +7,6 @@ Flask
 flask-jsontools
 Flask-Login
 passlib
-PyYAML
 simplejson
 SQLAlchemy
 WTForms

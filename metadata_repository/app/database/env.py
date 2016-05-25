@@ -26,7 +26,6 @@ from sqlalchemy import create_engine, pool
 from logging.config import fileConfig
 
 sys.path.insert(0, os.getcwd())
-from app.config import app_config
 from app.models import BaseModel
 
 # this is the Alembic Config object, which provides
@@ -61,7 +60,7 @@ def run_migrations_offline():
     script output.
 
     """
-    context.configure(url=app_config["database_url"], target_metadata=target_metadata)
+    context.configure(url=os.getenv("DATABASE_URL"), target_metadata=target_metadata)
 
     with context.begin_transaction():
         context.run_migrations()
@@ -74,7 +73,7 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    engine = create_engine(app_config["database_url"], poolclass=pool.NullPool)
+    engine = create_engine(os.getenv("DATABASE_URL"), poolclass=pool.NullPool)
 
     connection = engine.connect()
     context.configure(

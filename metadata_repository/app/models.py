@@ -18,6 +18,7 @@
 
 import datetime
 import math
+import os
 import statistics
 
 import sqlalchemy as sa
@@ -26,11 +27,10 @@ from flask.ext.login import current_user, UserMixin
 from sqlalchemy.orm import backref, scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
-from .config import app_config
 from .util import matcher_of_type, transform_of_type, JSONEncodedDict, MutableDict
 
 # http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/#declarative
-db_engine = sa.create_engine(app_config["database_url"])
+db_engine = sa.create_engine(os.getenv("DATABASE_URL"))
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db_engine))
 
 
