@@ -10,12 +10,12 @@ transferring data over wireless networks, etc.
 BDSS aims to alleviate this problem by shifting the burden of learning about alternative file mirrors, transfer
 clients, tuning parameters, etc. from the end user researcher to a group of "data curators". It consists of three parts:
 
-1. **Metadata repository server**
+1. **[Metadata repository server](/metadata_repository/README.md)**
    * Central database managed by data curators
    * Maps URLs of data files to alternate sources
-   * Includes information about the transfer client to use to access the data
+   * Includes information about the BDSS transfer client to use to access the data
 
-2. **BDSS Client**
+2. **BDSS transfer client**
    * Consumes information from metadata repository
    * Invokes transfer clients
    * Reports analytics to metadata repository
