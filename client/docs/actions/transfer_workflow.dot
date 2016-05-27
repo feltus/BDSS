@@ -1,7 +1,8 @@
 digraph {
 
     start[
-        label="Client is invoked\nto download a file"
+        label="User attempts to transfer a data file\nusing the BDSS transfer client"
+        shape=plaintext
     ]
 
     start -> request_alternate_urls

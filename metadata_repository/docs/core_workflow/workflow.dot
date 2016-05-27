@@ -4,8 +4,15 @@
 #
 digraph {
 
+    user[
+        label="User attempts to transfer a data file\nusing the BDSS transfer client"
+        shape=plaintext
+    ]
+
+    user -> start
+
     start[
-        label="Alternate sources requested\nfor a data file"
+        label="Alternate sources requested\nfor the data file"
     ]
 
     start -> select_sources
