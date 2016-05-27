@@ -10,17 +10,17 @@ transferring data over wireless networks, etc.
 BDSS aims to alleviate this problem by shifting the burden of learning about alternative file mirrors, transfer
 clients, tuning parameters, etc. from the end user researcher to a group of "data curators". It consists of three parts:
 
-###1. Metadata repository server
+1. **Metadata repository server**
    * Central database managed by data curators
    * Maps URLs of data files to alternate sources
    * Includes information about the transfer client to use to access the data
 
-###2. BDSS Client
+2. **BDSS Client**
    * Consumes information from metadata repository
    * Invokes transfer clients
    * Reports analytics to metadata repository
 
-###3. Integrartion as a Galaxy data transfer tool
+3. **Integration as a Galaxy data transfer tool**
    * Run the BDSS client as part of a [Galaxy](https://galaxyproject.org/) workflow
 
 For more information, see the documentation.
