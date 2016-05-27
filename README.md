@@ -15,15 +15,11 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
    * Maps URLs of data files to alternate sources
    * Includes information about the BDSS transfer client to use to access the data
 
-2. **BDSS transfer client**
+2. **[BDSS transfer client](/client/README.md)**
    * Consumes information from metadata repository
    * Invokes transfer clients
    * Reports analytics to metadata repository
 
-3. **Integration as a Galaxy data transfer tool**
+3. **[Integration as a Galaxy data transfer tool](/galaxy_tool/README.md)**
    * Run the BDSS client as part of a [Galaxy](https://galaxyproject.org/) workflow
 
-For more information, see the documentation.
-   * [Metadata repository](/metadata_repository/README.md)
-   * [Client](/client/README.md)
-   * [Galaxy tool](/galaxy_tool/README.md)
