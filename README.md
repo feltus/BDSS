@@ -1,4 +1,4 @@
-###What is the Big Data Smart Socket?
+###What is the Big Data Smart Socket (BDSS)?
 
 The increasing size of datasets used in scientific computing has made it difficult or impossible for a researcher
 to store all their data at the compute site they are using to process it. This has necessitated that a data transfer
