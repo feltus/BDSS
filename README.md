@@ -22,7 +22,7 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
 
 3. **[Integration as a Galaxy data transfer tool](/galaxy_tool/README.md)**
 
-**[NCBI Download with Galaxy Example Usage](NCBIExample.md)**
+**[NCBI Download Example Usage](NCBIExample.md)**
 
    
 
