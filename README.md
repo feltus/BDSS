@@ -21,5 +21,9 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
    * Reports analytics to metadata repository
 
 3. **[Integration as a Galaxy data transfer tool](/galaxy_tool/README.md)**
-   * Run the BDSS client as part of a [Galaxy](https://galaxyproject.org/) workflow
+
+**[NCBI Example Usage](NCBIexample.md)**
+**[Galaxy Example Usage](/galaxy_tool/README.md)**
+   
+
 
