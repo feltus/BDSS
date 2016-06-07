@@ -27,5 +27,7 @@ def is_available():
 
 def transfer_command(url, output_path, options):
     # Strip scheme from URL
-    url = urlunsplit(("", *urlsplit(url)[1:]))[2:]
+    parts = list(urlsplit(url))
+    parts[0] = ""
+    url = urlunsplit(parts)[2:]
     return ["scp", url, output_path]
