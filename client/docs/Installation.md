@@ -10,6 +10,8 @@ cd BDSS/client
 python3 setup.py develop
 ```
 
+See Python's [documentation on installing modules](https://docs.python.org/3/install/) for more information.
+
 ## Install from PyPI
 
 _Not available yet_ (See [#105](https://github.com/feltus/BDSS/issues/105))
