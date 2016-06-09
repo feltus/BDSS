@@ -2,7 +2,7 @@
 
 ## Installation
 
-* Copy `bdss.xml` into `/path/to/galaxy/tools/data_source`.
+* Copy [`bdss.xml`](https://github.com/feltus/BDSS/blob/master/galaxy_tool/bdss.xml) into `/path/to/galaxy/tools/data_source`.
 * [Build the BDSS client into a standalone executable](/client/docs/Installation.md).
 * Set the path to the client executable in `bdss.xml`.
 * [Configure the client](/client/docs/Configuration.md) to use the correct [metadata repository](/metadata_repository).
