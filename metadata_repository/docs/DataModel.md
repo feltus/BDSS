@@ -51,5 +51,6 @@ back to the metadata repository. This report contains:
 * the size of the file
 * the time required to transfer the file
 * a checksum
+
 The file URL is used to link the report to a data source. This information can be used by
 administrators to reconfigure the metadata repository to prioritize different data sources.
