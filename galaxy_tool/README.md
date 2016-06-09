@@ -9,6 +9,7 @@
   The `.bdss.cfg` configuration file should be placed in the home directory of the user running the Galaxy server.
 * [Make Galaxy aware of the new tool](https://wiki.galaxyproject.org/Admin/Tools/AddToolTutorial#A4._Make_Galaxy_aware_of_the_new_tool:).
 * Restart Galaxy.
+* Of course, any data transfer applications must be installed on the galaxy server and accessible to the Galaxy useer.
 
 ## Usage
 
