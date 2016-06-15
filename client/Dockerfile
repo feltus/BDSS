@@ -26,6 +26,14 @@ RUN curl http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/${sratoolkit_version}/sratool
     && find /opt/sratoolkit.${sratoolkit_version}-ubuntu64/bin -type f -o -type l | grep --invert-match 'vdb-validate' | xargs rm
 ENV PATH="$PATH:/opt/sratoolkit.${sratoolkit_version}-ubuntu64/bin"
 
+# Install Globus GridFTP
+RUN wget "http://toolkit.globus.org/ftppub/gt6/installers/repo/globus-toolkit-repo_latest_all.deb" \
+    && dpkg -i "globus-toolkit-repo_latest_all.deb" \
+    && rm "globus-toolkit-repo_latest_all.deb" \
+    && apt-get --yes update \
+    && apt-get --yes install globus-gridftp \
+    && apt-get clean
+
 # Install BDSS client
 WORKDIR /usr/src/app
 COPY requirements.txt /usr/src/app
