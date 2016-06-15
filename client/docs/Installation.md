@@ -11,6 +11,8 @@ python3 setup.py develop
 ```
 
 See Python's [documentation on installing modules](https://docs.python.org/3/install/) for more information.
+A [virtualenv](https://virtualenv.pypa.io/en/stable/) may be be useful for isolating from other projects
+or on a shared host where you don't have permission to install in the global `site-packages` directory.
 
 ## Install from PyPI
 
