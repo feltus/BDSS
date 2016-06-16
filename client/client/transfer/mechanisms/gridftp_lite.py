@@ -24,4 +24,30 @@ def is_available():
 
 
 def transfer_command(url, output_path, options):
-    return ["globus-url-copy", url, output_path]
+    args = []
+
+    try:
+        if options["fast_mode"]:
+            args.append("-fast")
+    except KeyError:
+        pass
+
+    try:
+        if options["parallelism"]:
+            args.extend(["-p", int(options["parallelism"])])
+    except KeyError:
+        pass
+
+    try:
+        if options["block_size"]:
+            args.extend(["-block-size", int(options["block_size"])])
+    except KeyError:
+        pass
+
+    try:
+        if options["tcp_buffer_size"]:
+            args.extend(["-tcp-buffer-size", int(options["tcp_buffer_size"])])
+    except KeyError:
+        pass
+
+    return ["globus-url-copy"] + args + [url, output_path]

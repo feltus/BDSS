@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from wtforms import Form
+import wtforms
 
 
 label = "GridFTP-Lite"
@@ -25,5 +25,19 @@ label = "GridFTP-Lite"
 description = "Transfer files with <a href=\"http://toolkit.globus.org/toolkit/data/gridftp/quickstart.html\">GridFTP-Lite</a> (GridFTP with SSH authentication)"
 
 
-class OptionsForm(Form):
-    pass
+class OptionsForm(wtforms.Form):
+
+    fast_mode = wtforms.fields.BooleanField(
+        label="Transfer with -fast flag")
+
+    parallelism = wtforms.fields.IntegerField(
+        label="Parallelism",
+        description="Number of parallel data connections to use (-parallel option)")
+
+    block_size = wtforms.fields.IntegerField(
+        label="Block Size",
+        description="Buffer size (bytes) for underlying transfer method (-block-size option)")
+
+    tcp_buffer_size = wtforms.fields.IntegerField(
+        label="TCP Buffer Size",
+        description="Buffer size (bytes) for underlying FTP data channels (-tcp-buffer-size option)")
