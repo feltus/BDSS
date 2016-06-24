@@ -20,8 +20,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from client.transfer import TransferFailedError, TransferSpec
-from client.verification import md5_checksum_verification as md5_cv
+from client.transfer.base import Transfer, TransferFailedError
+from client.transfer.verification import md5_checksum_verification as md5_cv
 
 
 class TestMD5ChecksumVerification(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestMD5ChecksumVerification(unittest.TestCase):
         self.checksum_data = b"5eb63bbbe01eeed093cb22bb8f5acdc3"
         self.checksum = "5eb63bbbe01eeed093cb22bb8f5acdc3"
 
-        self.spec = TransferSpec(self.file_url, "curl", {})
+        self.transfer = Transfer(self.file_url, "curl", {})
 
     def test_always_attempts_verification(self):
         self.assertTrue(md5_cv.can_attempt_verification("http://www.example.com/test.txt", None))
@@ -47,7 +47,7 @@ class TestMD5ChecksumVerification(unittest.TestCase):
                          "http://www.example.com/ftp/files/test.sra.md5?param=value#fragment")
 
     def test_get_checksum(self):
-        with patch.object(md5_cv.TransferSpec, "get_transfer_data", return_value=self.checksum_data):
+        with patch.object(md5_cv.Transfer, "get_data", return_value=self.checksum_data):
             self.assertEqual(md5_cv._get_checksum(self.file_url, "curl", {}), self.checksum)
 
     def test_validate_checksum(self):
@@ -58,15 +58,15 @@ class TestMD5ChecksumVerification(unittest.TestCase):
         with tempfile.NamedTemporaryFile() as temp_f, patch.object(md5_cv, "_get_checksum", return_value=self.checksum):
             temp_f.write(self.file_data.encode())
             temp_f.flush()
-            self.assertTrue(md5_cv.verify_transfer(self.spec, temp_f.name))
+            self.assertTrue(md5_cv.verify_transfer(self.transfer, temp_f.name))
 
     def test_incorrect_checksum_returns_false(self):
         with tempfile.NamedTemporaryFile() as temp_f, patch.object(md5_cv, "_get_checksum", return_value=self.checksum):
             temp_f.write(self.file_data.encode())
             temp_f.write(b"Corruption")
             temp_f.flush()
-            self.assertFalse(md5_cv.verify_transfer(self.spec, temp_f.name))
+            self.assertFalse(md5_cv.verify_transfer(self.transfer, temp_f.name))
 
     def test_raises_unable_to_verify_if_no_checksum(self):
-        with patch.object(md5_cv.TransferSpec, "get_transfer_data", side_effect=TransferFailedError):
-            self.assertRaises(TransferFailedError, md5_cv.verify_transfer, self.spec, None)
+        with patch.object(md5_cv.Transfer, "get_data", side_effect=TransferFailedError):
+            self.assertRaises(TransferFailedError, md5_cv.verify_transfer, self.transfer, None)

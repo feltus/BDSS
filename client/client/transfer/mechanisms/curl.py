@@ -16,12 +16,14 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from ...util import is_program_on_path
+from .base import SimpleSubprocessMechanism
 
 
-def is_available():
-    return is_program_on_path("curl")
+class CurlMechanism(SimpleSubprocessMechanism):
 
+    @classmethod
+    def transfer_program(cls):
+        return "curl"
 
-def transfer_command(url, output_path, options):
-    return ["curl", "--output", output_path, url]
+    def transfer_command(self, url, output_path):
+        return ["curl", "--output", output_path, url]

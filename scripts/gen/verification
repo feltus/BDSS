@@ -11,9 +11,9 @@ fi
 METHOD_NAME="$1"
 
 TEMPLATE="${PROJECT_DIR}/templates/client_verification_method.py"
-TARGET="${PROJECT_DIR}/client/client/verification/${METHOD_NAME}.py"
+TARGET="${PROJECT_DIR}/client/client/transfer/verification/${METHOD_NAME}.py"
 
 sed -e "s/METHOD_NAME/${METHOD_NAME}/" "${TEMPLATE}" > "${TARGET}"
 echo -e "\033[01;32mCreated ${TARGET}\033[00m"
 # FIXME: This can be automated
-echo -e "\033[01;93mAdd import to client/client/verification/__init__.py\033[00m"
+echo -e "\033[01;93mAdd import to client/client/transfer/verification/__init__.py\033[00m"

@@ -19,27 +19,33 @@
 import os
 from urllib.parse import urlparse, urlunsplit
 
-from ...util import is_program_on_path
+from .base import SimpleSubprocessMechanism
 
 
-def is_available():
-    return is_program_on_path("ascp")
+class AsperaMechanism(SimpleSubprocessMechanism):
 
+    @classmethod
+    def allowed_options(cls):
+        return ("disable_encryption", "username")
 
-def transfer_command(url, output_path, options):
+    @classmethod
+    def transfer_program(cls):
+        return "ascp"
 
-    default_path_to_key = os.path.expandvars(os.path.join("$HOME", ".aspera", "connect", "etc", "asperaweb_id_dsa.openssh"))
-    args = ["-i", default_path_to_key]
+    def _transfer_command(self, url, output_path):
 
-    # Require encryption?
-    try:
-        if options["disable_encryption"]:
-            args.append("-T")
-    except KeyError:
-        pass
+        default_path_to_key = os.path.expandvars(os.path.join("$HOME", ".aspera", "connect", "etc", "asperaweb_id_dsa.openssh"))
+        args = ["-i", default_path_to_key]
 
-    # Remove scheme from URL
-    parts = urlparse(url)
-    url = parts[1] + ":" + urlunsplit(("", "", parts[2], parts[3], parts[4]))
+        # Require encryption?
+        try:
+            if self.disable_encryption:
+                args.append("-T")
+        except KeyError:
+            pass
 
-    return ["ascp"] + args + [options["username"] + "@" + url, output_path]
+        # Remove scheme from URL
+        parts = urlparse(url)
+        url = parts[1] + ":" + urlunsplit(("", "", parts[2], parts[3], parts[4]))
+
+        return ["ascp"] + args + [self.username + "@" + url, output_path]

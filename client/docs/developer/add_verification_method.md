@@ -2,7 +2,7 @@
 
 This explains how to add support for a new verification method to the client.
 
-Each verification method corresponds to a module in `client/verification` that conforms to
+Each verification method corresponds to a module in `client/transfer/verification` that conforms to
 a specific API. To generate stub code for a new verification method, run
 `./scripts/gen/verification id` from the BDSS project root, replacing `id` with the ID of
 the new verification method. This will create a file at `client/verification/id.py` with

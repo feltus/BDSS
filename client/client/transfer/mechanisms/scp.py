@@ -18,16 +18,18 @@
 
 from urllib.parse import urlsplit, urlunsplit
 
-from ...util import is_program_on_path
+from .base import SimpleSubprocessMechanism
 
 
-def is_available():
-    return is_program_on_path("scp")
+class SCPMechanism(SimpleSubprocessMechanism):
 
+    @classmethod
+    def transfer_program(cls):
+        return "scp"
 
-def transfer_command(url, output_path, options):
-    # Strip scheme from URL
-    parts = list(urlsplit(url))
-    parts[0] = ""
-    url = urlunsplit(parts)[2:]
-    return ["scp", url, output_path]
+    def transfer_command(self, url, output_path):
+        # Strip scheme from URL
+        parts = list(urlsplit(url))
+        parts[0] = ""
+        url = urlunsplit(parts)[2:]
+        return ["scp", url, output_path]

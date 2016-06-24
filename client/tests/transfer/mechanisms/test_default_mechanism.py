@@ -18,19 +18,19 @@
 
 import unittest
 
-from client.transfer import mechanisms
+from client.transfer.mechanisms import default_mechanism
 
 
 class TestDefaultMechanism(unittest.TestCase):
 
     def test_correct_default_mechanism_for_url_scheme(self):
 
-        self.assertEqual(mechanisms.default_mechanism("http://example.com/file.txt")[0], "curl")
-        self.assertEqual(mechanisms.default_mechanism("https://example.com/file.txt")[0], "curl")
-        self.assertEqual(mechanisms.default_mechanism("ftp://example.com/file.txt")[0], "curl")
+        self.assertEqual(default_mechanism("http://example.com/file.txt")[0], "curl")
+        self.assertEqual(default_mechanism("https://example.com/file.txt")[0], "curl")
+        self.assertEqual(default_mechanism("ftp://example.com/file.txt")[0], "curl")
 
-        self.assertEqual(mechanisms.default_mechanism("scp://user@example.com:/file.txt")[0], "scp")
+        self.assertEqual(default_mechanism("scp://user@example.com:/file.txt")[0], "scp")
 
-        self.assertEqual(mechanisms.default_mechanism("sshftp://user@example.com/file.txt")[0], "gridftp_lite")
+        self.assertEqual(default_mechanism("sshftp://user@example.com/file.txt")[0], "gridftp_lite")
 
-        self.assertEqual(mechanisms.default_mechanism("aspera://example.com:/file.txt")[0], "aspera")
+        self.assertEqual(default_mechanism("aspera://example.com:/file.txt")[0], "aspera")

@@ -18,17 +18,17 @@
 
 from urllib.parse import urlparse
 
-from . import aspera
-from . import curl
-from . import gridftp_lite
-from . import scp
+from .aspera import AsperaMechanism
+from .curl import CurlMechanism
+from .gridftp_lite import GridFTPLiteMechanism
+from .scp import SCPMechanism
 
 
 all_mechanisms = {
-    "aspera": aspera,
-    "curl": curl,
-    "gridftp_lite": gridftp_lite,
-    "scp": scp
+    "aspera": AsperaMechanism,
+    "curl": CurlMechanism,
+    "gridftp_lite": GridFTPLiteMechanism,
+    "scp": SCPMechanism
 }
 
 

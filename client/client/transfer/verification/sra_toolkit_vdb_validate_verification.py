@@ -16,21 +16,30 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import unittest
-from tempfile import NamedTemporaryFile
+import logging
+import os
+import subprocess
 
-from client.verification import util
+from ...util import is_program_on_path
 
 
-class TestCalculateFileChecksum(unittest.TestCase):
+label = "SRA Toolkit's vdb-validate"
 
-    def setUp(self):
-        self.file_data = "Lorem ipsum dolor sit amet"
-        self.correct_md5_checksum = "fea80f2db003d4ebc4536023814aa885"
 
-    def test_md5_checksum(self):
-        with NamedTemporaryFile() as f:
-            f.write(self.file_data.encode())
-            f.flush()
-            calculated_checksum = util.calculate_file_checksum("md5", f.name)
-            self.assertEqual(calculated_checksum, self.correct_md5_checksum)
+logger = logging.getLogger("bdss")
+
+
+def can_attempt_verification(transfer_spec, output_path):
+    """
+    Only attempt to verify SRA files.
+    """
+    _, ext = os.path.splitext(output_path)
+    return ext == ".sra" and is_program_on_path("vdb-validate")
+
+
+def verify_transfer(transfer_spec, output_path):
+    try:
+        subprocess.check_output(["vdb-validate", output_path])
+        return True
+    except subprocess.CalledProcessError:
+        return False

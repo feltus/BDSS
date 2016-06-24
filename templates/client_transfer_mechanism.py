@@ -16,9 +16,14 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-def is_available():
-    raise NotImplementedError("is_available not implemented for MECH_NAME transfer mechanism")
+from .base import BaseMechanism
 
 
-def transfer_command(url, output_path, options):
-    raise NotImplementedError("transfer_command not implemented for MECH_NAME transfer mechanism")
+class MECH_NAMEMechanism(BaseMechanism):
+
+    @classmethod
+    def is_available(cls):
+        raise NotImplementedError
+
+    def transfer_file(self, url, output_path):
+        raise NotImplementedError

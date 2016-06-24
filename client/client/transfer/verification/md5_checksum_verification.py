@@ -20,8 +20,8 @@ import logging
 import string
 from urllib.parse import urlparse, urlunparse
 
-from ..transfer import TransferSpec
-from .util import calculate_file_checksum
+from ..base import Transfer
+from ...util import calculate_file_checksum
 
 
 label = "MD5 Checksum"
@@ -30,7 +30,7 @@ label = "MD5 Checksum"
 logger = logging.getLogger("bdss")
 
 
-def can_attempt_verification(transfer_spec, output_path):
+def can_attempt_verification(transfer, output_path):
     return True
 
 
@@ -39,12 +39,12 @@ def _md5_checksum_url(data_file_url):
     return urlunparse((p.scheme, p.netloc, p.path + ".md5", p.params, p.query, p.fragment))
 
 
-def _get_checksum(checksum_url, transfer_mechanism, transfer_mechanism_options):
-    checksum_transfer_spec = TransferSpec(checksum_url,
-                                          transfer_mechanism,
-                                          transfer_mechanism_options)
+def _get_checksum(checksum_url, mechanism_name, mechanism_options):
+    checksum_transfer = Transfer(checksum_url,
+                                 mechanism_name,
+                                 mechanism_options)
 
-    checksum_data = checksum_transfer_spec.get_transfer_data()
+    checksum_data = checksum_transfer.get_data()
     return checksum_data.decode().strip().lower()
 
 
@@ -55,14 +55,14 @@ def _validate_md5_checksum(possible_checksum):
     return len(possible_checksum) == 32 and all(c in string.hexdigits for c in possible_checksum)
 
 
-def verify_transfer(transfer_spec, output_path):
-    checksum_url = _md5_checksum_url(transfer_spec.url)
+def verify_transfer(transfer, output_path):
+    checksum_url = _md5_checksum_url(transfer.url)
 
     logger.debug("Fetching MD5 checksum from %s" % checksum_url)
 
     correct_checksum = _get_checksum(checksum_url,
-                                     transfer_spec.transfer_mechanism,
-                                     transfer_spec.transfer_mechanism_options)
+                                     transfer.mechanism_name,
+                                     transfer.mechanism_options)
 
     if not _validate_md5_checksum(correct_checksum):
         raise ValueError("Fetched value is not a valid MD5 checksum")

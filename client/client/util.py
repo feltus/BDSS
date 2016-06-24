@@ -16,10 +16,37 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+import hashlib
+import io
 import os
+import selectors
+import subprocess
+import sys
+
+
+def calculate_file_checksum(algorithm, path, blocksize=65536):
+    """
+    Calculate the checksum of the file at path using the given algorithm.
+    See hashlib.available_algorithms
+    https://docs.python.org/3/library/hashlib.html
+    """
+    h = hashlib.new(algorithm)
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(blocksize), b""):
+            h.update(block)
+    return h.hexdigest().lower()
 
 
 def is_program_on_path(prog_name):
+    """
+    Check if a program is found on the executable search path.
+
+    Parameters:
+    prog_name - String - Name of the program
+
+    Returns:
+    Boolean - True if program is found
+    """
     for path in os.get_exec_path():
         if not path or not os.path.isdir(path):
             continue
@@ -28,4 +55,49 @@ def is_program_on_path(prog_name):
             prog_path = os.path.join(path, prog_name)
             if os.access(prog_path, os.X_OK):
                 return True
+
     return False
+
+
+def run_subprocess(subprocess_args, successful_return_codes=(0,)):
+    """
+    Run a program in a subprocess. Display and capture output.
+
+    Parameters:
+    subprocess_args - String[] - Args to subprocess.Popen. See https://docs.python.org/3/library/subprocess.html#popen-constructor
+    successful_return_codes - (Int, ...) - Return codes indicating success.
+
+    Returns:
+    (Boolean, String) - Tuple of Boolean true/false if subprocess succeeded/failed based on given return codes and
+    String containing output of subprocess.
+    """
+    process = subprocess.Popen(subprocess_args,
+                               bufsize=1,
+                               stderr=subprocess.STDOUT,
+                               stdout=subprocess.PIPE,
+                               universal_newlines=True)
+
+    buf = io.StringIO()
+
+    def select_callback(stream, mask):
+        line = stream.readline()
+        buf.write(line)
+        sys.stdout.write(line)
+
+    selector = selectors.DefaultSelector()
+    selector.register(process.stdout, selectors.EVENT_READ, select_callback)
+    while process.poll() is None:
+        events = selector.select()
+        for key, mask in events:
+            callback = key.data
+            callback(key.fileobj, mask)
+
+    return_code = process.wait()
+    selector.close()
+
+    success = return_code in successful_return_codes
+
+    output = buf.getvalue()
+    buf.close()
+
+    return (success, output)

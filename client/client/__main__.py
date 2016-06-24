@@ -21,7 +21,7 @@ import logging
 import sys
 import traceback
 
-from chalk import log
+from colorlog import ColoredFormatter
 
 from .actions import action_module, available_action_info
 
@@ -29,9 +29,9 @@ from .actions import action_module, available_action_info
 def main():
     parser = argparse.ArgumentParser(prog="bdss", description="BDSS client")
 
-    parser.add_argument("--no-color", action="store_true", help="Do not colorize log messages")
+    parser.add_argument("--no-color", action="store_true", help="Produce monochrome output")
 
-    parser.add_argument("--verbose", "-v", action="store_true", help="Produce verbose log messages")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Produce verbose output")
 
     subparsers = parser.add_subparsers(dest="action",
                                        help="See `bdss <action> -h` to read about a specific action",
@@ -54,8 +54,15 @@ def main():
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s - %(message)s"))
     else:
-        handler = log.ChalkHandler()
-        handler.setFormatter(log.ChalkFormatter("%(asctime)s %(levelname)s - %(message)s"))
+        handler = logging.StreamHandler()
+        handler.setFormatter(ColoredFormatter("%(log_color)s%(asctime)s %(levelname)s - %(message)s",
+                             log_colors={
+                                 'DEBUG':    'white',
+                                 'INFO':     'cyan',
+                                 'WARNING':  'yellow',
+                                 'ERROR':    'red',
+                                 'CRITICAL': 'red'
+                             }))
     handler.setLevel(logging.DEBUG)
     logger.addHandler(handler)
 

@@ -32,31 +32,60 @@ verification_methods = [
 ]
 
 
-def verify_transfer(transfer_spec, output_path):
+class VerificationReport():
+    """
+    Describes the results of file verification
+
+    method - String - Name of verification method
+    result - Boolean? - Result of verification method. True if verified, False if failed, None if unknown
+    """
+
+    def __init__(self, method=None, result=None):
+        self.method = method
+        self.result = result
+
+    def __str__(self):
+        display_result = {
+            True: "verified",
+            False: "failed",
+            None: "unknown"
+        }
+        return "%s -> %s" % (self.method, display_result[self.result])
+
+
+def verify_data_transfer(transfer, output_path):
     """
     Attempt to verify a downloaded file using all available methods.
+
+    Parameters:
+    url - String - The URL the data file was transferred from.
+    output_path - String - The path to the transferred data file.
+
+    Returns:
+    VerificationReport[]
     """
-    verification_results = []
-    logger.info("Verifying download from %s" % transfer_spec.url)
+    logger.info("Verifying transfer from %s" % transfer.url)
+
+    reports = []
     for method in verification_methods:
-        if not method.can_attempt_verification(transfer_spec, output_path):
+
+        if not method.can_attempt_verification(transfer, output_path):
             logger.debug("Skipping verification with %s" % method.label)
             continue
 
+        report = VerificationReport(method=method.label, result=None)
+
         try:
-            verified = method.verify_transfer(transfer_spec, output_path)
-            if verified:
+            report.result = method.verify_transfer(transfer, output_path)
+            if report.result:
                 logger.info("Verified with %s" % method.label)
             else:
                 logger.error("Failed verification by %s" % method.label)
-            verification_results.append(verified)
-        except Exception as e:
-            logger.warn("Unable to verify with %s" % method.label)
-            logger.warn(str(e))
-            logger.debug(traceback.format_exc())
-            verification_results.append(None)
 
-    if [r for r in verification_results if r is False]:
-        return False
-    else:
-        return True
+        except:
+            logger.warn("Unable to verify with %s" % method.label)
+            logger.debug(traceback.format_exc())
+
+        reports.append(report)
+
+    return reports

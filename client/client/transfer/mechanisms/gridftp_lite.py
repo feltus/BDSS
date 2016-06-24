@@ -16,38 +16,49 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from ...util import is_program_on_path
+from .base import SimpleSubprocessMechanism
 
 
-def is_available():
-    return is_program_on_path("globus-url-copy")
+class GridFTPLiteMechanism(SimpleSubprocessMechanism):
 
+    @classmethod
+    def allowed_options(cls):
+        return (
+            "fast_mode",
+            "parallelism",
+            "block_size",
+            "tcp_buffer_size"
+        )
 
-def transfer_command(url, output_path, options):
-    args = []
+    @classmethod
+    def transfer_program(cls):
+        return "globus-url-copy"
 
-    try:
-        if options["fast_mode"]:
-            args.append("-fast")
-    except KeyError:
-        pass
+    def transfer_command(self, url, output_path):
+        args = []
 
-    try:
-        if options["parallelism"]:
-            args.extend(["-p", int(options["parallelism"])])
-    except KeyError:
-        pass
+        try:
+            if self.fast_mode:
+                args.append("-fast")
+        except KeyError:
+            pass
 
-    try:
-        if options["block_size"]:
-            args.extend(["-block-size", int(options["block_size"])])
-    except KeyError:
-        pass
+        try:
+            if self.parallelism:
+                args.extend(["-p", int(self.parallelism)])
+        except KeyError:
+            pass
 
-    try:
-        if options["tcp_buffer_size"]:
-            args.extend(["-tcp-buffer-size", int(options["tcp_buffer_size"])])
-    except KeyError:
-        pass
+        try:
+            if self.block_size:
+                args.extend(["-block-size", int(self.block_size)])
+        except KeyError:
+            pass
 
-    return ["globus-url-copy"] + args + [url, output_path]
+        try:
+            if self.tcp_buffer_size:
+                args.extend(["-tcp-buffer-size", int(self.tcp_buffer_size)])
+        except KeyError:
+            pass
+
+        return ["globus-url-copy"] + args + [url, output_path]

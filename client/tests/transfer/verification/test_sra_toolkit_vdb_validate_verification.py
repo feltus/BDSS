@@ -19,7 +19,7 @@
 import unittest
 from unittest.mock import patch
 
-from client.verification import sra_toolkit_vdb_validate_verification as vdbval_verification
+from client.transfer.verification import sra_toolkit_vdb_validate_verification as vdbval_verification
 
 
 class TestSRAToolkitVDBValidateVerification(unittest.TestCase):

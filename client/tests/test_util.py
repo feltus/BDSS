@@ -16,17 +16,21 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import hashlib
+import unittest
+from tempfile import NamedTemporaryFile
+
+from client.util import calculate_file_checksum
 
 
-def calculate_file_checksum(algorithm, path, blocksize=65536):
-    """
-    Calculate the checksum of the file at path using the given algorithm.
-    See hashlib.available_algorithms
-    https://docs.python.org/3/library/hashlib.html
-    """
-    h = hashlib.new(algorithm)
-    with open(path, "rb") as f:
-        for block in iter(lambda: f.read(blocksize), b""):
-            h.update(block)
-    return h.hexdigest().lower()
+class TestCalculateFileChecksum(unittest.TestCase):
+
+    def setUp(self):
+        self.file_data = "Lorem ipsum dolor sit amet"
+        self.correct_md5_checksum = "fea80f2db003d4ebc4536023814aa885"
+
+    def test_md5_checksum(self):
+        with NamedTemporaryFile() as f:
+            f.write(self.file_data.encode())
+            f.flush()
+            calculated_checksum = calculate_file_checksum("md5", f.name)
+            self.assertEqual(calculated_checksum, self.correct_md5_checksum)
