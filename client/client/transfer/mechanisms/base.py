@@ -48,6 +48,12 @@ class BaseMechanism():
 
     @classmethod
     def allowed_options(self):
+        """
+        List of option names to filter options passed from metadata repository against.
+
+        Returns:
+        String[] - Names of options to allow.
+        """
         return []
 
     def __init__(self, **kwargs):
@@ -63,6 +69,7 @@ class BaseMechanism():
     def is_available(cls):
         """
         Determine if the transfer mechanism is available on this machine.
+        Usually involves checking if a specific program is found on the PATH.
 
         Returns:
         Boolean - True if available
