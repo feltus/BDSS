@@ -16,7 +16,32 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+from voluptuous import Invalid, Required, Schema
+
 from ...util import is_program_on_path, run_subprocess
+
+
+class UserInputOption():
+
+    def __init__(self, key, prompt=None, validation=str):
+        self.key = key
+        self.prompt = prompt
+        if not self.prompt:
+            self.prompt = "%s? " % self.key
+        self.validation = validation
+
+    def prompt_for_value(self):
+        validate = Schema({Required("value"): self.validation})
+        value_valid = False
+        while not value_valid:
+            try:
+                value = input(self.prompt)
+                validate({"value": value})
+                value_valid = True
+            except Invalid as e:
+                print("Invalid input:", e.msg)
+
+        return value
 
 
 class BaseMechanism():
@@ -31,12 +56,8 @@ class BaseMechanism():
         for opt in self.__class__.allowed_options():
             setattr(self, opt, None)
 
-        # Set passed options, validate against allowed options
-        for opt, val in kwargs.items():
-            if opt not in self.__class__.allowed_options():
-                raise AttributeError("%s does not support a '%s' option" % (self.__class__.__name__, opt))
-            else:
-                setattr(self, opt, val)
+        # Set passed options
+        self.update_options(kwargs)
 
     @classmethod
     def is_available(cls):
@@ -60,6 +81,41 @@ class BaseMechanism():
         (Boolean, String) - Tuple of (True/False for success/failure, Mechanism output)
         """
         raise NotImplementedError
+
+    def user_input_options(self):
+        """
+        Define options whose values must be supplied by the end user.
+
+        Returns:
+        UserInputOption[]
+        """
+        return []
+
+    def prompt_for_user_input_options(self):
+        """
+        Prompt the user for additional options for this mechanism.
+        The available options are preconfigured with the `user_input_options` method.
+
+        Returns:
+        dict - Items are key and value of options.
+        """
+        opts = {}
+        for opt in self.user_input_options():
+            opts[opt.key] = opt.prompt_for_value()
+        return opts
+
+    def update_options(self, opts):
+        """
+        Store options as attributes on this mechanism.
+
+        Parameters:
+        opts - dict - Options. Keys and values will correspond to attribute names and values.
+        """
+        for opt, val in opts.items():
+            if opt not in self.__class__.allowed_options():
+                raise AttributeError("%s does not support a '%s' option" % (self.__class__.__name__, opt))
+            else:
+                setattr(self, opt, val)
 
 
 class SimpleSubprocessMechanism(BaseMechanism):

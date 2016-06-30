@@ -51,7 +51,9 @@ def run_data_transfer(transfer, output_path):
     start_time = time.time()
 
     try:
-        (report.success, report.mechanism_output) = transfer.run(output_path)
+        r = transfer.run(output_path)
+        logger.debug(r)
+        (report.success, report.mechanism_output) = r
     except Exception:
         logger.exception("Exception in transfer mechanism")
     finally:

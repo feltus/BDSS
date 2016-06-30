@@ -53,3 +53,16 @@ def default_mechanism(url):
         "scp": "scp"
     }
     return (method_for_scheme.get(urlparse(url).scheme, "curl"), None)
+
+
+def get_mechanism(mechanism_name, mechanism_options):
+    """
+    Instantiate a mechanism of the given type with the given options.
+
+    Parameters:
+    mechanism_name - String - The name of the mechanism
+    mechanism_options - dict - Mechanism options
+    """
+    if not mechanism_options:
+        mechanism_options = {}
+    return all_mechanisms[mechanism_name](**mechanism_options)

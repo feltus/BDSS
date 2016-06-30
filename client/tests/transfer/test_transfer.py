@@ -17,12 +17,30 @@
 #
 
 import unittest
-from unittest.mock import ANY, patch
+from unittest.mock import ANY, call, patch
 
-from client.transfer.base import Transfer, TransferFailedError
+from client.transfer import base as transfer_base
+from client.transfer.mechanisms.base import BaseMechanism, UserInputOption
 
 
-class TestTransferSpec(unittest.TestCase):
+class MockMechanism(BaseMechanism):
+
+    @classmethod
+    def allowed_options(cls):
+        return ("test_opt",)
+
+    @classmethod
+    def is_available(cls):
+        return True
+
+    def transfer_file(self, url, output_path):
+        return (True, "")
+
+    def user_input_options(self):
+        return [UserInputOption("test_opt", "Value for option?")]
+
+
+class TestTransfer(unittest.TestCase):
 
     def setUp(self):
         self.file_url = "http://www.example.com/files/test.txt"
@@ -31,16 +49,15 @@ class TestTransferSpec(unittest.TestCase):
         self.output_path = "/tmp/test.txt"
         self.file_data = b"hello world"
 
-        self.transfer = Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
-
     def _write_file_data(self, output_path):
         with open(output_path, "w+b") as f:
             f.write(self.file_data)
         return (True, "")
 
     def test_get_transfer_data(self):
-        with patch.object(self.transfer, "run", side_effect=self._write_file_data) as mock_run_transfer:
-            data = self.transfer.get_data()
+        transfer = transfer_base.Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
+        with patch.object(transfer, "run", side_effect=self._write_file_data) as mock_run_transfer:
+            data = transfer.get_data()
             mock_run_transfer.assert_called_once_with(ANY)
             self.assertEqual(data, self.file_data)
 
@@ -48,5 +65,31 @@ class TestTransferSpec(unittest.TestCase):
         """
         Transfer#get_transfer_data should raise a TransferFailedError if run_transfer reported failure.
         """
-        with patch.object(self.transfer, "run", return_value=(False, "")):
-            self.assertRaises(TransferFailedError, self.transfer.get_data)
+        transfer = transfer_base.Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
+        with patch.object(transfer, "run", return_value=(False, "")):
+            self.assertRaises(transfer_base.TransferFailedError, transfer.get_data)
+
+    @patch.object(transfer_base, "get_mechanism", side_effect=lambda m, o: MockMechanism())
+    @patch("builtins.input", return_value="Hello")
+    def test_user_options_cache(self, mock_input, mock_get_mechanism):
+        # First transfer for this data source should prompt
+        transferOne = transfer_base.Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options, data_source_id=1)
+        mock_input.assert_called_once_with("Value for option?")
+        self.assertEqual(transferOne.mechanism.test_opt, "Hello")
+
+        # Second should use cached value
+        transferTwo = transfer_base.Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options, data_source_id=1)
+        mock_input.assert_called_once_with("Value for option?")
+        self.assertEqual(transferTwo.mechanism.test_opt, "Hello")
+
+    @patch.object(transfer_base, "get_mechanism", side_effect=lambda m, o: MockMechanism())
+    @patch("builtins.input", return_value="Hello")
+    def test_unknown_data_sources_do_not_cache_user_options(self, mock_input, mock_get_mechanism):
+        # Transfers without a known data source should not cache options
+        transferOne = transfer_base.Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
+        mock_input.assert_called_once_with("Value for option?")
+        self.assertEqual(transferOne.mechanism.test_opt, "Hello")
+
+        transferTwo = transfer_base.Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
+        self.assertEqual(mock_input.call_args_list, [call("Value for option?"), call("Value for option?")])
+        self.assertEqual(transferTwo.mechanism.test_opt, "Hello")

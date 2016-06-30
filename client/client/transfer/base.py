@@ -21,7 +21,7 @@ import textwrap
 
 from tempfile import NamedTemporaryFile
 
-from .mechanisms import all_mechanisms, default_mechanism
+from .mechanisms import default_mechanism, get_mechanism
 
 
 logger = logging.getLogger("bdss")
@@ -31,20 +31,38 @@ class TransferFailedError(Exception):
     pass
 
 
+_user_options_cache = {}
+
+
 class Transfer():
 
-    def __init__(self, url=None, mechanism_name=None, mechanism_options=None):
+    def __init__(self, url=None, mechanism_name=None, mechanism_options=None, data_source_id=None):
+        """
+
+        Parameters:
+        url - String -
+        mechanism_name - String -
+        mechanism_options - dict -
+        data_source_id - String - If provided, user options will be cached such that multiple transfers
+            from the same data source only prompt the first time.
+        """
         self.url = url
         self.mechanism_name = mechanism_name
         self.mechanism_options = mechanism_options
         if url and not mechanism_name:
             (self.mechanism_name, self.mechanism_options) = default_mechanism(url)
+        self.data_source_id = str(data_source_id)
 
-    @property
-    def mechanism(self):
-        mechanism_class = all_mechanisms[self.mechanism_name]
-        opts = self.mechanism_options if self.mechanism_options else {}
-        return mechanism_class(**opts)
+        self.mechanism = get_mechanism(self.mechanism_name, self.mechanism_options)
+
+        try:
+            self.mechanism_user_opts = _user_options_cache[self.data_source_id]
+        except KeyError:
+            self.mechanism_user_opts = self.mechanism.prompt_for_user_input_options()
+            if self.data_source_id:
+                _user_options_cache[self.data_source_id] = self.mechanism_user_opts
+
+        self.mechanism.update_options(self.mechanism_user_opts)
 
     def run(self, output_path):
         """

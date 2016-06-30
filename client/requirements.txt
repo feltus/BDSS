@@ -1,3 +1,4 @@
 colorlog==2.7.0
 requests==2.8.1
 six==1.10.0
+voluptuous==0.8.11
