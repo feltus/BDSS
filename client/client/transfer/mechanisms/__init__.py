@@ -22,13 +22,15 @@ from .aspera import AsperaMechanism
 from .curl import CurlMechanism
 from .gridftp_lite import GridFTPLiteMechanism
 from .scp import SCPMechanism
+from .session_authenticated_curl import SessionAuthenticatedCurlMechanism
 
 
 all_mechanisms = {
     "aspera": AsperaMechanism,
     "curl": CurlMechanism,
     "gridftp_lite": GridFTPLiteMechanism,
-    "scp": SCPMechanism
+    "scp": SCPMechanism,
+    "session_authenticated_curl": SessionAuthenticatedCurlMechanism
 }
 
 
