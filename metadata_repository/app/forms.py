@@ -194,7 +194,7 @@ class UrlForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
 
-class TransformedUrlsForm(wtforms.Form):
+class FindTransfersForm(wtforms.Form):
 
     available_mechanisms = wtforms.fields.FieldList(
         wtforms.fields.StringField(

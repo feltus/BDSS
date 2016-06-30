@@ -20,8 +20,8 @@ import traceback
 
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 
-from ..core import transform_url, UrlTransformException
-from ..forms import TransformedUrlsForm
+from ..core import find_transfers, FindTransferError
+from ..forms import FindTransfersForm
 
 
 routes = Blueprint("core", __name__)
@@ -40,30 +40,30 @@ def index():
     return redirect(url_for("data_sources.list_data_sources"))
 
 
-@routes.route("/transformed_urls", methods=["GET", "POST"])
-def get_transformed_urls():
+@routes.route("/transfers", methods=["GET", "POST"])
+def transfers():
     """
-    Find transformed URLs for a URL.
+    Find available transfers for a URL.
     """
-    form = TransformedUrlsForm(request.form)
+    form = FindTransfersForm(request.form)
 
     results = []
     if request.method == "POST":
         error_message = None
         if form.validate():
             try:
-                results = transform_url(form.url.data, form.available_mechanisms.data)
-            except UrlTransformException as e:
+                results = find_transfers(form.url.data, form.available_mechanisms.data)
+            except FindTransferError as e:
                 error_message = e.args[0]
             except Exception as e:
                 traceback.print_exc()
-                error_message = "Unable to transform URL"
+                error_message = "Unable to find transfers"
         else:
             error_message = "Validation error"
 
         if request.headers.get("Accept") == "application/json":
-            return jsonify(results=results, error={"message": error_message})
+            return jsonify(transfers=results, error={"message": error_message})
         elif error_message:
             flash(error_message, "danger")
 
-    return render_template("get_transformed_urls.html.jinja", form=form, results=results)
+    return render_template("transfers.html.jinja", form=form, transfers=results)

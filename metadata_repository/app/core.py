@@ -21,10 +21,10 @@ from collections import namedtuple
 
 from .models import UrlMatcher
 
-TransformResult = namedtuple("TransformResult", "original_url original_source transform_applied transformed_url")
+Transfer = namedtuple("Transfer", ["url", "mechanism_name", "mechanism_options", "data_source_id"])
 
 
-class UrlTransformException(Exception):
+class FindTransferError(Exception):
     pass
 
 
@@ -34,7 +34,7 @@ def matching_data_source(url):
     """
     matchers = UrlMatcher.query.all()
     if not matchers:
-        raise UrlTransformException("No URL matchers configured")
+        raise FindTransferError("No URL matchers configured")
 
     # Check URL against all matchers
     # Skip matchers for data sources that have already checked
@@ -55,15 +55,15 @@ def matching_data_source(url):
         return None
 
 
-def transform_url(url, available_mechanisms):
+def find_transfers(url, available_mechanisms):
     """
     Query DB for alternate URLs for the data file at the given URL.
     """
-    transform_results = []
+    transfers = []
     data_source = matching_data_source(url)
 
     if not data_source:
-        raise UrlTransformException("No data source matches URL")
+        raise FindTransferError("No data source matches URL")
 
     # For all matching data sources, apply all transforms
     for transform in data_source.transforms:
@@ -74,17 +74,25 @@ def transform_url(url, available_mechanisms):
         if transform.to_data_source.matches_url(transformed_url) and \
            transform.to_data_source.transfer_mechanism_type in available_mechanisms:
 
-            transform_results.append(TransformResult(
-                original_url=url,
-                original_source=data_source,
-                transform_applied=transform,
-                transformed_url=transformed_url
-            ))
+            transfer = Transfer(
+                url=transformed_url,
+                mechanism_name=transform.to_data_source.transfer_mechanism_type,
+                mechanism_options=transform.to_data_source.transfer_mechanism_options,
+                data_source_id=transform.to_data_source.id)
+
+            transfers.append(transfer)
 
         else:
             # FIXME: This should be a log
             print("Transformed URL did not match target data source", file=sys.stderr)
 
-    # TODO: If no matching sources have transforms, raise exception.
+    # Add a transfer from the original data source
+    original_transfer = Transfer(
+        url=url,
+        mechanism_name=data_source.transfer_mechanism_type,
+        mechanism_options=data_source.transfer_mechanism_options,
+        data_source_id=data_source.id)
 
-    return transform_results
+    transfers.append(original_transfer)
+
+    return transfers

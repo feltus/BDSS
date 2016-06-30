@@ -66,36 +66,32 @@ def output_file_name(url):
     return url.partition("?")[0].rpartition("/")[2]
 
 
-def load_alternate_transfers(url):
+def request_transfers(url):
     transfers = []
 
     data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(available_mechanisms())}
     data["url"] = url
 
-    logger.info("Requesting alternate sources for %s" % url)
+    logger.info("Requesting transfers for %s" % url)
     try:
-        response = requests.post("%s/transformed_urls" % metadata_repository_url,
+        response = requests.post("%s/transfers" % metadata_repository_url,
                                  data=data,
                                  headers={"Accept": "application/json"})
 
         response = response.json()
 
-        transfers = [Transfer(r["transformed_url"],
-                     r["transform_applied"]["to_data_source"]["transfer_mechanism_type"],
-                     r["transform_applied"]["to_data_source"]["transfer_mechanism_options"]) for r in response["results"]]
+        transfers = [Transfer(**r) for r in response["transfers"]]
 
         if transfers:
-            logger.info("Received alternate data sources")
-            logger.info("-------")
-            for r in response["results"]:
-                logger.info("%s", r["transform_applied"]["to_data_source"]["label"])
-                logger.info("  %s", r["transformed_url"])
-                logger.info("  %s", r["transform_applied"]["to_data_source"]["transfer_mechanism_type"])
+            logger.info("Received transfers")
+            logger.info("------------------")
+            for t in transfers:
+                logger.info(str(t))
         else:
-            logger.warn("Received no alternate data sources")
+            logger.warn("Received no transfers")
 
     except:
-        logger.warn("Unable to get alternate sources")
+        logger.warn("Request for transfers failed")
         logger.debug(traceback.format_exc())
 
     return transfers
@@ -114,7 +110,7 @@ def handle_action(args, parser):
             logger.warn("File at %s already exists at %s", url, output_path)
             continue
 
-        transfers = load_alternate_transfers(url)
+        transfers = request_transfers(url)
         # As a last resort, fall back to original URL and its default mechanism
         # Defaults are defined in mechanisms/__init__ module
         transfers.append(Transfer(url))

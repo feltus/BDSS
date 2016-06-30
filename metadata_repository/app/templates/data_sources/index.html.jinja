@@ -39,6 +39,6 @@
 {% if current_user.is_admin %}
 <p><a href="{{ url_for('data_sources.create_data_source') }}">Add New Data Source</a></p>
 {% endif %}
-<p><a href="{{ url_for('core.get_transformed_urls') }}">Find Alternate Data Sources</a></p>
+<p><a href="{{ url_for('core.transfers') }}">Find Alternate Data Sources</a></p>
 
 {% endblock %}

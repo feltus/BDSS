@@ -1,0 +1,30 @@
+{% extends "layout.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
+
+{% block page_header %}Find Data Transfers{% endblock %}
+
+{% block content %}
+
+{{ form_macros.render_form(form, action_url=url_for("core.transfers"), btn_class="btn btn-primary") }}
+
+{% if transfers %}
+    {% if transfers|length > 0 %}
+        <hr>
+        <ol>
+            {% for t in transfers %}
+                <li>{{ t.url }}<br>
+                    Mechanism: {{ t.mechanism_name }}<br>
+                    Options: {{ t.mechanism_options|tojson }}<br>
+                    Data Source: {{ t.data_source_id }}</li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>No results</p>
+    {% endif %}
+{% endif %}
+
+<hr>
+
+<p style="margin-top:20px;"><a href="{{ url_for('core.index') }}"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></p>
+
+{% endblock %}
