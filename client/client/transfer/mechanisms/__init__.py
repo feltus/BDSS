@@ -18,6 +18,7 @@
 
 from urllib.parse import urlparse
 
+from .anonymous_gridftp import AnonymousGridFTPMechanism
 from .aspera import AsperaMechanism
 from .curl import CurlMechanism
 from .gridftp_lite import GridFTPLiteMechanism
@@ -26,6 +27,7 @@ from .session_authenticated_curl import SessionAuthenticatedCurlMechanism
 
 
 all_mechanisms = {
+    "anonymous_gridftp": AnonymousGridFTPMechanism,
     "aspera": AsperaMechanism,
     "curl": CurlMechanism,
     "gridftp_lite": GridFTPLiteMechanism,
