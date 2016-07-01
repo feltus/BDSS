@@ -44,7 +44,7 @@ def _get_checksum(checksum_url, mechanism_name, mechanism_options):
                                  mechanism_name,
                                  mechanism_options)
 
-    checksum_data = checksum_transfer.get_data()
+    checksum_data = checksum_transfer.get_data(display_output=False)
     return checksum_data.decode().strip().lower()
 
 
