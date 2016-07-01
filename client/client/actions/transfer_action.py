@@ -56,6 +56,10 @@ def configure_parser(parser):
                         default=os.getcwd(),
                         help="Path to directory to store transferred files in")
 
+    parser.add_argument("--dry-run",
+                        action="store_true",
+                        help="Display available sources for files, but do not transfer")
+
     parser.add_argument("--transfer-report", "-t",
                         dest="report_file",
                         help="Path to write transfer report to",
@@ -82,12 +86,7 @@ def request_transfers(url):
 
         transfers = [Transfer(**r) for r in response["transfers"]]
 
-        if transfers:
-            logger.info("Received transfers")
-            logger.info("------------------")
-            for t in transfers:
-                logger.info(str(t))
-        else:
+        if not transfers:
             logger.warn("Received no transfers")
 
     except:
@@ -114,6 +113,14 @@ def handle_action(args, parser):
         # As a last resort, fall back to original URL and its default mechanism
         # Defaults are defined in mechanisms/__init__ module
         transfers.append(Transfer(url))
+
+        logger.info("Transfers for %s", url)
+        logger.info("------------------")
+        for t in transfers:
+            logger.info(str(t))
+
+        if args.dry_run:
+            continue
 
         transfer_success = False
         for t in transfers:
