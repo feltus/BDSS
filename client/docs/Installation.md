@@ -77,3 +77,12 @@ To build a Docker container with the BDSS client:
 cd /path/to/bdss/client
 docker build -t bdss-client .
 ```
+
+To use the Docker container for development, run the following after building the container:
+
+```Shell
+docker run --entrypoint=/bin/bash --interactive --rm --tty --volume="$(pwd)":/usr/src/app bdss-client
+# Now in docker container
+python setup.py develop --user
+export PATH=$PATH:$HOME/.local/bin
+```
