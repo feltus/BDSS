@@ -2,28 +2,29 @@
 
 ## Docker
 
-Install Docker and Docker Compose.
+Install [Docker](https://www.docker.com/products/docker) and [Docker Compose](https://docs.docker.com/compose/install/).
+
+1. Generate a secret key for [Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions).
+   ```
+   ./scripts/generate_flask_key
+   ```
+
+   Save the key in the `SESSION_KEY` environment variable in `docker-compose.yml`.
 
 1. Start services
    ```
    cd /path/to/metadata_repository
-   docker-compose -f docker-compose.yml -f development.yml up
+   docker-compose up
    ```
 
-   The default configuration is to copy application files to the container and runs the metadata repository application
-   using [gunicorn](http://gunicorn.org/). Adding the `development.yml` file overrides this and mounts the current
-   directory and runs the [Flask development server in debug mode](http://flask.pocoo.org/docs/0.10/quickstart/#debug-mode).
+   The default configuration is to mount the metadata repository directory as a volume on the container and serve
+   the application using the [Flask development server](http://flask.pocoo.org/docs/0.10/quickstart/#debug-mode).
    This allows for files to be edited on the host and the container to detect changes and restart the app server.
 
-2. Generate a secret key for [Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions).
-   ```
-   docker-compose run --rm app ./scripts/generate_flask_key
-   ```
+   Using the tiered configuration in `docker-compose-tiered.yml` copies application code to the container and runs
+   the metadata repository application using [gunicorn](http://gunicorn.org/) behind an nginx proxy.
 
-   Save the key in the `SESSION_KEY` environment variable in `docker-compose.yml`. Restart the `app` container after
-   changing the session key configuration.
-
-3. Run database migrations.
+1. Run database migrations.
    ```
    docker-compose run --rm app alembic upgrade head
    ```
@@ -31,7 +32,9 @@ Install Docker and Docker Compose.
    This only needs to be run when the containers are created the first time you run `docker-compose up`. Database
    data is persisted by mounting `./pgdata` as PostgreSQL's data directory on the `db` container.
 
-4. Open [http://localhost](http://localhost) in a browser.
+1. Open [http://localhost:5000](http://localhost:5000) in a browser. If using the tiered configuration, use port 80.
+
+1. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
 
 ## Vagrant
 
@@ -57,6 +60,8 @@ version control.
 3. Open [http://localhost:8000](http://localhost:8000) in a web browser.
 
    Port 8000 is forwarded to the VM's port 80.
+
+4. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
 
 ## Manual
 
