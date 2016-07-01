@@ -105,7 +105,7 @@ def handle_action(args, parser):
     reports_file = ReportsFile(args.report_file) if args.report_file else None
 
     for url in args.urls:
-        output_path = os.path.join(args.destination_directory, output_file_name(url))
+        output_path = os.path.abspath(os.path.join(args.destination_directory, output_file_name(url)))
         if os.path.isfile(output_path):
             logger.warn("File at %s already exists at %s", url, output_path)
             continue
