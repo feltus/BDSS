@@ -48,6 +48,7 @@ class Mechanism():
         Parameters:
         url - String - URL of the file to transfer
         output_path - String - Path to write transferred file to
+        display_output - Boolean - Output progress information
 
         Returns:
         (Boolean, String) - Tuple of (True/False for success/failure, Mechanism output)

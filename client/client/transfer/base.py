@@ -64,24 +64,28 @@ class Transfer():
 
         self.mechanism.update_options(self.mechanism_user_opts)
 
-    def run(self, output_path):
+    def run(self, output_path, display_output=True):
         """
         Run transfer.
 
         Parameters:
         output_path - String - The path to save the transferred file to.
+        display_output - Boolean - Display mechanism output as transfer runs.
 
         Returns:
         (Boolean, String) - Tuple of (True/False for success/failure, Mechanism output)
         """
-        return self.mechanism.transfer_file(self.url, output_path)
+        return self.mechanism.transfer_file(self.url, output_path, display_output)
 
-    def get_data(self):
+    def get_data(self, display_output=True):
         """
         Run transfer to temporary file. Return contents and delete temp file.
+
+        Parameters:
+        display_output - Boolean - Display mechanism output as transfer runs.
         """
         with NamedTemporaryFile() as temp_f:
-            (success, _) = self.run(temp_f.name)
+            (success, _) = self.run(temp_f.name, display_output)
             if not success:
                 raise TransferFailedError
             return temp_f.read()

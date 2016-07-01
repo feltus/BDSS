@@ -59,13 +59,13 @@ def is_program_on_path(prog_name):
     return False
 
 
-def run_subprocess(subprocess_args, successful_return_codes=(0,)):
+def run_subprocess(subprocess_args, display_output=True):
     """
     Run a program in a subprocess. Display and capture output.
 
     Parameters:
     subprocess_args - String[] - Args to subprocess.Popen. See https://docs.python.org/3/library/subprocess.html#popen-constructor
-    successful_return_codes - (Int, ...) - Return codes indicating success.
+    display_output - Boolean - Display output of subprocess as it runs.
 
     Returns:
     (Boolean, String) - Tuple of Boolean true/false if subprocess succeeded/failed based on given return codes and
@@ -82,7 +82,8 @@ def run_subprocess(subprocess_args, successful_return_codes=(0,)):
     def select_callback(stream, mask):
         line = stream.readline()
         buf.write(line)
-        sys.stdout.write(line)
+        if display_output:
+            sys.stdout.write(line)
 
     selector = selectors.DefaultSelector()
     selector.register(process.stdout, selectors.EVENT_READ, select_callback)
@@ -95,9 +96,7 @@ def run_subprocess(subprocess_args, successful_return_codes=(0,)):
     return_code = process.wait()
     selector.close()
 
-    success = return_code in successful_return_codes
-
     output = buf.getvalue()
     buf.close()
 
-    return (success, output)
+    return (return_code == 0, output)

@@ -76,13 +76,14 @@ class BaseMechanism():
         """
         raise NotImplementedError
 
-    def transfer_file(self, url, output_path):
+    def transfer_file(self, url, output_path, display_output=True):
         """
         Transfer a file.
 
         Parameters:
         url - String - URL of the file to transfer
         output_path - String - Path to write transferred file to
+        display_output - Boolean - Output progress information
 
         Returns:
         (Boolean, String) - Tuple of (True/False for success/failure, Mechanism output)
@@ -135,8 +136,8 @@ class SimpleSubprocessMechanism(BaseMechanism):
     def transfer_program(cls):
         raise NotImplementedError
 
-    def transfer_file(self, url, output_path):
-        return run_subprocess(self.transfer_command(url, output_path))
+    def transfer_file(self, url, output_path, display_output=True):
+        return run_subprocess(self.transfer_command(url, output_path), display_output)
 
     def transfer_command(self, url, output_path):
         raise NotImplementedError
