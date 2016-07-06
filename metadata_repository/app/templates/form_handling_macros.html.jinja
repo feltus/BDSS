@@ -15,7 +15,7 @@ $("#{{ type_field_id }}").on('change', function(e) {
         success: function(data) {
             var fieldset = $(data).find("fieldset");
             var group = select.closest(".form-group");
-            group.next("fieldset").remove();
+            group.nextAll("fieldset").eq(0).remove();
             fieldset.insertAfter(group);
         },
         error: function(err) {

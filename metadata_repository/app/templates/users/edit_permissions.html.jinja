@@ -1,4 +1,5 @@
 {% extends "authenticated.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
 
 {% block page_header %}Edit Permissions for {{ user.name }}{% endblock %}
 
@@ -7,13 +8,11 @@
 {%- if user.user_id == current_user.user_id -%}
     <div class="alert alert-warning">You cannot edit your own permissions</div>
 {%- else -%}
-    <form action="{{ url_for('users.edit_user_permissions', user_id=user.user_id) }}" method="POST">
-        {%- if not user.is_admin -%}
-            <button type="submit" class="btn btn-primary">Grant Admin Permissions</button>
-        {%- else -%}
-            <button type="submit" class="btn btn-danger">Revoke Admin Permissions</button>
-        {%- endif -%}
-    </form>
+    {%- if not user.is_admin -%}
+        {{ form_macros.render_form(form, action_text="Grant Admin Permissions", action_url=url_for('users.edit_user_permissions', user_id=user.user_id), btn_class="btn btn-danger") }}
+    {%- else -%}
+        {{ form_macros.render_form(form, action_text="Revoke Admin Permissions", action_url=url_for('users.edit_user_permissions', user_id=user.user_id), btn_class="btn btn-danger") }}
+    {%- endif -%}
 {%- endif -%}
 
 <hr>

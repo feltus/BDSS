@@ -24,7 +24,7 @@ from flask.ext.login import login_required
 
 from .auth import admin_required
 from ..core import matching_data_source
-from ..forms import TimingReportForm
+from ..forms import ConfirmDeleteForm, TimingReportForm
 from ..models import db_session, DataSource, TimingReport
 
 
@@ -110,9 +110,10 @@ def delete_timing_report(source_id, report_id):
     """
     Delete a timing report. Prompt for confirmation first.
     """
+    form = ConfirmDeleteForm(request.form)
     report = TimingReport.query.filter((TimingReport.data_source_id == source_id) & (TimingReport.report_id == report_id)).first() or abort(404)
 
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         try:
             db_session.delete(report)
             db_session.commit()
@@ -123,4 +124,4 @@ def delete_timing_report(source_id, report_id):
             flash("Failed to delete timing report", "danger")
             traceback.print_exc()
 
-    return render_template("timing_reports/delete.html.jinja", report=report)
+    return render_template("timing_reports/delete.html.jinja", form=form, report=report)

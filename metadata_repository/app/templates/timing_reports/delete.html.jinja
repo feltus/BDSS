@@ -1,4 +1,5 @@
 {% extends "authenticated.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
 
 {% block page_header %}Delete Timing Report{% endblock %}
 
@@ -6,9 +7,7 @@
 
 <p>Are you sure you want to delete this timing report? This cannot be undone.</p>
 
-<form action="{{ url_for('timing_reports.delete_timing_report', source_id=report.data_source_id, report_id=report.report_id) }}" method="POST">
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form>
+{{ form_macros.render_form(form, action_text="Delete", action_url=url_for('timing_reports.delete_timing_report', source_id=report.data_source_id, report_id=report.report_id), btn_class="btn btn-danger") }}
 
 <p style="margin-top:20px;"><a class="btn btn-default" href="{{ url_for('timing_reports.show_timing_report', source_id=report.data_source_id, report_id=report.report_id) }}">Cancel</a></p>
 

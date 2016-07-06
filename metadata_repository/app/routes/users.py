@@ -23,6 +23,7 @@ from flask import abort, Blueprint, flash, redirect, render_template, request, u
 from flask.ext.login import login_required
 
 from .auth import admin_required
+from ..forms import ToggleUserPermissionsForm
 from ..models import db_session, User
 
 
@@ -66,8 +67,9 @@ def edit_user_permissions(user_id):
     Grant/revoke admin permissions for a user
     """
     user = User.query.filter(User.user_id == user_id).first() or abort(404)
+    form = ToggleUserPermissionsForm(request.form)
 
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         user.is_admin = not user.is_admin
         try:
             db_session.commit()
@@ -78,4 +80,4 @@ def edit_user_permissions(user_id):
             flash("Failed to update permissions", "danger")
             traceback.print_exc()
 
-    return render_template("users/edit_permissions.html.jinja", user=user)
+    return render_template("users/edit_permissions.html.jinja", form=form, user=user)

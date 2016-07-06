@@ -23,7 +23,7 @@ from flask import abort, Blueprint, flash, jsonify, redirect, render_template, r
 from flask.ext.login import login_required
 
 from .auth import admin_required
-from ..forms import TransferTestFileForm
+from ..forms import ConfirmDeleteForm, TransferTestFileForm
 from ..models import db_session, DataSource, TransferTestFile
 
 
@@ -128,8 +128,9 @@ def delete_test_file(source_id, file_id):
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     test_file = TransferTestFile.query.filter((TransferTestFile.data_source_id == source_id) & (TransferTestFile.file_id == file_id)).first() or abort(404)
+    form = ConfirmDeleteForm(request.form)
 
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         try:
             db_session.delete(test_file)
             db_session.commit()

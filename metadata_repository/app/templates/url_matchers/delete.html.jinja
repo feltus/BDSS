@@ -1,4 +1,5 @@
 {% extends "authenticated.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
 
 {% block page_header %}Matcher for {{ data_source.label }}{% endblock %}
 
@@ -17,9 +18,7 @@
 
 <p>Are you sure you want to delete this matcher? This cannot be undone.</p>
 
-<form action="{{ url_for('matchers.delete_url_matcher', source_id=data_source.id, matcher_id=url_matcher.matcher_id) }}" method="POST">
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form>
+{{ form_macros.render_form(form, action_text="Delete", action_url=url_for('matchers.delete_url_matcher', source_id=data_source.id, matcher_id=url_matcher.matcher_id), btn_class="btn btn-danger") }}
 
 <p style="margin-top:20px;"><a class="btn btn-default" href="{{ url_for('matchers.show_url_matcher', source_id=data_source.id, matcher_id=url_matcher.matcher_id) }}">Cancel</a></p>
 

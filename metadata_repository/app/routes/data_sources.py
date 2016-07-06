@@ -25,7 +25,7 @@ from sqlalchemy import func
 from wtforms import validators
 
 from .auth import admin_required
-from ..forms import DataSourceForm, DataSourceSearchForm, UrlForm, Unique
+from ..forms import ConfirmDeleteForm, DataSourceForm, DataSourceSearchForm, UrlForm, Unique
 from ..form_handling import process_form_with_options_subform, render_options_subform
 from ..models import db_session, DataSource
 from ..util import render_matcher_description, render_transform_description, \
@@ -159,8 +159,9 @@ def edit_data_source(source_id):
 @admin_required
 def delete_data_source(source_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first()
+    form = ConfirmDeleteForm(request.form)
 
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         try:
             db_session.delete(data_source)
             db_session.commit()
@@ -171,7 +172,7 @@ def delete_data_source(source_id):
             flash("Failed to delete data source", "danger")
             traceback.print_exc()
 
-    return render_template("data_sources/delete.html.jinja", data_source=data_source)
+    return render_template("data_sources/delete.html.jinja", data_source=data_source, form=form)
 
 
 @routes.route("/data_sources/transfer_mechanism_options_form")

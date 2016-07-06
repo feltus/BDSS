@@ -22,7 +22,7 @@ from flask import abort, Blueprint, flash, redirect, render_template, request, u
 from flask.ext.login import login_required
 
 from .auth import admin_required
-from ..forms import UrlTransformForm
+from ..forms import ConfirmDeleteForm, UrlTransformForm
 from ..form_handling import process_form_with_options_subform, render_options_subform
 from ..models import db_session, DataSource, Transform
 from ..util import available_transform_types, options_form_class_for_transform_type, render_transform_description
@@ -173,8 +173,9 @@ def delete_transform(source_id, transform_id):
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first() or abort(404)
+    form = ConfirmDeleteForm(request.form)
 
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         try:
             db_session.delete(transform)
             db_session.commit()
@@ -185,7 +186,7 @@ def delete_transform(source_id, transform_id):
             flash("Failed to delete transform", "danger")
             traceback.print_exc()
 
-    return render_template("transforms/delete.html.jinja", from_data_source=data_source, transform=transform)
+    return render_template("transforms/delete.html.jinja", form=form, from_data_source=data_source, transform=transform)
 
 
 @routes.route("/data_sources/transform_options_form")

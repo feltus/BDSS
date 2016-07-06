@@ -22,7 +22,7 @@ from flask import abort, Blueprint, flash, jsonify, redirect, render_template, r
 from flask.ext.login import login_required
 
 from .auth import admin_required
-from ..forms import UrlMatcherForm
+from ..forms import ConfirmDeleteForm, UrlMatcherForm
 from ..form_handling import process_form_with_options_subform, render_options_subform
 from ..models import db_session, DataSource, UrlMatcher
 from ..util import available_matcher_types, options_form_class_for_matcher_type, render_matcher_description
@@ -138,8 +138,9 @@ def delete_url_matcher(source_id, matcher_id):
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     url_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == source_id) & (UrlMatcher.matcher_id == matcher_id)).first() or abort(404)
+    form = ConfirmDeleteForm(request.form)
 
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         try:
             db_session.delete(url_matcher)
             db_session.commit()
@@ -150,7 +151,7 @@ def delete_url_matcher(source_id, matcher_id):
             flash("Failed to delete matcher", "danger")
             traceback.print_exc()
 
-    return render_template("url_matchers/delete.html.jinja", data_source=data_source, url_matcher=url_matcher)
+    return render_template("url_matchers/delete.html.jinja", data_source=data_source, form=form, url_matcher=url_matcher)
 
 
 @routes.route("/data_sources/matcher_options_form")

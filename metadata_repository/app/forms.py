@@ -17,9 +17,13 @@
 #
 
 import re
+from datetime import timedelta
 
 import wtforms
+from flask import session
+from wtforms.csrf.session import SessionCSRF
 
+from .config import secret_key
 from .models import db_session, DataSource, User
 from .util import available_matcher_types, description_for_matcher_type, label_for_matcher_type
 from .util import available_transfer_mechanism_types, description_for_transfer_mechanism_type, label_for_transfer_mechanism_type
@@ -85,7 +89,19 @@ class SelectWithOptionDescriptionField(wtforms.fields.SelectField):
             yield (value, label, self.coerce(value) == self.data, self.option_descriptions[i])
 
 
-class LoginForm(wtforms.Form):
+class CSRFProtectedForm(wtforms.Form):
+    class Meta:
+        csrf = True
+        csrf_class = SessionCSRF
+        csrf_secret = secret_key
+        csrf_time_limit = timedelta(minutes=20)
+
+        @property
+        def csrf_context(self):
+            return session
+
+
+class LoginForm(CSRFProtectedForm):
 
     email = wtforms.fields.StringField(
         label="Email Address",
@@ -96,7 +112,7 @@ class LoginForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
 
-class RegistrationForm(wtforms.Form):
+class RegistrationForm(CSRFProtectedForm):
 
     name = wtforms.fields.StringField(
         label="Name",
@@ -115,7 +131,7 @@ class RegistrationForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired(), wtforms.validators.EqualTo("password", message="Passwords do not match")])
 
 
-class DataSourceForm(wtforms.Form):
+class DataSourceForm(CSRFProtectedForm):
     """
     Form for creating/editing a data source.
     """
@@ -144,7 +160,7 @@ class DataSourceSearchForm(wtforms.Form):
         validators=[wtforms.validators.DataRequired()])
 
 
-class UrlMatcherForm(wtforms.Form):
+class UrlMatcherForm(CSRFProtectedForm):
     """
     Form for creating/editing a URL matcher.
     More fields will be contained in the options forms for the various matcher types.
@@ -159,7 +175,7 @@ class UrlMatcherForm(wtforms.Form):
     matcher_options = None
 
 
-class UrlTransformForm(wtforms.Form):
+class UrlTransformForm(CSRFProtectedForm):
     """
     Form for creating/editing a URL transform between data sources.
     More fields will be contained in the options forms for the various transform types.
@@ -184,7 +200,7 @@ class UrlTransformForm(wtforms.Form):
     transform_options = None
 
 
-class UrlForm(wtforms.Form):
+class UrlForm(CSRFProtectedForm):
     """
     Form for entering URLs to check matches with data source(s) or to get transformed URLs.
     """
@@ -244,7 +260,7 @@ class TimingReportForm(wtforms.Form):
         validators=[wtforms.validators.Optional()])
 
 
-class TransferTestFileForm(wtforms.Form):
+class TransferTestFileForm(CSRFProtectedForm):
     """
     Form for adding test files to a data source.
     """
@@ -252,3 +268,17 @@ class TransferTestFileForm(wtforms.Form):
     url = wtforms.StringField(
         label="URL",
         validators=[wtforms.validators.InputRequired()])
+
+
+class ConfirmDeleteForm(CSRFProtectedForm):
+    """
+    Form for confirming deletions.
+    """
+    pass
+
+
+class ToggleUserPermissionsForm(CSRFProtectedForm):
+    """
+    Form for granting/revoking a user admin permissions.
+    """
+    pass
