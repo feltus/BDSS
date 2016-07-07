@@ -25,8 +25,9 @@ from sqlalchemy import func
 from wtforms import validators
 
 from .auth import admin_required
-from ..forms import ConfirmDeleteForm, DataSourceForm, DataSourceSearchForm, UrlForm, Unique
-from ..form_handling import process_form_with_options_subform, render_options_subform
+from ..forms import ConfirmDeleteForm, DataSourceForm, DataSourceSearchForm, UrlForm
+from ..forms.subform_handling import process_form_with_options_subform, render_options_subform
+from ..forms.validators import Unique
 from ..models import db_session, DataSource
 from ..util import render_matcher_description, render_transform_description, \
     available_transfer_mechanism_types, options_form_class_for_transfer_mechanism_type

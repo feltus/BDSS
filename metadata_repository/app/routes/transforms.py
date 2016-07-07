@@ -23,7 +23,7 @@ from flask.ext.login import login_required
 
 from .auth import admin_required
 from ..forms import ConfirmDeleteForm, UrlTransformForm
-from ..form_handling import process_form_with_options_subform, render_options_subform
+from ..forms.subform_handling import process_form_with_options_subform, render_options_subform
 from ..models import db_session, DataSource, Transform
 from ..util import available_transform_types, options_form_class_for_transform_type, render_transform_description
 
