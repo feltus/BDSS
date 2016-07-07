@@ -135,15 +135,15 @@ class DataSource(BaseModel, TrackEditsMixin):
 
     @property
     def num_successful_transfers(self):
-        return len([r for r in self.timing_reports if r.is_success])
+        return len([r for r in self.transfer_reports if r.is_success])
 
     @property
     def mean_successful_transfer_rate(self):
-        return statistics.mean([r.transfer_rate for r in self.timing_reports if r.is_success])
+        return statistics.mean([r.transfer_rate for r in self.transfer_reports if r.is_success])
 
     @property
     def stdev_successful_transfer_rates(self):
-        return statistics.stdev([r.transfer_rate for r in self.timing_reports if r.is_success])
+        return statistics.stdev([r.transfer_rate for r in self.transfer_reports if r.is_success])
 
     def __repr__(self):
         return "<DataSource (id=%s, label=%s)>" % (self.id, self.label)
@@ -212,16 +212,16 @@ class Transform(BaseModel, TrackEditsMixin):
         return transform_of_type(self.transform_type)(self.transform_options, url)
 
 
-class TimingReport(BaseModel):
+class TransferReport(BaseModel):
 
-    __tablename__ = "timing_reports"
+    __tablename__ = "transfer_reports"
 
     report_id = sa.Column(sa.types.Integer(), primary_key=True, autoincrement=False, nullable=False)
 
     data_source_id = sa.Column(sa.types.Integer(), sa.ForeignKey("data_sources.id"), primary_key=True, nullable=False)
 
     data_source = sa.orm.relationship("DataSource",
-                                      backref=backref("timing_reports", cascade="all, delete-orphan"),
+                                      backref=backref("transfer_reports", cascade="all, delete-orphan"),
                                       foreign_keys=[data_source_id])
 
     url = sa.Column(sa.types.Text(), nullable=False)
@@ -252,7 +252,7 @@ class TimingReport(BaseModel):
     created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return "<TimingReport (data_source=%d, url=%s, time=%f)>" % (self.data_source_id, self.url, self.transfer_duration_seconds)
+        return "<TransferReport (data_source=%d, url=%s, time=%f)>" % (self.data_source_id, self.url, self.transfer_duration_seconds)
 
 
 class TransferTestFile(BaseModel, TrackEditsMixin):

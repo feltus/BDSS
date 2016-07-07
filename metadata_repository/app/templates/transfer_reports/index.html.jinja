@@ -20,7 +20,7 @@ svg {
 </style>
 {% endblock %}
 
-{% block page_header %}{{ data_source.label }} - Timing Reports{% endblock %}
+{% block page_header %}{{ data_source.label }} - Transfer Reports{% endblock %}
 
 {% block content %}
 
@@ -33,7 +33,7 @@ svg {
                 {%- if report.is_transfer_rate_outlier -%}
                     <span class="glyphicon glyphicon-warning-sign" style="color:#f0ad4e;position:absolute;left:-35px;top:3px;"></span>
                 {%- endif -%}
-                <a href="{{ url_for('timing_reports.show_timing_report', source_id=data_source.id, report_id=report.report_id) }}">{{ report.created_at }} - {{ report.url }}</a>
+                <a href="{{ url_for('transfer_reports.show_transfer_report', source_id=data_source.id, report_id=report.report_id) }}">{{ report.created_at }} - {{ report.url }}</a>
             </li>
         {% endfor %}
     </ul>
@@ -42,20 +42,20 @@ svg {
         <nav style="text-align:center;">
             <ul class="pagination">
                 {% if page_range[0] > 1 %}
-                    <li><a href="{{ url_for('timing_reports.list_timing_reports', source_id=data_source.id, page=(page_range[0] - 1)) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    <li><a href="{{ url_for('transfer_reports.list_transfer_reports', source_id=data_source.id, page=(page_range[0] - 1)) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
                 {% endif %}
                 {% for p in page_range %}
                     {% if p == page_num %}<li class="active">{% else %}<li>{% endif %}
-                    <a href="{{ url_for('timing_reports.list_timing_reports', source_id=data_source.id, page=p) }}">{{ p }}</a></li>
+                    <a href="{{ url_for('transfer_reports.list_transfer_reports', source_id=data_source.id, page=p) }}">{{ p }}</a></li>
                 {% endfor %}
                 {% if page_range[-1] < total_num_pages %}
-                    <li><a href="{{ url_for('timing_reports.list_timing_reports', source_id=data_source.id, page=(page_range[-1] + 1)) }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                    <li><a href="{{ url_for('transfer_reports.list_transfer_reports', source_id=data_source.id, page=(page_range[-1] + 1)) }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
                 {% endif %}
             </ul>
         </nav>
     {% endif %}
 {% else %}
-    <p>No timing reports found.</p>
+    <p>No transfer reports found.</p>
 {% endif %}
 
 <p style="margin-top:20px;"><a href="{{ url_for('data_sources.show_data_source', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ data_source.label }}</a></p>
@@ -130,6 +130,6 @@ function plotGraph(points) {
         .attr("cy", function(d) { return y(d[1]); });
 }
 
-$.get('timing_reports/graph', function(data) { plotGraph(data.points); });
+$.get('transfer_reports/graph', function(data) { plotGraph(data.points); });
 </script>
 {% endblock %}

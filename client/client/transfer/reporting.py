@@ -86,7 +86,7 @@ def send_report(report):
     Parameters:
     report - TransferReport
     """
-    requests.post(metadata_repository_url + "/timing_reports",
+    requests.post(metadata_repository_url + "/transfer_reports",
                   data={
                       "url": report.url,
                       "file_size_bytes": report.size,

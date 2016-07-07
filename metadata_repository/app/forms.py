@@ -224,7 +224,7 @@ class FindTransfersForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
 
-class TimingReportForm(wtforms.Form):
+class TransferReportForm(wtforms.Form):
     """
     Form for reporting transfer times.
     """

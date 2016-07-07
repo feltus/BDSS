@@ -23,6 +23,6 @@ from .core import routes as core_routes
 from .data_sources import routes as data_source_routes
 from .matchers import routes as matcher_routes
 from .test_files import routes as test_file_routes
-from .timing_reports import routes as timing_report_routes
+from .transfer_reports import routes as transfer_report_routes
 from .transforms import routes as transform_routes
 from .users import routes as user_routes

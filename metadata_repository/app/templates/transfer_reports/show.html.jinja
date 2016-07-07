@@ -1,6 +1,6 @@
 {% extends "authenticated.html.jinja" %}
 
-{% block page_header %}{{ data_source.label }} - Timing Report{% endblock %}
+{% block page_header %}{{ data_source.label }} - Transfer Report{% endblock %}
 
 {% block content %}
 
@@ -26,11 +26,11 @@
 <pre>{{ report.mechanism_output }}</pre>
 
 {% if current_user.is_admin %}
-<p><a href="{{ url_for('timing_reports.delete_timing_report', source_id=report.data_source_id, report_id=report.report_id) }}">Delete this timing report</a></p>
+<p><a href="{{ url_for('transfer_reports.delete_transfer_report', source_id=report.data_source_id, report_id=report.report_id) }}">Delete this transfer report</a></p>
 {% endif %}
 
 <hr>
 
-<p style="margin-top:20px;"><a href="{{ url_for('timing_reports.list_timing_reports', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ data_source.label }}</a></p>
+<p style="margin-top:20px;"><a href="{{ url_for('transfer_reports.list_transfer_reports', source_id=data_source.id) }}"><span class="glyphicon glyphicon-chevron-left"></span>{{ data_source.label }}</a></p>
 
 {% endblock %}

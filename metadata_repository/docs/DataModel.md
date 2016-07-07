@@ -43,9 +43,9 @@ used for things like testing transfer speeds from the data source. Also, they pr
 validation of the data source's URL matcher configuration, as each test file URL is checked
 against the data source's matchers when it is added.
 
-## Timing Report
+## Transfer Report
 
-Each time the [BDSS client](/client/docs) is used to transfer a file, it sends a timing report
+Each time the [BDSS client](/client/docs) is used to transfer a file, it sends a report
 back to the metadata repository. This report contains:
 * the file's URL
 * the size of the file

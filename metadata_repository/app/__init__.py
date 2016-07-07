@@ -23,7 +23,7 @@ from htmlmin.minify import html_minify
 from .config import secret_key
 from .models import db_session, User
 from .routes import auth_routes, core_routes, data_source_routes, \
-    matcher_routes, test_file_routes, timing_report_routes, transform_routes, \
+    matcher_routes, test_file_routes, transfer_report_routes, transform_routes, \
     user_routes
 
 app = Flask(__name__)
@@ -85,6 +85,6 @@ app.register_blueprint(core_routes)
 app.register_blueprint(data_source_routes)
 app.register_blueprint(matcher_routes)
 app.register_blueprint(test_file_routes)
-app.register_blueprint(timing_report_routes)
+app.register_blueprint(transfer_report_routes)
 app.register_blueprint(transform_routes)
 app.register_blueprint(user_routes)
