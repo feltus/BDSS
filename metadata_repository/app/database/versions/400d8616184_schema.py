@@ -32,7 +32,7 @@ depends_on = None
 
 from alembic import op
 import sqlalchemy as sa
-from app.util import JSONEncodedDict
+from app.models.base import JSONEncodedDict
 
 
 def upgrade():

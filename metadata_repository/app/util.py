@@ -17,12 +17,8 @@
 #
 
 import importlib
-import json
 import os
 import pkgutil
-
-import sqlalchemy
-import sqlalchemy.ext.mutable
 
 
 ######################################################################################################
@@ -146,65 +142,3 @@ def description_for_transfer_mechanism_type(transfer_mechanism_type):
 def options_form_class_for_transfer_mechanism_type(transfer_mechanism_type):
     """Get options form for a transfer_mechanism type."""
     return _property_of_module("transfer_mechanisms." + transfer_mechanism_type, "OptionsForm")
-
-
-######################################################################################################
-#
-# Database types
-#
-######################################################################################################
-
-
-class JSONEncodedDict(sqlalchemy.types.TypeDecorator):
-    """
-    This type stores data in the database as JSON encoded text.
-    However, the model's property is a dictionary.
-
-    http://docs.sqlalchemy.org/en/latest/core/custom_types.html#marshal-json-strings
-    """
-
-    impl = sqlalchemy.types.Text
-
-    def process_bind_param(self, value, dialect):
-        """Store dictionary as JSON."""
-        if value is not None:
-            value = json.dumps(value)
-        return value
-
-    def process_result_value(self, value, dialect):
-        """Load dictionary from JSON."""
-        if value is not None:
-            value = json.loads(value)
-        return value
-
-
-class MutableDict(sqlalchemy.ext.mutable.Mutable, dict):
-    """
-    Used in conjunctino with JSONEncodedDict.
-    By default, when a dictionary value is changed, the dictionary object is still the same object, so SQLAlchemy
-    doesn't recognize the field as having changed and thus doesn't store the change in the database.
-
-    This marks the field as having changed whenever a dictionary value is changed or a key is deleted.
-
-    http://docs.sqlalchemy.org/en/latest/orm/extensions/mutable.html#establishing-mutability-on-scalar-column-values
-    """
-
-    @classmethod
-    def coerce(cls, key, value):
-        "Convert plain dictionaries to MutableDict."
-        if not isinstance(value, MutableDict):
-            if isinstance(value, dict):
-                return MutableDict(value)
-            return sqlalchemy.ext.mutable.Mutable.coerce(key, value)
-        else:
-            return value
-
-    def __setitem__(self, key, value):
-        "Detect dictionary set events and emit change events."
-        dict.__setitem__(self, key, value)
-        self.changed()
-
-    def __delitem__(self, key):
-        "Detect dictionary del events and emit change events."
-        dict.__delitem__(self, key)
-        self.changed()
