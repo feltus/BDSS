@@ -17,7 +17,7 @@
 #
 
 from flask import Flask, jsonify, redirect, render_template, request, url_for
-from flask.ext.login import LoginManager
+from flask_login import LoginManager
 from htmlmin.minify import html_minify
 
 from .config import secret_key

@@ -19,7 +19,7 @@
 import datetime
 
 import sqlalchemy as sa
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 
 from .base import BaseModel
 

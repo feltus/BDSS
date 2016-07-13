@@ -21,8 +21,8 @@ import json
 import os
 
 import sqlalchemy as sa
-from flask.ext.jsontools.formatting import get_entity_loaded_propnames
-from flask.ext.login import current_user
+from flask_jsontools.formatting import get_entity_loaded_propnames
+from flask_login import current_user
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.ext.mutable import Mutable

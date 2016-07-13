@@ -20,7 +20,7 @@ import math
 import traceback
 
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
-from flask.ext.login import login_required
+from flask_login import login_required
 from sqlalchemy import func
 from wtforms import validators
 

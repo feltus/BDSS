@@ -20,7 +20,7 @@ import math
 import traceback
 
 from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
-from flask.ext.login import login_required
+from flask_login import login_required
 
 from .auth import admin_required
 from ..forms import ToggleUserPermissionsForm
