@@ -110,11 +110,14 @@ def handle_action(args, parser):
             continue
 
         transfers = request_transfers(url)
+
         # As a last resort, fall back to original URL and its default mechanism
         # Defaults are defined in mechanisms/__init__ module
-        transfers.append(Transfer(url))
+        default_transfer = Transfer(url)
+        if default_transfer not in transfers:
+            transfers.append(default_transfer)
 
-        logger.info("Transfers for %s", url)
+        logger.info("%d transfer(s) for %s", len(transfers), url)
         logger.info("------------------")
         for t in transfers:
             logger.info(str(t))

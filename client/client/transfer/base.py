@@ -51,6 +51,8 @@ class Transfer():
         self.mechanism_options = mechanism_options
         if url and not mechanism_name:
             (self.mechanism_name, self.mechanism_options) = default_mechanism(url)
+        if not self.mechanism_options:
+            self.mechanism_options = {}
         self.data_source_id = str(data_source_id)
 
         self.mechanism = get_mechanism(self.mechanism_name, self.mechanism_options)
@@ -89,6 +91,12 @@ class Transfer():
             if not success:
                 raise TransferFailedError
             return temp_f.read()
+
+    def __eq__(self, other):
+        return (self.url == other.url and
+                self.mechanism_name == other.mechanism_name and
+                self.mechanism_options == other.mechanism_options and
+                self.mechanism_user_opts == other.mechanism_user_opts)
 
     def __str__(self):
         return textwrap.dedent("""\

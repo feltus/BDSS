@@ -56,7 +56,7 @@ def default_mechanism(url):
         "sshftp": "gridftp_lite",
         "scp": "scp"
     }
-    return (method_for_scheme.get(urlparse(url).scheme, "curl"), None)
+    return (method_for_scheme.get(urlparse(url).scheme, "curl"), {})
 
 
 def get_mechanism(mechanism_name, mechanism_options):
