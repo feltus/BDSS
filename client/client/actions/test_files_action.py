@@ -41,7 +41,7 @@ def get_test_files(data_source_id):
     Parameters:
     data_source_id - Integer - ID of data source to get test files for
     """
-    response = requests.get("/".join([metadata_repository_url, "data_sources", data_source_id, "test_files"]), headers={
+    response = requests.get("/".join([metadata_repository_url, "data_sources", str(data_source_id), "test_files"]), headers={
         "accept": "application/json"
     })
     if response.status_code == 200:
