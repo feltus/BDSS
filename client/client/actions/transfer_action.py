@@ -70,10 +70,10 @@ def output_file_name(url):
     return url.partition("?")[0].rpartition("/")[2]
 
 
-def request_transfers(url):
+def get_transfers(url, mechanisms):
     transfers = []
 
-    data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(available_mechanisms())}
+    data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(mechanisms)}
     data["url"] = url
 
     logger.info("Requesting transfers for %s" % url)
@@ -93,6 +93,12 @@ def request_transfers(url):
         logger.warn("Request for transfers failed")
         logger.debug(traceback.format_exc())
 
+    # As a last resort, fall back to original URL and its default mechanism
+    # Defaults are defined in mechanisms/__init__ module
+    default_transfer = Transfer(url)
+    if default_transfer not in transfers:
+        transfers.append(default_transfer)
+
     return transfers
 
 
@@ -109,13 +115,7 @@ def handle_action(args, parser):
             logger.warn("File at %s already exists at %s", url, output_path)
             continue
 
-        transfers = request_transfers(url)
-
-        # As a last resort, fall back to original URL and its default mechanism
-        # Defaults are defined in mechanisms/__init__ module
-        default_transfer = Transfer(url)
-        if default_transfer not in transfers:
-            transfers.append(default_transfer)
+        transfers = get_transfers(url, available_mechanisms())
 
         logger.info("%d transfer(s) for %s", len(transfers), url)
         logger.info("------------------")
