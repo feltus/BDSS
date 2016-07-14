@@ -49,7 +49,7 @@ class TestTransfer(unittest.TestCase):
         self.output_path = "/tmp/test.txt"
         self.file_data = b"hello world"
 
-    def _write_file_data(self, output_path):
+    def _write_file_data(self, output_path, display_output):
         with open(output_path, "w+b") as f:
             f.write(self.file_data)
         return (True, "")
@@ -58,7 +58,7 @@ class TestTransfer(unittest.TestCase):
         transfer = transfer_base.Transfer(self.file_url, self.transfer_mechanism, self.transfer_mechanism_options)
         with patch.object(transfer, "run", side_effect=self._write_file_data) as mock_run_transfer:
             data = transfer.get_data()
-            mock_run_transfer.assert_called_once_with(ANY)
+            mock_run_transfer.assert_called_once_with(ANY, True)
             self.assertEqual(data, self.file_data)
 
     def test_raises_if_unable_to_transfer(self):
