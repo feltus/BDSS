@@ -49,20 +49,33 @@ class Transfer():
         self.url = url
         self.mechanism_name = mechanism_name
         self.mechanism_options = mechanism_options
+
+        # If no mechanism is provided, use default
         if url and not mechanism_name:
             (self.mechanism_name, self.mechanism_options) = default_mechanism(url)
+
+        # Options should always be a dictionary
         if not self.mechanism_options:
             self.mechanism_options = {}
-        self.data_source_id = str(data_source_id)
+
+        self.mechanism_user_opts = {}
+
+        self.data_source_id = data_source_id
 
         self.mechanism = get_mechanism(self.mechanism_name, self.mechanism_options)
 
-        try:
-            self.mechanism_user_opts = _user_options_cache[self.data_source_id]
-        except KeyError:
+        if self.data_source_id:
+            # If this is a transfer from a known data source, cache user provided options so that
+            # the user is only prompted once per source even if there are multiple transfers from
+            # the same source.
+            try:
+                self.mechanism_user_opts = _user_options_cache[str(self.data_source_id)]
+            except KeyError:
+                self.mechanism_user_opts = self.mechanism.prompt_for_user_input_options()
+                _user_options_cache[str(self.data_source_id)] = self.mechanism_user_opts
+        else:
+            # For unknown sources, always prompt
             self.mechanism_user_opts = self.mechanism.prompt_for_user_input_options()
-            if self.data_source_id:
-                _user_options_cache[self.data_source_id] = self.mechanism_user_opts
 
         self.mechanism.update_options(self.mechanism_user_opts)
 
