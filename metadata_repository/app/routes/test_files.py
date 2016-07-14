@@ -38,7 +38,7 @@ def list_test_files(source_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
 
     if request.headers.get("Accept") == "application/json":
-        return jsonify(test_files=data_source.transfer_test_files)
+        return jsonify(test_files=[f.url for f in data_source.transfer_test_files])
     else:
         return redirect(url_for("data_sources.show_data_source", source_id=source_id))
 

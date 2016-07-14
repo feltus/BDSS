@@ -56,4 +56,4 @@ def get_test_files(data_source_id):
 def handle_action(args, parser):
     test_files = get_test_files(args.data_source_id)
     for f in test_files:
-        print(f["url"])
+        print(f)
