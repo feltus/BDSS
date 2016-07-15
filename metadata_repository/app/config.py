@@ -28,3 +28,8 @@ if secret_key:
     secret_key = binascii.unhexlify(secret_key.encode("ascii"))
 else:
     secret_key = os.urandom(32)
+
+
+csrf_enabled = True
+if os.getenv("CSRF_DISABLED", False):
+    csrf_enabled = False

@@ -22,12 +22,12 @@ from flask import session
 from wtforms import Form
 from wtforms.csrf.session import SessionCSRF
 
-from ..config import secret_key
+from ..config import csrf_enabled, secret_key
 
 
 class CSRFProtectedForm(Form):
     class Meta:
-        csrf = True
+        csrf = csrf_enabled
         csrf_class = SessionCSRF
         csrf_secret = secret_key
         csrf_time_limit = timedelta(minutes=20)
