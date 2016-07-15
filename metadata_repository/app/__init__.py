@@ -40,7 +40,7 @@ def format_number(value):
 
 @app.after_request
 def minify_response(response):
-    if "text/html" in response.content_type:
+    if "text/html" in response.content_type and not app.config["TESTING"]:
         response.set_data(html_minify(response.get_data(as_text=True)))
     return response
 
