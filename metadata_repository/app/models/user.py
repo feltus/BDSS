@@ -20,8 +20,12 @@ import datetime
 
 import sqlalchemy as sa
 from flask_login import UserMixin
+from passlib.context import CryptContext
 
 from .base import BaseModel
+
+
+_pwd_context = CryptContext(schemes="bcrypt_sha256")
 
 
 class User(BaseModel, UserMixin):
@@ -38,6 +42,12 @@ class User(BaseModel, UserMixin):
     email = sa.Column(sa.types.String(100), nullable=False, unique=True)
 
     password_hash = sa.Column(sa.types.String(80), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = _pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return _pwd_context.verify(password, self.password_hash)
 
     created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 

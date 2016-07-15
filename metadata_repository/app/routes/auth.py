@@ -21,15 +21,12 @@ from functools import wraps
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_app, current_user, login_required, login_user, logout_user
-from passlib.context import CryptContext
 
 from ..forms import LoginForm, RegistrationForm
 from ..models import db_session, User
 
 
 routes = Blueprint("auth", __name__)
-
-pwd_context = CryptContext(schemes="bcrypt_sha256")
 
 
 def admin_required(func):
@@ -59,7 +56,7 @@ def login():
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
         user = User.query.filter(User.email == form.email.data).first()
-        if user and pwd_context.verify(form.password.data, user.password_hash):
+        if user and user.verify_password(form.password.data):
             login_user(user, remember=True)
             return redirect(url_for("core.index"))
         else:
@@ -78,12 +75,13 @@ def register():
 
     form = RegistrationForm(request.form)
     if request.method == "POST" and form.validate():
-        pwd_hash = pwd_context.encrypt(form.password.data)
-        user = User(name=form.name.data, email=form.email.data, password_hash=pwd_hash)
+        user = User(name=form.name.data, email=form.email.data)
+        user.set_password(form.password.data)
         try:
             db_session.add(user)
             db_session.commit()
             login_user(user, remember=True)
+            flash("Registration successful")
             return redirect(url_for("core.index"))
         except:
             db_session.rollback()
