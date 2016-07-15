@@ -24,15 +24,16 @@ Create Date: 2015-12-18 13:45:44.828587
 
 """
 
+from alembic import op
+import sqlalchemy as sa
+from app.models.base import JSONEncodedDict
+
+
 # revision identifiers, used by Alembic.
 revision = '400d8616184'
 down_revision = None
 branch_labels = None
 depends_on = None
-
-from alembic import op
-import sqlalchemy as sa
-from app.models.base import JSONEncodedDict
 
 
 def upgrade():

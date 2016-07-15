@@ -26,7 +26,7 @@ from sqlalchemy import create_engine, pool
 from logging.config import fileConfig
 
 sys.path.insert(0, os.getcwd())
-from app.models import BaseModel
+from app.models import BaseModel  # flake8: noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
