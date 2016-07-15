@@ -20,6 +20,9 @@ import binascii
 import os
 
 
+database_url = os.getenv("DATABASE_URL")
+
+
 secret_key = os.getenv("SESSION_KEY", "")
 if secret_key:
     secret_key = binascii.unhexlify(secret_key.encode("ascii"))

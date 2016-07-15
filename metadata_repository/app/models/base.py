@@ -18,7 +18,6 @@
 
 import datetime
 import json
-import os
 
 import sqlalchemy as sa
 from flask_jsontools.formatting import get_entity_loaded_propnames
@@ -27,9 +26,11 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.ext.mutable import Mutable
 
+from ..config import database_url
+
 
 # http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/#declarative
-db_engine = sa.create_engine(os.getenv("DATABASE_URL"))
+db_engine = sa.create_engine(database_url)
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db_engine))
 
 
