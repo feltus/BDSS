@@ -3,6 +3,10 @@
 import os
 import sys
 
+if not os.getenv("DATABASE_URL"):
+    print("DATABASE_URL is not set", file=sys.stderr)
+    sys.exit(1)
+
 project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, project_dir)
 
