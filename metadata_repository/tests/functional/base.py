@@ -19,14 +19,22 @@
 import unittest
 
 import app
-from app.models import db_engine, BaseModel
+from app.models import db_engine, db_session, BaseModel
 
 
 class BaseTestCase(unittest.TestCase):
 
+    def seedData(self):
+        return []
+
     def setUp(self):
         BaseModel.metadata.create_all(bind=db_engine)
         app.app.config["TESTING"] = True
+
+        for obj in self.seedData():
+            db_session.add(obj)
+        db_session.commit()
+
         self.client = app.app.test_client()
 
     def tearDown(self):
