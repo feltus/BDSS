@@ -3,14 +3,17 @@
 import os
 import sys
 
-if not os.getenv("DATABASE_URL"):
-    print("DATABASE_URL is not set", file=sys.stderr)
-    sys.exit(1)
 
 project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, project_dir)
 
+if not os.getenv("DATABASE_URL"):
+    os.environ["DATABASE_URL"] = "sqlite:///%s" % os.path.join(project_dir, "dev.sqlite")
+
 from app import app as application
+
+from app.config import database_url
+from app.models import BaseModel, db_engine
 
 args = {
     "debug": True,
@@ -20,4 +23,5 @@ if len(sys.argv) > 1 and sys.argv[1] == "--public":
     args["host"] = "0.0.0.0"
 
 if __name__ == "__main__":
+    BaseModel.metadata.create_all(bind=db_engine)
     application.run(**args)
