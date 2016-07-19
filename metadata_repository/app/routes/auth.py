@@ -81,7 +81,7 @@ def register():
             db_session.add(user)
             db_session.commit()
             login_user(user, remember=True)
-            flash("Registration successful")
+            flash("Registration successful", "success")
             return redirect(url_for("core.index"))
         except:
             db_session.rollback()
