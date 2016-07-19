@@ -24,14 +24,10 @@ from app.models import db_engine, db_session, BaseModel, User
 
 class BaseTestCase(unittest.TestCase):
 
-    def addToDatabase(self, objs):
-        try:
-            for obj in objs:
-                db_session.add(obj)
-        except TypeError:
-            db_session.add(objs)
-        finally:
-            db_session.commit()
+    def addToDatabase(self, *args):
+        for obj in args:
+            db_session.add(obj)
+        db_session.commit()
 
     def loginTestUser(self):
         self.client.post("/login",
