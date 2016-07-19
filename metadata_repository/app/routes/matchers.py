@@ -37,7 +37,7 @@ def list_url_matchers(source_id):
     """
     List matcher descriptions for a data source.
     """
-    if "application/json" not in request.headers["Accept"]:
+    if "Accept" not in request.headers or "application/json" not in request.headers["Accept"]:
         return redirect(url_for("data_sources.show_data_source", source_id=source_id))
 
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
