@@ -19,23 +19,36 @@
 import unittest
 
 import app
-from app.models import db_engine, db_session, BaseModel
+from app.models import db_engine, db_session, BaseModel, User
 
 
 class BaseTestCase(unittest.TestCase):
 
-    def seedData(self):
-        return []
+    def addToDatabase(self, objs):
+        try:
+            for obj in objs:
+                db_session.add(obj)
+        except TypeError:
+            db_session.add(objs)
+        finally:
+            db_session.commit()
+
+    def loginTestUser(self):
+        self.client.post("/login",
+                         data=dict(email="user@example.com", password="password"),
+                         follow_redirects=True)
 
     def setUp(self):
+        BaseModel.metadata.drop_all(bind=db_engine)
         BaseModel.metadata.create_all(bind=db_engine)
+
         app.app.config["TESTING"] = True
 
-        for obj in self.seedData():
-            db_session.add(obj)
-        db_session.commit()
-
         self.client = app.app.test_client()
+
+        u = User(user_id=1, name="Test User", email="user@example.com", is_admin=True)
+        u.set_password("password")
+        self.addToDatabase(u)
 
     def tearDown(self):
         BaseModel.metadata.drop_all(bind=db_engine)

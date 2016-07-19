@@ -18,15 +18,8 @@
 
 from .base import BaseTestCase
 
-from app.models import User
-
 
 class TestLogin(BaseTestCase):
-
-    def seedData(self):
-        u = User(name="Test User", email="user@example.com")
-        u.set_password("password")
-        return (u,)
 
     def test_login_logout(self):
         r = self.client.post("/login",

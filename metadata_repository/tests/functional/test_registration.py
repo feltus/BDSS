@@ -23,11 +23,6 @@ from app.models import User
 
 class TestRegistration(BaseTestCase):
 
-    def seedData(self):
-        u = User(name="Existing User", email="existing@example.com")
-        u.set_password("password")
-        return (u,)
-
     def test_registration(self):
         r = self.client.post("/register",
                              data=dict(name="New User",
@@ -52,8 +47,8 @@ class TestRegistration(BaseTestCase):
 
     def test_prevent_duplicate_registrations(self):
         r = self.client.post("/register",
-                             data=dict(name="Existing User",
-                                       email="existing@example.com",
+                             data=dict(name="Test User",
+                                       email="user@example.com",
                                        password="password",
                                        password_confirmation="password"),
                              follow_redirects=True)
