@@ -37,6 +37,12 @@ class TransferReport(BaseModel):
                                       backref=backref("transfer_reports", cascade="all, delete-orphan"),
                                       foreign_keys=[data_source_id])
 
+    destination_id = sa.Column(sa.types.Integer(), sa.ForeignKey("destinations.id"))
+
+    destination = sa.orm.relationship("Destination",
+                                      backref=backref("transfer_reports", cascade="all, delete-orphan"),
+                                      foreign_keys=[destination_id])
+
     url = sa.Column(sa.types.Text(), nullable=False)
 
     file_size_bytes = sa.Column(sa.types.Integer(), nullable=False)
@@ -65,4 +71,8 @@ class TransferReport(BaseModel):
     created_at = sa.Column(sa.types.DateTime(), nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return "<TransferReport (data_source=%d, url=%s, time=%f)>" % (self.data_source_id, self.url, self.transfer_duration_seconds)
+        return "<TransferReport (data_source=%d, destination=%d, url=%s, time=%f)>" % (
+            self.data_source_id,
+            self.destination_id,
+            self.url,
+            self.transfer_duration_seconds)

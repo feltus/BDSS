@@ -25,7 +25,7 @@ from flask_login import login_required
 from .auth import admin_required
 from ..core import matching_data_source
 from ..forms import ConfirmDeleteForm, TransferReportForm
-from ..models import db_session, DataSource, TransferReport
+from ..models import db_session, DataSource, Destination, TransferReport
 
 
 routes = Blueprint("transfer_reports", __name__)
@@ -37,14 +37,24 @@ def report_transfer():
     Report a transfer.
     """
     form = TransferReportForm(request.form)
+    form.destination.choices = [("", "Unknown")] + [(d.label, d.label) for d in Destination.query.all()]
+
     error_message = None
     if form.validate():
         data_source = matching_data_source(form.url.data)
+        destination = None
+        if form.destination.data:
+            destination = Destination.query.filter(Destination.label == form.destination.data).first()
         if data_source:
             report = TransferReport(
                 data_source_id=data_source.id,
-                report_id=max([r.report_id for r in data_source.transfer_reports] + [0]) + 1)
-            form.populate_obj(report)
+                report_id=max([r.report_id for r in data_source.transfer_reports] + [0]) + 1,
+                destination=destination,
+                url=form.url.data,
+                file_size_bytes=form.file_size_bytes.data,
+                transfer_duration_seconds=form.transfer_duration_seconds.data,
+                file_checksum=form.file_checksum.data
+            )
 
             try:
                 db_session.add(report)

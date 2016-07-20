@@ -6,6 +6,15 @@
 
 <p><strong>URL:</strong> {{ report.url }}</p>
 
+<p>
+<strong>Destination: </strong>
+{%- if report.destination -%}
+    {{ destination.label }}
+{%- else -%}
+    Unknown
+{%- endif -%}
+</p>
+
 <p><strong>Transferred At:</strong> {{ report.created_at }}</p>
 
 <p style="font-size:22px;">

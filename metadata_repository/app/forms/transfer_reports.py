@@ -34,6 +34,10 @@ class TransferReportForm(wtforms.Form):
         label="URL",
         validators=[wtforms.validators.InputRequired()])
 
+    destination = wtforms.fields.SelectField(
+        label="Destination",
+        validators=[wtforms.validators.Optional()])
+
     file_size_bytes = wtforms.IntegerField(
         label="File Size (bytes)",
         validators=[wtforms.validators.InputRequired()])
