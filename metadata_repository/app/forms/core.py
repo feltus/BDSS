@@ -28,6 +28,10 @@ class FindTransfersForm(wtforms.Form):
         label="Available Mechanisms",
         min_entries=1)
 
+    destination = wtforms.fields.SelectField(
+        label="Destination",
+        validators=[wtforms.validators.Optional()])
+
     url = wtforms.fields.StringField(
         label="URL",
         validators=[wtforms.validators.InputRequired()])

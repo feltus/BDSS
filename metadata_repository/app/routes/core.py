@@ -22,6 +22,7 @@ from flask import Blueprint, flash, jsonify, redirect, render_template, request,
 
 from ..core import find_transfers, FindTransferError
 from ..forms import FindTransfersForm
+from ..models import Destination
 
 
 routes = Blueprint("core", __name__)
@@ -46,13 +47,17 @@ def transfers():
     Find available transfers for a URL.
     """
     form = FindTransfersForm(request.form)
+    form.destination.choices = [("", "Unknown")] + [(d.label, d.label) for d in Destination.query.all()]
 
     results = []
     if request.method == "POST":
         error_message = None
         if form.validate():
             try:
-                results = find_transfers(form.url.data, form.available_mechanisms.data)
+                destination = None
+                if form.destination.data:
+                    destination = Destination.query.filter(Destination.label == form.destination.data).first()
+                results = find_transfers(form.url.data, form.available_mechanisms.data, destination)
             except FindTransferError as e:
                 error_message = e.args[0]
             except Exception as e:

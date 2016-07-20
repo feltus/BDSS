@@ -55,7 +55,7 @@ def matching_data_source(url):
         return None
 
 
-def find_transfers(url, available_mechanisms):
+def find_transfers(url, available_mechanisms, destination=None):
     """
     Query DB for alternate URLs for the data file at the given URL.
     """
