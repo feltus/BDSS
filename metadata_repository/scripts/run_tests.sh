@@ -10,4 +10,5 @@ cd "$PROJECT_DIR"
 nose2 \
     --project-directory . \
     --start-dir tests \
-    --log-capture
+    --log-capture \
+    "$@"
