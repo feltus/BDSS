@@ -20,6 +20,7 @@
 
 from .base import db_engine, db_session, BaseModel
 from .data_source import DataSource
+from .destination import Destination
 from .transfer_report import TransferReport
 from .transfer_test_file import TransferTestFile
 from .transform import Transform

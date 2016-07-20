@@ -1,0 +1,14 @@
+{% extends "authenticated.html.jinja" %}
+{% import "form_macros.html.jinja" as form_macros %}
+
+{% block page_header %}Edit {{ destination.label }}{% endblock %}
+
+{% block content %}
+
+{{ form_macros.render_form(form, action_url=url_for("destinations.edit_destination", destination_id=destination.id), btn_class="btn btn-primary") }}
+
+<hr>
+
+<a href="{{ url_for('destinations.show_destination', destination_id=destination.id) }}" class="btn btn-default">Cancel</a>
+
+{% endblock %}

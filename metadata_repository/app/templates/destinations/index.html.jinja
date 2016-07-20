@@ -1,0 +1,40 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}Data Destinations{% endblock %}
+
+{% block content %}
+
+{% if destinations|length > 0 %}
+    <ul>
+        {% for destination in destinations %}
+            <li>
+                <a href="{{ url_for('destinations.show_destination', destination_id=destination.id) }}">{{ destination.label }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if total_num_pages > 1 %}
+        <nav style="text-align:center;">
+            <ul class="pagination">
+                {% if page_range[0] > 1 %}
+                    <li><a href="{{ url_for('destinations.list_destinations', page=(page_range[0] - 1)) }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                {% endif %}
+                {% for p in page_range %}
+                    {% if p == page_num %}<li class="active">{% else %}<li>{% endif %}
+                    <a href="{{ url_for('destinations.list_destinations', page=p) }}">{{ p }}</a></li>
+                {% endfor %}
+                {% if page_range[-1] < total_num_pages %}
+                    <li><a href="{{ url_for('destinations.list_destinations', page=(page_range[-1] + 1)) }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <p>No data destinations found.</p>
+{% endif %}
+
+{% if current_user.is_admin %}
+<p><a href="{{ url_for('destinations.create_destination') }}">Add New Destination</a></p>
+{% endif %}
+
+{% endblock %}

@@ -16,14 +16,17 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-# flake8: noqa
+import sqlalchemy as sa
 
-from .auth import routes as auth_routes
-from .core import routes as core_routes
-from .data_sources import routes as data_source_routes
-from .destinations import routes as destination_routes
-from .matchers import routes as matcher_routes
-from .test_files import routes as test_file_routes
-from .transfer_reports import routes as transfer_report_routes
-from .transforms import routes as transform_routes
-from .users import routes as user_routes
+from .base import BaseModel, TrackEditsMixin
+
+
+class Destination(BaseModel, TrackEditsMixin):
+
+    __tablename__ = "destinations"
+
+    id = sa.Column(sa.types.Integer(), autoincrement=True, primary_key=True, nullable=False)
+
+    label = sa.Column(sa.types.String(100), index=True, nullable=False, unique=True)
+
+    description = sa.Column(sa.types.Text())

@@ -16,14 +16,22 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-# flake8: noqa
+import wtforms
 
-from .auth import routes as auth_routes
-from .core import routes as core_routes
-from .data_sources import routes as data_source_routes
-from .destinations import routes as destination_routes
-from .matchers import routes as matcher_routes
-from .test_files import routes as test_file_routes
-from .transfer_reports import routes as transfer_report_routes
-from .transforms import routes as transform_routes
-from .users import routes as user_routes
+from .base import CSRFProtectedForm
+from .validators import Unique
+from ..models import Destination
+
+
+class DestinationForm(CSRFProtectedForm):
+    """
+    Form for creating/editing a destination.
+    """
+
+    label = wtforms.fields.StringField(
+        label="Label",
+        validators=[wtforms.validators.InputRequired(), Unique(Destination, "label")])
+
+    description = wtforms.fields.TextAreaField(
+        label="Description",
+        validators=[wtforms.validators.Optional()])

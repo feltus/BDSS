@@ -22,7 +22,7 @@ from htmlmin.minify import html_minify
 
 from .config import secret_key
 from .models import db_session, User
-from .routes import auth_routes, core_routes, data_source_routes, \
+from .routes import auth_routes, core_routes, data_source_routes, destination_routes, \
     matcher_routes, test_file_routes, transfer_report_routes, transform_routes, \
     user_routes
 
@@ -83,6 +83,7 @@ def unauthorized():
 app.register_blueprint(auth_routes)
 app.register_blueprint(core_routes)
 app.register_blueprint(data_source_routes)
+app.register_blueprint(destination_routes)
 app.register_blueprint(matcher_routes)
 app.register_blueprint(test_file_routes)
 app.register_blueprint(transfer_report_routes)

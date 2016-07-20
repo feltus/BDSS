@@ -22,6 +22,7 @@ from .auth import LoginForm, RegistrationForm
 from .base import CSRFProtectedForm
 from .core import FindTransfersForm
 from .data_sources import DataSourceForm, DataSourceSearchForm
+from .destinations import DestinationForm
 from .test_files import TransferTestFileForm
 from .transfer_reports import TransferReportForm
 from .url_matchers import UrlMatcherForm

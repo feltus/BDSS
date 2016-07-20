@@ -1,0 +1,18 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}{{ destination.label }}{% endblock %}
+
+{% block content %}
+
+<p>{{ destination.description or "No description" }}</p>
+
+{% if current_user.is_admin %}
+<p><a href="{{ url_for('destinations.edit_destination', destination_id=destination.id) }}">Edit this destination</a></p>
+<p><a href="{{ url_for('destinations.delete_destination', destination_id=destination.id) }}">Delete this destination</a></p>
+{% endif %}
+
+<hr>
+
+<p style="margin-top:20px;"><a href="{{ url_for('destinations.list_destinations') }}"><span class="glyphicon glyphicon-chevron-left"></span>All Destinations</a></p>
+
+{% endblock %}
