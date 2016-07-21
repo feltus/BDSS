@@ -23,10 +23,24 @@ import sqlalchemy as sa
 from flask_jsontools.formatting import get_entity_loaded_propnames
 from flask_login import current_user
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.ext.mutable import Mutable
+from sqlite3 import Connection as SQLite3Connection
 
 from ..config import database_url
+
+
+@sa.event.listens_for(Engine, "connect")
+def _set_sqlite_pragma(dbapi_connection, connection_record):
+    """
+    Enable foreign keys when using SQLite
+    http://stackoverflow.com/a/15542046/1517804
+    """
+    if isinstance(dbapi_connection, SQLite3Connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON;")
+        cursor.close()
 
 
 # http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/#declarative
