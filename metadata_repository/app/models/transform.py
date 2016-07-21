@@ -56,6 +56,14 @@ class Transform(BaseModel, TrackEditsMixin):
     for_destinations = sa.orm.relationship("Destination",
                                            secondary=transform_destination_association)
 
+    @property
+    def for_destination_ids(self):
+        """
+        The edit form uses a field for_destination_ids.
+        This makes the proper options selected when using the form.
+        """
+        return [d.id for d in self.for_destinations]
+
     preference_order = sa.Column(sa.types.Integer(), nullable=False)
 
     transform_type = sa.Column(sa.types.String(100), nullable=False)

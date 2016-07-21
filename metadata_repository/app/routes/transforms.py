@@ -24,11 +24,25 @@ from flask_login import login_required
 from .auth import admin_required
 from ..forms import ConfirmDeleteForm, UrlTransformForm
 from ..forms.subform_handling import process_form_with_options_subform, render_options_subform
-from ..models import db_session, DataSource, Transform
+from ..models import db_session, DataSource, Destination, Transform
 from ..util import available_transform_types, options_form_class_for_transform_type, render_transform_description
 
 
 routes = Blueprint("transforms", __name__)
+
+
+def _setup_transform_form(from_data_source_id):
+    data_sources = DataSource.query.filter(DataSource.id != from_data_source_id).all()
+    c1 = [(src.id, src.label) for src in data_sources]
+
+    destinations = Destination.query.all()
+    c2 = [(d.id, d.label) for d in destinations]
+
+    def setup_form(form):
+        setattr(form.to_data_source_id, "choices", c1)
+        setattr(form.for_destination_ids, "choices", c2)
+
+    return setup_form
 
 
 @routes.route("/data_sources/<source_id>/transforms/new", methods=["GET", "POST"])
@@ -40,11 +54,10 @@ def add_transform(source_id):
     """
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
 
-    to_data_source_choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
     form = process_form_with_options_subform(UrlTransformForm,
                                              "transform_type", "transform_options",
                                              options_form_class_for_transform_type,
-                                             form_init=lambda f: setattr(f.to_data_source_id, "choices", to_data_source_choices))
+                                             form_init=_setup_transform_form(source_id))
 
     if request.method == "POST" and form.validate():
         transform = Transform(
@@ -55,6 +68,10 @@ def add_transform(source_id):
             description=form.description.data,
             preference_order=max([s.preference_order for s in data_source.transforms] + [-1]) + 1
         )
+        if form.for_destination_ids.data:
+            transform.for_destinations = Destination.query.filter(Destination.id.in_(form.for_destination_ids.data)).all()
+        else:
+            transform.for_destinations = []
         if "transform_options" in form._fields.keys() and form._fields["transform_options"]:
             transform.transform_options = form._fields["transform_options"].data
         else:
@@ -96,18 +113,20 @@ def edit_transform(source_id, transform_id):
     data_source = DataSource.query.filter(DataSource.id == source_id).first() or abort(404)
     transform = Transform.query.filter((Transform.from_data_source_id == source_id) & (Transform.transform_id == transform_id)).first() or abort(404)
 
-    to_data_source_choices = [(src.id, src.label) for src in DataSource.query.filter(DataSource.id != source_id).all()]
     form = process_form_with_options_subform(UrlTransformForm,
                                              "transform_type", "transform_options",
                                              options_form_class_for_transform_type,
                                              editing_obj=transform,
-                                             form_init=lambda f: setattr(f.to_data_source_id, "choices", to_data_source_choices))
+                                             form_init=_setup_transform_form(source_id))
 
     if request.method == "POST" and form.validate():
         transform.to_data_source_id = form.to_data_source_id.data
         transform.transform_type = form.transform_type.data
         transform.description = form.description.data
-
+        if form.for_destination_ids.data:
+            transform.for_destinations = Destination.query.filter(Destination.id.in_(form.for_destination_ids.data)).all()
+        else:
+            transform.for_destinations = []
         if "transform_options" in form._fields.keys() and form._fields["transform_options"]:
             transform.transform_options = form._fields["transform_options"].data
         else:

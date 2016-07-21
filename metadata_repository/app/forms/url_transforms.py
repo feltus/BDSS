@@ -35,6 +35,12 @@ class UrlTransformForm(CSRFProtectedForm):
         coerce=int,
         validators=[wtforms.validators.InputRequired()])
 
+    for_destination_ids = wtforms.fields.SelectMultipleField(
+        label="If specified, only apply transform for these destinations",
+        choices=[],
+        coerce=int,
+        validators=[wtforms.validators.Optional()])
+
     description = wtforms.fields.TextAreaField(
         label="Description",
         validators=[wtforms.validators.Optional()])

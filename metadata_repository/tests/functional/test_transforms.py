@@ -41,7 +41,10 @@ class TestUrlTransforms(BaseTestCase):
                                   preference_order=1,
                                   transform_type="change_host",
                                   transform_options={"new_host": "example.org"})
-            self.addToDatabase(ds1, ds2, transform)
+            dest1 = Destination(id=1, label="Test Destination")
+            dest2 = Destination(id=2, label="Another Destination")
+            transform.for_destinations.append(dest1)
+            self.addToDatabase(ds1, ds2, transform, dest1, dest2)
 
     def test_show_transform(self):
         with self.client as client:
@@ -75,6 +78,32 @@ class TestUrlTransforms(BaseTestCase):
             self.assertEqual(len(added_transform.transform_options.items()), 1)
             self.assertEqual(added_transform.transform_options["new_scheme"], "ftp")
 
+    def test_add_transform_for_specific_destinations(self):
+        with self.client as client:
+            self.loginTestUser()
+
+            form_data = {}
+            form_data["transform_type"] = "change_scheme"
+            form_data["to_data_source_id"] = 2
+            form_data["for_destination_ids"] = [1, 2]
+            form_data["transform_options-new_scheme"] = "ftp"
+
+            r = client.post("/data_sources/1/transforms/new",
+                            data=form_data,
+                            follow_redirects=True)
+
+            self.assertTrue(b"Transform saved" in r.data)
+            self.assertEqual(Transform.query.filter(Transform.from_data_source_id == 1).count(), 2)
+
+            added_transform = Transform.query.filter((Transform.from_data_source_id == 1) & (Transform.transform_id != 1)).first()
+            self.assertEqual(added_transform.from_data_source_id, 1)
+            self.assertEqual(added_transform.to_data_source_id, 2)
+            self.assertEqual(len(added_transform.for_destinations), 2)
+            self.assertEqual(added_transform.preference_order, 2)
+            self.assertEqual(added_transform.transform_type, "change_scheme")
+            self.assertEqual(len(added_transform.transform_options.items()), 1)
+            self.assertEqual(added_transform.transform_options["new_scheme"], "ftp")
+
     def test_edit_transform(self):
         with self.client as client:
             self.loginTestUser()
@@ -82,6 +111,7 @@ class TestUrlTransforms(BaseTestCase):
             form_data = {}
             form_data["transform_type"] = "change_host"
             form_data["to_data_source_id"] = 2
+            form_data["for_destination_ids"] = [2]
             form_data["transform_options-new_host"] = "example.net"
 
             r = client.post("/data_sources/1/transforms/1/edit",
@@ -93,6 +123,33 @@ class TestUrlTransforms(BaseTestCase):
             edited_transform = Transform.query.filter((Transform.from_data_source_id == 1) & (Transform.transform_id == 1)).first()
             self.assertEqual(edited_transform.from_data_source_id, 1)
             self.assertEqual(edited_transform.to_data_source_id, 2)
+            self.assertEqual(len(edited_transform.for_destinations), 1)
+            self.assertEqual(edited_transform.for_destinations[0].id, 2)
+            self.assertEqual(edited_transform.preference_order, 1)
+            self.assertEqual(edited_transform.transform_type, "change_host")
+            self.assertEqual(len(edited_transform.transform_options.items()), 1)
+            self.assertEqual(edited_transform.transform_options["new_host"], "example.net")
+
+    def test_edit_transform_and_remove_destinations(self):
+        with self.client as client:
+            self.loginTestUser()
+
+            form_data = {}
+            form_data["transform_type"] = "change_host"
+            form_data["to_data_source_id"] = 2
+            form_data["for_destination_ids"] = []
+            form_data["transform_options-new_host"] = "example.net"
+
+            r = client.post("/data_sources/1/transforms/1/edit",
+                            data=form_data,
+                            follow_redirects=True)
+
+            self.assertTrue(b"Transform updated" in r.data)
+
+            edited_transform = Transform.query.filter((Transform.from_data_source_id == 1) & (Transform.transform_id == 1)).first()
+            self.assertEqual(edited_transform.from_data_source_id, 1)
+            self.assertEqual(edited_transform.to_data_source_id, 2)
+            self.assertEqual(len(edited_transform.for_destinations), 0)
             self.assertEqual(edited_transform.preference_order, 1)
             self.assertEqual(edited_transform.transform_type, "change_host")
             self.assertEqual(len(edited_transform.transform_options.items()), 1)

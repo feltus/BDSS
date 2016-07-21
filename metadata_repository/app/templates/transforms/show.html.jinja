@@ -10,6 +10,17 @@
 
 <hr>
 
+{%- if transform.for_destinations -%}
+    <p>Transform is only applied for the following destinations</p>
+    <ul>
+        {%- for dest in transform.for_destinations -%}
+        <li><a href="{{ url_for('destinations.show_destination', destination_id=dest.id) }}">{{ dest.label }}</a></li>
+        {%- endfor -%}
+    </ul>
+{%- else -%}
+    <p>Transform is applied for all destinations</p>
+{%- endif -%}
+
 <p><strong>Transform type:</strong> {{ transform.transform_type }}</p>
 
 {% if transform.transform_options %}
