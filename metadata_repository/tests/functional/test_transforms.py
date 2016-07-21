@@ -18,7 +18,7 @@
 
 from .base import BaseTestCase
 
-from app.models import DataSource, Transform
+from app.models import db_session, BaseModel, DataSource, Destination, Transform
 
 
 class TestUrlTransforms(BaseTestCase):
@@ -97,3 +97,54 @@ class TestUrlTransforms(BaseTestCase):
             self.assertEqual(edited_transform.transform_type, "change_host")
             self.assertEqual(len(edited_transform.transform_options.items()), 1)
             self.assertEqual(edited_transform.transform_options["new_host"], "example.net")
+
+
+class TestTransformDestinationRelationship(BaseTestCase):
+    """
+    Test that the many to many relationship between transforms and destinations behaves as expected
+    """
+
+    def setUp(self):
+        super().setUp()
+
+        with self.client:
+            self.loginTestUser()
+
+            ds1 = DataSource(id=1,
+                             label="Test Source",
+                             transfer_mechanism_type="curl")
+
+            ds2 = DataSource(id=2,
+                             label="Another Source",
+                             transfer_mechanism_type="curl")
+
+            transform = Transform(from_data_source_id=1,
+                                  to_data_source_id=2,
+                                  transform_id=1,
+                                  preference_order=1,
+                                  transform_type="change_host",
+                                  transform_options={"new_host": "example.org"})
+
+            dest = Destination(id=1, label="Test Destination")
+
+            transform.for_destinations.append(dest)
+
+            self.addToDatabase(ds1, ds2, transform, dest)
+
+    def test_delete_destination_removes_from_relation_collection(self):
+        dest = Destination.query.first()
+        db_session.delete(dest)
+        db_session.commit()
+
+        transform = Transform.query.first()
+        self.assertEqual(len(transform.for_destinations), 0)
+
+        self.assertEqual(db_session.query(BaseModel.metadata.tables["transform_destinations"]).count(), 0)
+
+    def test_delete_transform_deletes_association_record(self):
+        transform = Transform.query.first()
+        db_session.delete(transform)
+        db_session.commit()
+
+        self.assertEqual(db_session.query(BaseModel.metadata.tables["transform_destinations"]).count(), 0)
+        self.assertEqual(Destination.query.count(), 1)

@@ -23,6 +23,17 @@ from .base import BaseModel, JSONEncodedDict, MutableDict, TrackEditsMixin
 from ..util import transform_of_type
 
 
+transform_destination_association = sa.Table(
+    "transform_destinations",
+    BaseModel.metadata,
+    sa.Column("transform_from_data_source_id", sa.types.Integer),
+    sa.Column("transform_id", sa.types.Integer),
+    sa.Column("destination_id", sa.types.Integer, sa.ForeignKey("destinations.id", ondelete="CASCADE")),
+    sa.ForeignKeyConstraint(
+        ("transform_from_data_source_id", "transform_id"),
+        ("url_transforms.from_data_source_id", "url_transforms.transform_id")))
+
+
 class Transform(BaseModel, TrackEditsMixin):
 
     __tablename__ = "url_transforms"
@@ -41,6 +52,9 @@ class Transform(BaseModel, TrackEditsMixin):
     to_data_source = sa.orm.relationship("DataSource",
                                          backref=backref("targeting_transforms", cascade="all, delete-orphan"),
                                          foreign_keys=[to_data_source_id])
+
+    for_destinations = sa.orm.relationship("Destination",
+                                           secondary=transform_destination_association)
 
     preference_order = sa.Column(sa.types.Integer(), nullable=False)
 
