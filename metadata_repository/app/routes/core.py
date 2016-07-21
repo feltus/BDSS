@@ -52,6 +52,7 @@ def transfers():
     results = []
     if request.method == "POST":
         error_message = None
+        error_details = None
         if form.validate():
             try:
                 destination = None
@@ -65,9 +66,10 @@ def transfers():
                 error_message = "Unable to find transfers"
         else:
             error_message = "Validation error"
+            error_details = form.errors
 
         if request.headers.get("Accept") == "application/json":
-            return jsonify(transfers=results, error={"message": error_message})
+            return jsonify(transfers=results, error=dict(message=error_message, details=error_details))
         elif error_message:
             flash(error_message, "danger")
 

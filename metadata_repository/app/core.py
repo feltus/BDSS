@@ -67,6 +67,11 @@ def find_transfers(url, available_mechanisms, destination=None):
 
     # For all matching data sources, apply all transforms
     for transform in data_source.transforms:
+
+        if transform.for_destinations:
+            if not destination or destination not in transform.for_destinations:
+                continue
+
         transformed_url = transform.transform_url(url)
 
         # If transformed URL matches target data source, add to results
