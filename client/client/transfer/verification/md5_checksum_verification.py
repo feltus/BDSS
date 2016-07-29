@@ -39,10 +39,11 @@ def _md5_checksum_url(data_file_url):
     return urlunparse((p.scheme, p.netloc, p.path + ".md5", p.params, p.query, p.fragment))
 
 
-def _get_checksum(checksum_url, mechanism_name, mechanism_options):
+def _get_checksum(checksum_url, mechanism_name, mechanism_options, data_source_id=None):
     checksum_transfer = Transfer(checksum_url,
                                  mechanism_name,
-                                 mechanism_options)
+                                 mechanism_options,
+                                 data_source_id)
 
     checksum_data = checksum_transfer.get_data(display_output=False)
     return checksum_data.decode().strip().lower()
@@ -62,7 +63,8 @@ def verify_transfer(transfer, output_path):
 
     correct_checksum = _get_checksum(checksum_url,
                                      transfer.mechanism_name,
-                                     transfer.mechanism_options)
+                                     transfer.mechanism_options,
+                                     transfer.data_source_id)
 
     if not _validate_md5_checksum(correct_checksum):
         raise ValueError("Fetched value is not a valid MD5 checksum")
