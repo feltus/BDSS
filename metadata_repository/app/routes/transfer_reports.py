@@ -49,7 +49,7 @@ def report_transfer():
             report = TransferReport(
                 data_source_id=data_source.id,
                 report_id=max([r.report_id for r in data_source.transfer_reports] + [0]) + 1,
-                destination=destination,
+                destination_id=destination.id,
                 url=form.url.data,
                 file_size_bytes=form.file_size_bytes.data,
                 transfer_duration_seconds=form.transfer_duration_seconds.data,
