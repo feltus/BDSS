@@ -20,7 +20,7 @@ import requests
 import textwrap
 
 from .mechanisms import default_mechanism
-from ..config import metadata_repository_url
+from ..config import client_destination, metadata_repository_url
 
 
 class TransferReport():
@@ -86,15 +86,20 @@ def send_report(report):
     Parameters:
     report - TransferReport
     """
-    requests.post(metadata_repository_url + "/transfer_reports",
-                  data={
-                      "url": report.url,
-                      "file_size_bytes": report.size,
-                      "transfer_duration_seconds": report.duration,
-                      "is_success": report.success,
-                      "mechanism_output": report.mechanism_output,
-                      "file_checksum": report.checksum
-                  })
+
+    report_data = dict(
+        url=report.url,
+        file_size_bytes=report.size,
+        transfer_duration_seconds=report.duration,
+        is_success=report.success,
+        mechanism_output=report.mechanism_output,
+        file_checksum=report.checksum
+    )
+
+    if client_destination:
+        report_data["destination"] = client_destination
+
+    requests.post(metadata_repository_url + "/transfer_reports", data=report_data)
 
 
 class ReportsFile():

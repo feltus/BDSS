@@ -23,7 +23,7 @@ import traceback
 
 import requests
 
-from ..config import metadata_repository_url
+from ..config import client_destination, metadata_repository_url
 from ..transfer.base import Transfer
 from ..transfer.data import run_data_transfer
 from ..transfer.mechanisms import available_mechanisms
@@ -75,6 +75,8 @@ def get_transfers(url, mechanisms):
 
     data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(mechanisms)}
     data["url"] = url
+    if client_destination:
+        data["destination"] = client_destination
 
     logger.info("Requesting transfers for %s" % url)
     try:

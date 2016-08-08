@@ -25,3 +25,5 @@ config.read_string(resource_string(__name__, "defaults.cfg").decode("utf-8"))
 config.read([os.path.expanduser("~/.bdss.cfg"), "bdss.cfg"])
 
 metadata_repository_url = config.get("metadata_repository", "url").rstrip("/")
+
+client_destination = config.get("client", "location", fallback=None)
