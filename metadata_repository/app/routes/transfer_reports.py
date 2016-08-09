@@ -42,14 +42,15 @@ def report_transfer():
     error_message = None
     if form.validate():
         data_source = matching_data_source(form.url.data)
-        destination = None
+        destination_id = None
         if form.destination.data:
             destination = Destination.query.filter(Destination.label == form.destination.data).first()
+            destination_id = destination.id
         if data_source:
             report = TransferReport(
                 data_source_id=data_source.id,
                 report_id=max([r.report_id for r in data_source.transfer_reports] + [0]) + 1,
-                destination_id=destination.id,
+                destination_id=destination_id,
                 url=form.url.data,
                 file_size_bytes=form.file_size_bytes.data,
                 transfer_duration_seconds=form.transfer_duration_seconds.data,
