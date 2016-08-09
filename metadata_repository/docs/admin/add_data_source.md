@@ -1,14 +1,16 @@
 # Add a Data Source
 
-1. From the home screen, click "Add New Data Source". You must have administrator rights in order
+1. Click "Data Sources" in the navigation bar.
+
+2. At the bottom of the list, click "Add New Data Source". You must have administrator rights in order
    to see this link.
 
-2. Enter a label for the new data source and an optional description.
+3. Enter a label for the new data source and an optional description.
 
-3. Select the transfer mechanism used to retrieve files from this source and configure available options.
+4. Select the transfer mechanism used to retrieve files from this source and configure available options.
    See the documentation for individual transfer mechanisms for more information.
 
-4. Submit the form. You will be redirected to a page displaying information about the new source.
+5. Submit the form. You will be redirected to a page displaying information about the new source.
 
    From this page, you can edit the information you just entered by clicking "Edit this data source" or
    delete the source entirely (click "Delete this data source").

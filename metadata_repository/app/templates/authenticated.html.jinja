@@ -26,13 +26,10 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
-                    {#
                     {% block nav %}
                         {% with routes = [
-                                ('jobs.jobs_index', 'View All Jobs'),
-                                ('jobs.submit_page', 'Submit Job'),
-                                ('credentials.list_credentials', 'Credentials'),
-                                ('destinations.list_destinations', 'Data Destinations')
+                                ('data_sources.list_data_sources', 'Data Sources'),
+                                ('destinations.list_destinations', 'Destinations')
                             ]
                         %}
                             {% for endpoint, label in routes %}
@@ -44,7 +41,6 @@
                             {% endfor %}
                         {% endwith %}
                     {% endblock %}
-                    #}
                 </ul>
 
             </div>
