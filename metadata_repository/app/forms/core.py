@@ -18,15 +18,15 @@
 
 import wtforms
 
+from ..util import available_transfer_mechanism_types, label_for_transfer_mechanism_type
+
 
 class FindTransfersForm(wtforms.Form):
 
-    available_mechanisms = wtforms.fields.FieldList(
-        wtforms.fields.StringField(
-            label="Mechanism",
-            validators=[wtforms.validators.InputRequired()]),
+    available_mechanisms = wtforms.fields.SelectMultipleField(
         label="Available Mechanisms",
-        min_entries=1)
+        choices=[(mech, label_for_transfer_mechanism_type(mech)) for mech in available_transfer_mechanism_types()],
+        validators=[wtforms.validators.InputRequired()])
 
     destination = wtforms.fields.SelectField(
         label="Destination",

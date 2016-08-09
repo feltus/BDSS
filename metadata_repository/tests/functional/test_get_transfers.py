@@ -96,7 +96,7 @@ class TestGetTransfers(BaseTestCase):
             r = client.post("/transfers",
                             data={
                                 "url": "http://example.com/file.txt",
-                                "available_mechanisms-0": "curl"
+                                "available_mechanisms": ["curl"]
                             },
                             headers=dict(Accept="application/json"),
                             follow_redirects=True)
@@ -118,7 +118,7 @@ class TestGetTransfers(BaseTestCase):
             r = client.post("/transfers",
                             data={
                                 "url": "http://example.com/file.txt",
-                                "available_mechanisms-0": "curl",
+                                "available_mechanisms": ["curl"],
                                 "destination": "Test Destination"
                             },
                             headers=dict(Accept="application/json"),
