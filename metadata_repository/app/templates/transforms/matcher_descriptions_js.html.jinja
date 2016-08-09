@@ -2,6 +2,9 @@
 var update_matcher_descriptions = function() {
     var s = $('#to_data_source_id');
     var target_source_id = s.val();
+    if (target_source_id == null) {
+        return;
+    }
     var group = s.closest('.form-group');
     $.ajax({
         url: '/data_sources/' + target_source_id + '/matchers',
