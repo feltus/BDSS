@@ -20,4 +20,9 @@ url=http://localhost:5000
 
 * `metadata_repository`
 
-    * `url` The URL of the metadata repository to use. Defaults to http://bdss.bioinfo.wsu.edu/.
+   * `url` **Required**. The URL of the metadata repository to use. Defaults to http://bdss.bioinfo.wsu.edu/.
+
+* `client`
+
+   * `location` Optional. The location where the client is running. This must match the label of a
+   [destination](/metadata_repository/docs/DataModel.md#destination) in the metadata repository.
