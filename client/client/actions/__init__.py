@@ -16,6 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+from . import check_configuration_action
 from . import mechanisms_action
 from . import sources_action
 from . import test_files_action
@@ -24,6 +25,7 @@ from . import version_action
 
 
 _actions = {
+    "check_conf": check_configuration_action,
     "mechanisms": mechanisms_action,
     "sources": sources_action,
     "test_files": test_files_action,

@@ -20,7 +20,7 @@ import math
 import traceback
 import wtforms
 
-from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
+from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import login_required
 
 from .auth import admin_required
@@ -33,11 +33,14 @@ routes = Blueprint("destinations", __name__)
 
 
 @routes.route("/destinations")
-@login_required
 def list_destinations():
     """
     List all destinations in database.
     """
+    if "application/json" in request.headers["Accept"]:
+        destinations = Destination.query.all()
+        return jsonify(destinations=[{"id": d.id, "label": d.label} for d in destinations])
+
     page_num = int(request.args.get("page", 1))
     num_per_page = 10
     destinations = Destination.query.limit(num_per_page).offset((page_num - 1) * num_per_page).all()
