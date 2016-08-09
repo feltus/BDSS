@@ -91,13 +91,14 @@ def find_transfers(url, available_mechanisms, destination=None):
             # FIXME: This should be a log
             print("Transformed URL did not match target data source", file=sys.stderr)
 
-    # Add a transfer from the original data source
-    original_transfer = Transfer(
-        url=url,
-        mechanism_name=data_source.transfer_mechanism_type,
-        mechanism_options=data_source.transfer_mechanism_options,
-        data_source_id=data_source.id)
+    # Add a transfer from the original data source, if the mechanism is available
+    if data_source.transfer_mechanism_type in available_mechanisms:
+        original_transfer = Transfer(
+            url=url,
+            mechanism_name=data_source.transfer_mechanism_type,
+            mechanism_options=data_source.transfer_mechanism_options,
+            data_source_id=data_source.id)
 
-    transfers.append(original_transfer)
+        transfers.append(original_transfer)
 
     return transfers
