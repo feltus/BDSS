@@ -73,8 +73,10 @@ def output_file_name(url):
 def get_transfers(url, mechanisms):
     transfers = []
 
-    data = {"available_mechanisms-" + str(i): mech for i, mech in enumerate(mechanisms)}
-    data["url"] = url
+    data = dict(
+        available_mechanisms=mechanisms,
+        url=url
+    )
     if client_destination:
         data["destination"] = client_destination
 
