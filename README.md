@@ -1,4 +1,4 @@
-###What is the Big Data Smart Socket (BDSS)?
+# What is the Big Data Smart Socket (BDSS)?
 
 The increasing size of datasets used in scientific computing has made it difficult or impossible for a researcher
 to store all their data at the compute site they are using to process it. This has necessitated that a data transfer
@@ -12,18 +12,14 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
 
 1. **[Metadata repository server](/metadata_repository/README.md)**
    * Central database managed by data curators
-   * Maps URLs of data files to alternate sources
-   * Includes information about the BDSS transfer client to use to access the data
+   * Matches patterns of data file URLs and maps them to alternate sources
+   * Includes information about the transfer tool to use to retrieve the data
 
 2. **[BDSS transfer client](/client/README.md)**
    * Consumes information from metadata repository
-   * Invokes transfer clients
+   * Invokes transfer tools
    * Reports analytics to metadata repository
 
 3. **[Integration as a Galaxy data transfer tool](/galaxy_tool/README.md)**
 
 **[NCBI Download Example Usage](NCBIExample.md)**
-
-   
-
-

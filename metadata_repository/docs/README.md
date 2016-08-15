@@ -1,6 +1,6 @@
 # Overview
 
-The BDSS metadata repository maps URLs of data files to alternate sources for the same file.
+The BDSS metadata repository matches patterns of data file URLs and maps them to alternate sources for the same file.
 
 * [Data Model](/metadata_repository/docs/DataModel.md)
 * [Workflow for requesting alternate data sources](/metadata_repository/docs/core_workflow)
