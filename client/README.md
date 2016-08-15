@@ -1,5 +1,3 @@
-# Table of Contents
+# BDSS Client
 
-* [Installation](/client/docs/Installation.md)
-* [Configuration](/client/docs/Configuration.md)
-* [Usage](/client/docs/Usage.md)
+[See documentation in the docs folder](/client/docs)
