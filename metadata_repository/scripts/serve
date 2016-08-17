@@ -21,7 +21,15 @@ from app.models import BaseModel, db_engine
 
 args = {
     "debug": True,
+    "extra_files": []
 }
+
+extra_dirs = ["./app/templates"]
+for extra_dir in extra_dirs:
+    for dirname, _, files in os.walk(extra_dir):
+        for filename in files:
+            filename = os.path.join(dirname, filename)
+            args["extra_files"].append(filename)
 
 if len(sys.argv) > 1 and sys.argv[1] == "--public":
     args["host"] = "0.0.0.0"
