@@ -16,6 +16,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+import json
+
 from .base import BaseTestCase
 
 from app.models import Destination
@@ -33,6 +35,25 @@ class TestDestinations(BaseTestCase):
             r = client.get("/destinations", follow_redirects=True)
 
             self.assertTrue(b"Test Destination" in r.data)
+
+    def test_list_destinations_json(self):
+        with self.client as client:
+            self.loginTestUser()
+
+            d1 = Destination(label="Destination 1")
+            d2 = Destination(label="Destination 2")
+            self.addToDatabase(d1, d2)
+
+            r = client.get("/destinations",
+                           follow_redirects=True,
+                           headers=dict(accept="application/json"))
+
+            r = json.loads(r.get_data(as_text=True))
+
+            self.assertEqual(len(r["destinations"]), 2)
+            labels = [d["label"] for d in r["destinations"]]
+            self.assertIn("Destination 1", labels)
+            self.assertIn("Destination 2", labels)
 
     def test_add_destination(self):
         with self.client as client:
