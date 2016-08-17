@@ -29,7 +29,8 @@
                     {% block nav %}
                         {% with routes = [
                                 ('data_sources.list_data_sources', 'Data Sources'),
-                                ('destinations.list_destinations', 'Destinations')
+                                ('destinations.list_destinations', 'Destinations'),
+                                ('configuration.index', 'Import/Export')
                             ]
                         %}
                             {% for endpoint, label in routes %}

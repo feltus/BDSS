@@ -1,0 +1,31 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}Metadata Repository Configuration{% endblock %}
+
+{% block content %}
+<h2 style="font-size:20px;">Export</h2>
+<p>Export configuration to file. Includes:
+    <ul>
+        <li>Data sources
+            <ul>
+                <li>Transfer Mechanism</li>
+                <li>URL Matchers</li>
+                <li>Transforms</li>
+                <li>Test Files</li>
+            </ul>
+        </li>
+        <li>Destinations</li>
+    </ul>
+    <a class="btn btn-primary" download="md_repo_config.json" href="{{ url_for('configuration.export_configuration') }}">Download Configuration</a>
+</p>
+
+{%- if current_user.is_admin -%}
+    <hr>
+    <h2 style="font-size:20px;">Import</h2>
+    <p>Import configuration from file.</p>
+    <a class="btn btn-primary" href="{{ url_for('configuration.import_configuration') }}">Upload Configuration</a>
+{%- endif -%}
+
+<hr>
+<p style="margin-top:20px;"><a href="{{ url_for('core.index') }}"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></p>
+{% endblock %}

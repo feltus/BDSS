@@ -1,0 +1,18 @@
+{% extends "authenticated.html.jinja" %}
+
+{% block page_header %}Import Configuration{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('configuration.import_configuration') }}" enctype="multipart/form-data" method="POST">
+    <div class="form-group {% if error %}has-error{% endif %}">
+        <label for="conf_file">Configuration File</label>
+        <input name="conf_file" type="file">
+        {%- if error -%}
+            <p class="help-block">{{ error }}</p>
+        {%- endif -%}
+    </div>
+    <input class="btn btn-primary" type="submit" value="Import">
+</form>
+<hr>
+<p style="margin-top:20px;"><a href="{{ url_for('configuration.index') }}"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></p>
+{% endblock %}

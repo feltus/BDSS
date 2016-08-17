@@ -19,6 +19,7 @@
 # flake8: noqa
 
 from .auth import routes as auth_routes
+from .configuration import routes as configuration_routes
 from .core import routes as core_routes
 from .data_sources import routes as data_source_routes
 from .destinations import routes as destination_routes
