@@ -37,7 +37,7 @@ def list_destinations():
     """
     List all destinations in database.
     """
-    if "application/json" in request.headers["Accept"]:
+    if "application/json" in request.headers.getlist("Accept"):
         destinations = Destination.query.all()
         return jsonify(destinations=[{"id": d.id, "label": d.label} for d in destinations])
 
