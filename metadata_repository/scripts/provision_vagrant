@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 
-# Provision server for metadata repository
+# Provision Ubuntu 16.04 server for metadata repository
+
+set -e
 
 apt-get update
 
-# BDSS dependencies
-apt-get install --assume-yes python3-dev libffi-dev
-
-# Install pip dependencies for BDSS
-wget "https://bootstrap.pypa.io/get-pip.py"
-python3 ./get-pip.py
-pip install --requirement /vagrant/requirements.txt
-
+# ======================================================
 # PostgreSQL
+# ======================================================
+
 apt-get install --assume-yes postgresql postgresql-contrib
 
 PG_VERSION=$(psql --version | awk '{ print $3 }' | awk 'BEGIN { FS="." } ; { print $1"."$2 }')
@@ -44,20 +41,45 @@ CREATE DATABASE $DB_NAME WITH OWNER=$DB_USER
                                  TEMPLATE=template0;
 EOF
 
-pip install psycopg2
+# ======================================================
+# Python
+# ======================================================
 
-# Install Apache
+apt-get install --assume-yes python3-dev libffi-dev python3-pip
+pip3 install --upgrade pip
+
+# ======================================================
+# Apache
+# ======================================================
+
 apt-get install --assume-yes apache2 apache2-dev
 
 # Install mod_wsgi (apt-get repo version is outdated)
-pip install mod_wsgi
+pip3 install mod_wsgi
 /usr/local/bin/mod_wsgi-express install-module
-echo "LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi-py34.cpython-34m.so" > /etc/apache2/mods-available/wsgi_express.load
+echo "LoadModule wsgi_module $(/usr/local/bin/mod_wsgi-express module-location)" > /etc/apache2/mods-available/wsgi_express.load
 echo "WSGIPythonHome /usr" > /etc/apache2/mods-available/wsgi_express.conf
 a2enmod wsgi_express
+service apache2 restart
 
-# Remove default Apache configuration
-rm /etc/apache2/sites-enabled/000-default.conf
+# ======================================================
+# BDSS
+# ======================================================
+
+pip3 install --requirement /vagrant/requirements.txt
+
+# Configure
+cd /vagrant
+cat <<EOF > .env
+DATABASE_URL=postgresql+psycopg2://bdss:bdss@localhost/bdss
+SESSION_KEY=$(python3 ./scripts/generate_flask_key)
+EOF
+
+# Create database schema
+apt-get install --assume-yes libpq-dev
+pip3 install psycopg2
+cd /vagrant
+sh ./scripts/with_dotenv alembic upgrade head
 
 # Apache configuration for BDSS
 cat > /etc/apache2/sites-available/bdss.conf <<EOF
@@ -74,7 +96,7 @@ EnableSendfile Off
     Alias /static/ /vagrant/app/static/
 
     WSGIDaemonProcess bdss user=www-data group=www-data processes=1 threads=5 \\
-        python-path=/usr/local/lib/python3.4/dist-packages:/vagrant
+        python-path=/usr/local/lib/python3.5/dist-packages:/vagrant
     WSGIScriptAlias / /vagrant/app.wsgi
     WSGIProcessGroup bdss
     WSGIApplicationGroup %{GLOBAL}
@@ -83,14 +105,6 @@ EnableSendfile Off
 </VirtualHost>
 EOF
 
-ln --symbolic /etc/apache2/sites-available/bdss.conf /etc/apache2/sites-enabled/bdss.conf
-
-# Configuration
-sed -i 's/os.environ\["DATABASE_URL"\] = .*/os.environ["DATABASE_URL"] = "postgresql+psycopg2:\/\/bdss:bdss@localhost\/bdss"/' app.wsgi
-sed -i "s/os.environ\\[\"SESSION_KEY\"\\] = .*/os.environ[\"SESSION_KEY\"] = \"$(./scripts/generate_flask_key)\"/" app.wsgi
-
-# Create database schema
-cd /vagrant
-alembic upgrade head
-
-apachectl graceful
+a2dissite 000-default
+a2ensite bdss
+service apache2 reload
