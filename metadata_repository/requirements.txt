@@ -14,10 +14,12 @@ Jinja2==2.8
 Mako==1.0.4
 MarkupSafe==0.23
 mccabe==0.5.0
+ordereddict==1.1
 passlib==1.6.5
 pycodestyle==2.0.0
 pycparser==2.14
 pyflakes==1.2.3
+python-dotenv==0.5.1
 python-editor==1.0.1
 simplejson==3.8.2
 six==1.10.0

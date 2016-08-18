@@ -7,6 +7,7 @@ Flask
 flask-jsontools
 Flask-Login
 passlib
+python-dotenv
 simplejson
 SQLAlchemy
 WTForms

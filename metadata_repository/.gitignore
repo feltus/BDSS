@@ -1,6 +1,6 @@
 __pycache__
 
-app/app_config.yml
+.env
 
 *.sqlite
 pgdata

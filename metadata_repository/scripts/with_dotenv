@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Run a command with the environment variables specified in the .env file.
+
+set -e
+
+SCRIPTS_DIR=$(cd $(dirname $0); pwd -P)
+PROJECT_DIR=$(cd "${SCRIPTS_DIR}/.."; pwd -P)
+
+env $(cat "$PROJECT_DIR/.env" | grep -v '^#' | xargs) "$@"

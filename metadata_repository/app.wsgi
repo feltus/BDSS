@@ -4,10 +4,15 @@ import logging
 import os
 import sys
 
-logging.basicConfig(stream=sys.stderr)
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from dotenv import load_dotenv
 
-os.environ["DATABASE_URL"] = ""
-os.environ["SESSION_KEY"] = ""
+
+logging.basicConfig(stream=sys.stderr)
+
+containing_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, containing_dir)
+
+load_dotenv(os.path.join(containing_dir, ".env"))
+
 
 from app import app as application
