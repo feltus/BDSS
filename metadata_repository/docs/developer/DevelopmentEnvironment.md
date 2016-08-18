@@ -1,5 +1,77 @@
 # Development Environment
 
+Options for development environment:
+* [Manual](#manual)
+* [Docker](#docker)
+* [Vagrant](#vagrant)
+
+## Manual
+
+To manually set up a development environment, follow these steps:
+
+1. [Install Python 3.4+](http://docs.python-guide.org/en/latest/starting/installation/).
+
+1. Create a [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/).
+   ```Shell
+   cd /path/to/bdss/metadata_repository
+   virtualenv -p /path/to/python3 venv
+   ```
+
+1. Activate the virtualenv.
+   ```Shell
+   source venv/bin/activate
+   ```
+
+1. Install requirements.
+   ```Shell
+   pip install -r requirements.txt
+   ```
+
+1. Configure the application.
+   Create a `.env` file in the `metadata_repository` directory and add the following:
+   ```
+   DATABASE_URL=
+   SESSION_KEY=
+   ```
+
+   The values for the options will depend on your specific configuration.
+
+   * DATABASE_URL - Location of the database to use. See the
+     [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls) for more
+     information. If you use a path to an SQLite database, it will be automatically created if it doesn't exist.
+     For other database types, you may have to install an additional driver.
+
+   * SESSION_KEY - Secret key for [Flask sessions](http://flask.pocoo.org/docs/latest/quickstart/#sessions). To
+     generate a random key, run `dotenv set SESSION_KEY $(./scripts/generate_flask_key)`.
+
+1. Create the database schema. The `with_dotenv` script loads environment variables from the `.env` file created
+   in the last step.
+
+   This project uses [Alembic](https://alembic.readthedocs.org/en/latest/) for database migrations.
+   To migrate your database to the latest version, run:
+
+   ```Shell
+   ./scripts/with_dotenv ./scripts/run_migrations
+   ```
+
+   Alternatively, you can create a database with the current schema by running:
+   ```Shell
+   ./scripts/with_dotenv ./scripts/create_db
+   ```
+   This will be necessary if using an SQLite database, as SQLite does not support some of the operations performed
+   by the migrations.
+
+1. Start the development server.
+
+   ```Shell
+   ./scripts/with_dotenv ./scripts/serve
+   ```
+
+   By default, this server will only be accessible at `localhost`. To make it publicly accessible, run
+   the script with the `--public` option.
+
+1. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
+
 ## Docker
 
 Install [Docker](https://www.docker.com/products/docker) and [Docker Compose](https://docs.docker.com/compose/install/).
@@ -42,80 +114,20 @@ Alternatively, you can launch an instance of the metadata repository in a virtua
 configured to use [PostgreSQL](http://www.postgresql.org/) for the database and
 [Apache](https://httpd.apache.org/) with [mod_wsgi](https://modwsgi.readthedocs.io/) for the web server.
 
-**Note**: The VM provision script sets environment variables in `app.wsgi`. Be careful about committing them to
-version control.
-
 1. Install VirtualBox and Vagrant
 
    * [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
    * [Vagrant](http://docs.vagrantup.com/v2/installation/index.html)
 
-2. Launch VM
+1. Launch VM
 
    ```Shell
    cd /path/to/bdss/metadata_repository
    vagrant up
    ```
 
-3. Open [http://localhost:8000](http://localhost:8000) in a web browser.
+1. Open [http://localhost:8000](http://localhost:8000) in a web browser.
 
    Port 8000 is forwarded to the VM's port 80.
 
-4. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
-
-## Manual
-
-To manually set up a development environment, follow these steps:
-
-1. [Install Python 3.4+](http://docs.python-guide.org/en/latest/starting/installation/).
-
-2. Create a [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/).
-
-   ```Shell
-   cd /path/to/bdss/metadata_repository
-   virtualenv -p /path/to/python3 venv
-   ```
-
-3. Activate the virtualenv.
-
-   ```Shell
-   source venv/bin/activate
-   ```
-
-4. Install requirements.
-
-   ```Shell
-   pip install -r requirements.txt
-   ```
-
-5. Configure the application.
-
-   Two configuration values are read from environment variables:
-
-   * DATABASE_URL - Location of the database to use. See the
-     [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls) for more
-     information. If you use a path to an SQLite database, it will be automatically created if it doesn't exist.
-     For other database types, you may have to install an additional driver.
-
-   * SESSION_KEY - Secret key for [Flask sessions](http://flask.pocoo.org/docs/0.10/quickstart/#sessions). To
-     generate a random key, run `./scripts/generate_flask_key`.
-
-6. Create the database schema.
-
-   This project uses [Alembic](https://alembic.readthedocs.org/en/latest/) for database migrations.
-   To migrate your database to the latest version, run:
-
-   ```Shell
-   alembic upgrade head
-   ```
-
-7. Start the development server.
-
-   ```Shell
-   ./scripts/serve
-   ```
-
-   By default, this server will only be accessible at `localhost`. To make it publicly accessible, run
-   the script with the `--public` option.
-
-8. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
+1. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
