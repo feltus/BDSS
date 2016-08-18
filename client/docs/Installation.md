@@ -2,25 +2,22 @@
 
 The BDSS client requires Python 3.4+.
 
-## Development
+## Install from PyPI
+
+_Not available yet_ (See [#105](https://github.com/feltus/BDSS/issues/105))
 
 ```Shell
-git clone https://github.com/feltus/BDSS.git
-cd BDSS/client
-python3 setup.py develop
+pip3 install bdss-client
 ```
 
 See Python's [documentation on installing modules](https://docs.python.org/3/install/) for more information.
 A [virtualenv](https://virtualenv.pypa.io/en/stable/) may be be useful for isolating from other projects
 or on a shared host where you don't have permission to install in the global `site-packages` directory.
 
-## Install from PyPI
+## Transfer mechanisms
 
-_Not available yet_ (See [#105](https://github.com/feltus/BDSS/issues/105))
-
-```Shell
-pip install bdss-client
-```
+The BDSS client invokes other programs to transfer files. These must be installed individually. See the
+[list of supported transfer mechanisms](/client/docs/transfer_mechanisms/README.md) for more information.
 
 ## Stand alone executable
 
@@ -64,10 +61,13 @@ On Debian/Ubuntu:
 apt-get install openssl libssl-dev
 ```
 
-## Transfer mechanisms
+## Development
 
-The BDSS client invokes other programs to transfer files. These must be installed individually. See the
-[list of supported transfer mechanisms](/client/docs/transfer_mechanisms/README.md) for more information.
+```Shell
+git clone https://github.com/feltus/BDSS.git
+cd BDSS/client
+python3 setup.py develop
+```
 
 ## Docker
 

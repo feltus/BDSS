@@ -6,7 +6,7 @@ This will show a list of available actions to take. Run `bdss <action> -h` to re
 
 ## Docker
 
-To run bdss from the Docker container:
+To run bdss from the [Docker container](/client/docs/Installation.md#docker):
 
 ```Shell
 docker run --rm --interactive --tty --volume="$PWD":/wd --workdir=/wd bdss-client help
