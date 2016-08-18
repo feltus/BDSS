@@ -82,6 +82,8 @@ cd /vagrant
 sh ./scripts/with_dotenv alembic upgrade head
 
 # Apache configuration for BDSS
+PYTHON_VERSION=$(python3 --version 2>&1 | awk '{ print $2 }' | awk -F. '{ print $1"."$2 }')
+
 cat > /etc/apache2/sites-available/bdss.conf <<EOF
 
 # http://docs.vagrantup.com/v2/synced-folders/virtualbox.html
@@ -96,7 +98,7 @@ EnableSendfile Off
     Alias /static/ /vagrant/app/static/
 
     WSGIDaemonProcess bdss user=www-data group=www-data processes=1 threads=5 \\
-        python-path=/usr/local/lib/python3.5/dist-packages:/vagrant
+        python-path=/usr/local/lib/python${PYTHON_VERSION}/dist-packages:/vagrant
     WSGIScriptAlias / /vagrant/app.wsgi
     WSGIProcessGroup bdss
     WSGIApplicationGroup %{GLOBAL}
