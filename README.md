@@ -10,16 +10,26 @@ transferring data over wireless networks, etc.
 BDSS aims to alleviate this problem by shifting the burden of learning about alternative file mirrors, transfer
 clients, tuning parameters, etc. from the end user researcher to a group of "data curators". It consists of three parts:
 
-1. **[Metadata repository server](/metadata_repository/README.md)**
+## Components
+
+* Metadata repository
    * Central database managed by data curators
    * Matches patterns of data file URLs and maps them to alternate sources
    * Includes information about the transfer tool to use to retrieve the data
 
-2. **[BDSS transfer client](/client/README.md)**
+* BDSS transfer client
    * Consumes information from metadata repository
    * Invokes transfer tools
    * Reports analytics to metadata repository
 
-3. **[Integration as a Galaxy data transfer tool](/galaxy_tool/README.md)**
+* Integration as a [Galaxy](https://galaxyproject.org/) data transfer tool
 
-**[NCBI Download Example Usage](NCBIExample.md)**
+## Get Started
+
+* Moving data with the BDSS client:
+   * [From the command line](/client/docs)
+   * [From Galaxy](/galaxy_tool/README.md)
+* [Managing an existing metadata repository](/metadata_repository/docs/README.md#administrator-documentation)
+* Setting up a new metadata repository
+   * [For development or testing](/metadata_repository/docs/developer/DevelopmentEnvironment.md)
+   * [For production use](/metadata_repository/docs/Installation.md)
