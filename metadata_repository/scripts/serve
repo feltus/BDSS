@@ -7,34 +7,24 @@ import sys
 project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, project_dir)
 
-init_db = False
-if not os.getenv("DATABASE_URL"):
-    db_file_path = os.path.join(project_dir, "dev.sqlite")
-    os.environ["DATABASE_URL"] = "sqlite:///%s" % db_file_path
-    if not os.path.exists(db_file_path):
-        init_db = True
 
 from app import app as application
 
 from app.config import database_url
 from app.models import BaseModel, db_engine
 
-args = {
-    "debug": True,
-    "extra_files": []
-}
-
-extra_dirs = ["./app/templates"]
-for extra_dir in extra_dirs:
-    for dirname, _, files in os.walk(extra_dir):
-        for filename in files:
-            filename = os.path.join(dirname, filename)
-            args["extra_files"].append(filename)
-
-if len(sys.argv) > 1 and sys.argv[1] == "--public":
-    args["host"] = "0.0.0.0"
 
 if __name__ == "__main__":
-    if init_db:
-        BaseModel.metadata.create_all(bind=db_engine)
+    args = dict(debug=True, extra_files=[])
+
+    extra_dirs = [os.path.join(project_dir, "app/templates")]
+    for extra_dir in extra_dirs:
+        for dirname, _, files in os.walk(extra_dir):
+            for filename in files:
+                filename = os.path.join(dirname, filename)
+                args["extra_files"].append(filename)
+
+    if "--public" in sys.argv[1:]:
+        args["host"] = "0.0.0.0"
+
     application.run(**args)
