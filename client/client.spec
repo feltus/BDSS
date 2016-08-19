@@ -23,8 +23,7 @@ a = Analysis(["run.py"],
              pathex=[],
              binaries=None,
              datas=[
-                ("client/defaults.cfg", "client"),
-                ("client/transfer/script_template.py", "client/transfer")
+                ("client/defaults.cfg", "client")
              ],
              hiddenimports=[],
              hookspath=[],
