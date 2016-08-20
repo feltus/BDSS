@@ -79,7 +79,7 @@ pip install --upgrade pip
 
 cd "${CLIENT_DIR}"
 pip install -r requirements.txt
-pip install pyinstaller
+pip install pyinstaller==3.2
 
 pyinstaller --clean --onefile client.spec
 
