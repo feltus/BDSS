@@ -25,7 +25,7 @@ a = Analysis(["run.py"],
              datas=[
                 ("client/defaults.cfg", "client")
              ],
-             hiddenimports=[],
+             hiddenimports=["six"],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
