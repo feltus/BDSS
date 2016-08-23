@@ -32,7 +32,7 @@ class AsperaMechanism(SimpleSubprocessMechanism):
     def transfer_program(cls):
         return "ascp"
 
-    def _transfer_command(self, url, output_path):
+    def transfer_command(self, url, output_path):
 
         default_path_to_key = os.path.expandvars(os.path.join("$HOME", ".aspera", "connect", "etc", "asperaweb_id_dsa.openssh"))
         args = ["-i", default_path_to_key]
