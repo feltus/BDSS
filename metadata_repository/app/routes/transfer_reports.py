@@ -45,7 +45,8 @@ def report_transfer():
         destination_id = None
         if form.destination.data:
             destination = Destination.query.filter(Destination.label == form.destination.data).first()
-            destination_id = destination.id
+            if destination:
+                destination_id = destination.id
         if data_source:
             report = TransferReport(
                 data_source_id=data_source.id,
