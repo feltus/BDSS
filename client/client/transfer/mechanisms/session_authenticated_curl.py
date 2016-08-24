@@ -45,7 +45,7 @@ class SessionAuthenticatedCurlMechanism(BaseMechanism):
     def user_input_options(self):
         return [
             UserInputOption("username", self.username_prompt),
-            UserInputOption("password", self.password_prompt)
+            UserInputOption("password", self.password_prompt, hide_input=True)
         ]
 
     def transfer_file(self, url, output_path, display_output=True):

@@ -16,6 +16,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+from getpass import getpass
+
 from voluptuous import Invalid, Required, Schema
 
 from ...util import is_program_on_path, run_subprocess
@@ -23,19 +25,24 @@ from ...util import is_program_on_path, run_subprocess
 
 class UserInputOption():
 
-    def __init__(self, key, prompt=None, validation=str):
+    def __init__(self, key, prompt=None, validation=str, hide_input=False):
         self.key = key
         self.prompt = prompt
         if not self.prompt:
             self.prompt = "%s? " % self.key
         self.validation = validation
+        self.hide_input = hide_input
 
     def prompt_for_value(self):
         validate = Schema({Required("value"): self.validation})
         value_valid = False
+        value = None
         while not value_valid:
             try:
-                value = input(self.prompt)
+                if self.hide_input:
+                    value = getpass(self.prompt)
+                else:
+                    value = input(self.prompt)
                 validate({"value": value})
                 value_valid = True
             except Invalid as e:
