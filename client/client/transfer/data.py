@@ -39,8 +39,7 @@ def run_data_transfer(transfer, output_path):
     Returns:
     TransferReport - Report describing result of transfer.
     """
-    logger.debug("Data file transfer")
-    logger.debug(transfer)
+    logger.info("Transferring %s with %s", transfer.url, transfer.mechanism_name)
 
     report = TransferReport()
     report.url = transfer.url

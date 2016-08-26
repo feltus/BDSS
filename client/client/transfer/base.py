@@ -17,7 +17,6 @@
 #
 
 import logging
-import textwrap
 
 from tempfile import NamedTemporaryFile
 
@@ -112,12 +111,8 @@ class Transfer():
                 self.mechanism_user_opts == other.mechanism_user_opts)
 
     def __str__(self):
-        return textwrap.dedent("""\
-            Transfer:
-            URL = %s
-            mechanism = %s
-            %s""" % (
+        return "Transfer(%s, %s, %s)" % (
             self.url,
             self.mechanism_name,
-            "\n".join(["   %s: %s" % (k, v) for k, v in self.mechanism_options.items()]) if self.mechanism_options else "   No options"
-        ))
+            str(self.mechanism_options)
+        )
