@@ -17,6 +17,7 @@
 #
 
 import os
+import re
 import uuid
 
 from pip.req import parse_requirements
@@ -27,30 +28,43 @@ requirements = [str(r.req) for r in parse_requirements("requirements.txt", sessi
 # https://pythonhosted.org/setuptools/setuptools.html
 
 # Load version from client/version.py
-exec(open(os.path.join("client", "version.py")).read())
+with open(os.path.join("client", "version.py"), "r") as version_fd:
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', version_fd.read(), re.MULTILINE).group(1)
+if not version:
+    raise RuntimeError("Unable to find version number")
+
+# Load README from file. Convert from Markdown to RST
+try:
+    import pypandoc
+    readme = pypandoc.convert_file("../README.md", "rst")
+except:
+    raise RuntimeError("Unable to read and convert ../README.md")
 
 setup(name="bdss_client",
-      version=__version__,  # noqa
-      description="",
+      version=version,
+      description="Big Data Smart Socket client",
+      long_description=readme,
       classifiers=[
-          "Development Status :: 1 - Planning",
+          "Development Status :: 4 - Beta",
           "Environment :: Console",
           "Intended Audience :: Science/Research",
           "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
           "Natural Language :: English",
+          "Programming Language :: Python :: 3.4",
           "Programming Language :: Python :: 3.5",
-          "Topic :: Communications",
           "Topic :: Scientific/Engineering"
       ],
-      url="http://github.com/feltus/BDSS",
+      url="https://github.com/feltus/BDSS",
       author="Alex Feltus",
       author_email="ffeltus@clemson.edu",
+      maintainer="Nick Watts",
+      maintainer_email="nick@nawatts.com",
       install_requires=requirements,
       license="GPLv2",
-      packages=find_packages(),
-      package_data={
-          "": ["*.cfg", "*.md", "*.rst", "*.txt"]
-      },
+      packages=find_packages(exclude=["tests*"]),
+      data_files=[
+          ("client", ["client/defaults.cfg"])
+      ],
       entry_points={
           "console_scripts": ["bdss = client.__main__:main"]
       },
