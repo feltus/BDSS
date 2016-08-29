@@ -27,12 +27,12 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
 ## Get Started
 
 * Moving data with the BDSS client:
-   * [From the command line](/client/docs)
-   * [From Galaxy](/galaxy_tool/README.md)
-* [Managing an existing metadata repository](/metadata_repository/docs/README.md#administrator-documentation)
+   * [From the command line](https://github.com/feltus/BDSS/blob/master/client/docs)
+   * [From Galaxy](https://github.com/feltus/BDSS/blob/master/galaxy_tool/README.md)
+* [Managing an existing metadata repository](https://github.com/feltus/BDSS/blob/master/metadata_repository/docs/README.md#administrator-documentation)
 * Setting up a new metadata repository
-   * [For development or testing](/metadata_repository/docs/developer/DevelopmentEnvironment.md)
-   * [For production use](/metadata_repository/docs/Installation.md)
+   * [For development or testing](https://github.com/feltus/BDSS/blob/master/metadata_repository/docs/developer/DevelopmentEnvironment.md)
+   * [For production use](https://github.com/feltus/BDSS/blob/master/metadata_repository/docs/Installation.md)
 
 ## Examples
 
@@ -40,8 +40,8 @@ All examples here require a metadata repository configured to support them. The 
 at [http://bdss.bioinfo.wsu.edu/](http://bdss.bioinfo.wsu.edu/) supports these examples and the necessary
 configuration is also listed here.
 
-* [NCBI SRA archive](#ncbi-sra-archive)
-* [JGI Genome Portal](#jgi-genome-portal)
+* [NCBI SRA archive](https://github.com/feltus/BDSS#ncbi-sra-archive)
+* [JGI Genome Portal](https://github.com/feltus/BDSS#jgi-genome-portal)
 
 ### NCBI SRA archive
 
