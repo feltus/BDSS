@@ -4,8 +4,6 @@ The BDSS client requires Python 3.4+.
 
 ## Install from PyPI
 
-_Not available yet_ (See [#105](https://github.com/feltus/BDSS/issues/105))
-
 ```Shell
 pip3 install bdss-client
 ```
