@@ -28,7 +28,9 @@ clients, tuning parameters, etc. from the end user researcher to a group of "dat
 
 * Moving data with the BDSS client:
    * [From the command line](https://github.com/feltus/BDSS/blob/master/client/docs)
+   * [Command Line Usage Video](https://www.youtube.com/watch?v=Cwn7O5xssgY)
    * [From Galaxy](https://github.com/feltus/BDSS/blob/master/galaxy_tool/README.md)
+   * [Galaxy Usage Video](https://www.youtube.com/watch?v=KE7KkA6rzMQ)
 * [Managing an existing metadata repository](https://github.com/feltus/BDSS/blob/master/metadata_repository/docs/README.md#administrator-documentation)
 * Setting up a new metadata repository
    * [For development or testing](https://github.com/feltus/BDSS/blob/master/metadata_repository/docs/developer/DevelopmentEnvironment.md)
