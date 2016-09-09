@@ -31,7 +31,7 @@ Requirements:
 
 ```Shell
 apt-get install python3-dev
-pip install pyinstaller
+pip3 install pyinstaller
 ```
 
 Build:
@@ -59,12 +59,14 @@ On Debian/Ubuntu:
 apt-get install openssl libssl-dev
 ```
 
-## Development
+## Development / Install from source
+
+Use an ["editable install"](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs).
 
 ```Shell
 git clone https://github.com/feltus/BDSS.git
 cd BDSS/client
-python3 setup.py develop
+pip3 install --editable .
 ```
 
 ## Docker
