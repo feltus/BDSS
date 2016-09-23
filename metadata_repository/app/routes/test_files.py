@@ -141,4 +141,4 @@ def delete_test_file(source_id, file_id):
             flash("Failed to delete test file", "danger")
             traceback.print_exc()
 
-    return render_template("test_files/delete.html.jinja", test_file=test_file)
+    return render_template("test_files/delete.html.jinja", form=form, test_file=test_file)
