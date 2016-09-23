@@ -91,8 +91,8 @@ def register():
     return render_template("users/register.html.jinja", form=form)
 
 
-@login_required
 @routes.route("/logout")
+@login_required
 def logout():
     """
     Logout of the application.
