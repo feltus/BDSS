@@ -188,6 +188,7 @@ def show_transfer_mechanism_options_form():
 
 
 @routes.route("/data_sources/relations")
+@login_required
 def data_source_relations():
     data_sources = DataSource.query.all()
     nodes = []
