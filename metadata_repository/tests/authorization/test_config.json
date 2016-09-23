@@ -1,0 +1,91 @@
+{
+  "data_sources": [
+    {
+      "description": "",
+      "label": "Source 1",
+      "test_files": [
+        "ftp://example.com/file.txt"
+      ],
+      "transfer_mechanism": {
+        "options": {},
+        "type": "curl"
+      },
+      "transforms": [
+        {
+          "for_destinations": ["Example Destination"],
+          "options": {
+            "new_host": "example.net"
+          },
+          "target": "Source 3",
+          "type": "change_host"
+        },
+        {
+          "for_destinations": [],
+          "options": {
+            "new_host": "example.org",
+            "new_scheme": "http"
+          },
+          "target": "Source 2",
+          "type": "change_scheme_and_host"
+        }
+      ],
+      "url_matchers": [
+        {
+          "options": {
+            "host": "example.com",
+            "scheme": "ftp"
+          },
+          "type": "scheme_and_host"
+        }
+      ]
+    },
+    {
+      "description": "",
+      "label": "Source 2",
+      "test_files": [
+        "http://example.org/file.txt"
+      ],
+      "transfer_mechanism": {
+        "options": {},
+        "type": "curl"
+      },
+      "transforms": [],
+      "url_matchers": [
+        {
+          "options": {
+            "host": "example.org",
+            "scheme": "http"
+          },
+          "type": "scheme_and_host"
+        }
+      ]
+    },
+    {
+      "description": "",
+      "label": "Source 3",
+      "test_files": [
+        "http://example.net/file.txt"
+      ],
+      "transfer_mechanism": {
+        "options": {},
+        "type": "curl"
+      },
+      "transforms": [],
+      "url_matchers": [
+        {
+          "options": {
+            "host": "example.net",
+            "scheme": "http"
+          },
+          "type": "scheme_and_host"
+        }
+      ]
+    }
+  ],
+  "destinations": [
+    {
+      "description": "An example destination",
+      "label": "Example Destination"
+    }
+  ]
+}
