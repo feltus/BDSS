@@ -207,12 +207,12 @@ def search_data_sources():
     if form.validate():
         data_sources = DataSource.query.filter(func.lower(DataSource.label).like("%%%s%%" % form.q.data.lower())).all()
 
-        if "application/json" in request.headers["Accept"]:
+        if "application/json" in request.headers.getlist("Accept"):
             return jsonify(data_sources=[{"id": d.id, "label": d.label} for d in data_sources])
         else:
             return render_template("data_sources/search_results.html.jinja", data_sources=data_sources, form=form)
     else:
-        if "application/json" in request.headers["Accept"]:
+        if "application/json" in request.headers.getlist("Accept"):
             abort(400)
         else:
             return render_template("data_sources/search_results.html.jinja", data_sources=None, form=form)
