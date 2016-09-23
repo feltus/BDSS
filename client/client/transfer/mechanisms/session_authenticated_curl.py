@@ -48,7 +48,7 @@ class SessionAuthenticatedCurlMechanism(BaseMechanism):
             UserInputOption("password", self.password_prompt, hide_input=True)
         ]
 
-    def transfer_file(self, url, output_path, display_output=True):
+    def transfer_file(self, url, partial_range, output_path, display_output=True):
         with tempfile.NamedTemporaryFile(delete=True) as cookie_jar:
             (success, output1) = run_subprocess([
                 "curl",
@@ -61,11 +61,12 @@ class SessionAuthenticatedCurlMechanism(BaseMechanism):
             if not success:
                 return (success, output1)
             else:
-                (success, output2) = run_subprocess([
-                    "curl",
+                args = [
                     "--cookie", cookie_jar.name,
                     "--output", output_path,
-                    url
-                ], display_output)
+                ]
+                if partial_range:
+                    args.extend(["--range", "%d-%d" % (partial_range[0], partial_range[0] + partial_range[1] - 1)])
+                (success, output2) = run_subprocess(["curl"] + args + [url], display_output)
 
                 return (success, output1 + "\n" + output2)

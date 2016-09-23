@@ -31,7 +31,13 @@ class AnonymousGridFTPMechanism(SimpleSubprocessMechanism):
     def transfer_program(cls):
         return "globus-url-copy"
 
-    def transfer_command(self, url, output_path):
+    def transfer_command(self, url, partial_range, output_path):
         parts = urlsplit(url)
         url = urlunsplit(("ftp", self.username + "@" + parts[1] + ":" + str(self.port), parts[2], parts[3], parts[4]))
-        return ["globus-url-copy", url, "file://" + output_path]
+        args = []
+        if partial_range:
+            args.extend([
+                "-partial-offset", partial_range[0],
+                "-partial-length", partial_range[1]
+            ])
+        return ["globus-url-copy"] + args + [url, "file://" + output_path]

@@ -25,5 +25,8 @@ class CurlMechanism(SimpleSubprocessMechanism):
     def transfer_program(cls):
         return "curl"
 
-    def transfer_command(self, url, output_path):
-        return ["curl", "--output", output_path, url]
+    def transfer_command(self, url, partial_range, output_path):
+        args = ["--output", output_path]
+        if partial_range:
+            args.extend(["--range", "%d-%d" % (partial_range[0], partial_range[0] + partial_range[1] - 1)])
+        return ["curl"] + args + [url]

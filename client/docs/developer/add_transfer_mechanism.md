@@ -41,13 +41,15 @@ class Mechanism():
         """
         raise NotImplementedError
 
-    def transfer_file(self, url, output_path):
+    def transfer_file(self, url, partial_range, output_path):
         """
         Transfer a file.
 
         Parameters:
         url - String - URL of the file to transfer
         output_path - String - Path to write transferred file to
+        partial_range - tuple (int, int) - Partial section of file to transfer. First number is offset from start,
+             second number is length of partial transfer. If None, transfer the entire file.
         display_output - Boolean - Output progress information
 
         Returns:

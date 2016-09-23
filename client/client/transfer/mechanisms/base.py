@@ -83,12 +83,14 @@ class BaseMechanism():
         """
         raise NotImplementedError
 
-    def transfer_file(self, url, output_path, display_output=True):
+    def transfer_file(self, url, partial_range, output_path, display_output=True):
         """
         Transfer a file.
 
         Parameters:
         url - String - URL of the file to transfer
+        partial_range - tuple (int, int) - Partial section of file to transfer. First number is offset from start,
+            second number is length of partial transfer. If None, transfer the entire file.
         output_path - String - Path to write transferred file to
         display_output - Boolean - Output progress information
 
@@ -143,8 +145,8 @@ class SimpleSubprocessMechanism(BaseMechanism):
     def transfer_program(cls):
         raise NotImplementedError
 
-    def transfer_file(self, url, output_path, display_output=True):
-        return run_subprocess(self.transfer_command(url, output_path), display_output)
+    def transfer_file(self, url, partial_range, output_path, display_output=True):
+        return run_subprocess(self.transfer_command(url, partial_range, output_path), display_output)
 
-    def transfer_command(self, url, output_path):
+    def transfer_command(self, url, partial_range, output_path):
         raise NotImplementedError

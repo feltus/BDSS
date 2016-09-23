@@ -33,7 +33,7 @@ class MockMechanism(BaseMechanism):
     def is_available(cls):
         return True
 
-    def transfer_file(self, url, output_path):
+    def transfer_file(self, url, partial_range, output_path):
         return (True, "")
 
     def user_input_options(self):

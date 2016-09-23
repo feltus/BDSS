@@ -43,7 +43,7 @@ def _get_checksum(checksum_url, mechanism_name, mechanism_options, data_source_i
     checksum_transfer = Transfer(checksum_url,
                                  mechanism_name,
                                  mechanism_options,
-                                 data_source_id)
+                                 data_source_id=data_source_id)
 
     checksum_data = checksum_transfer.get_data(display_output=False)
     return checksum_data.decode().strip().lower()

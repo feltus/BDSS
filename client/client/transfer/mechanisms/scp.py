@@ -27,7 +27,7 @@ class SCPMechanism(SimpleSubprocessMechanism):
     def transfer_program(cls):
         return "scp"
 
-    def transfer_command(self, url, output_path):
+    def transfer_command(self, url, partial_range, output_path):
         # Strip scheme from URL
         parts = list(urlsplit(url))
         parts[0] = ""

@@ -34,7 +34,7 @@ class GridFTPLiteMechanism(SimpleSubprocessMechanism):
     def transfer_program(cls):
         return "globus-url-copy"
 
-    def transfer_command(self, url, output_path):
+    def transfer_command(self, url, partial_range, output_path):
         args = []
 
         try:
@@ -60,5 +60,11 @@ class GridFTPLiteMechanism(SimpleSubprocessMechanism):
                 args.extend(["-tcp-buffer-size", str(self.tcp_buffer_size)])
         except KeyError:
             pass
+
+        if partial_range:
+            args.extend([
+                "-partial-offset", partial_range[0],
+                "-partial-length", partial_range[1]
+            ])
 
         return ["globus-url-copy"] + args + [url, output_path]
