@@ -47,7 +47,8 @@ class TransferReportForm(wtforms.Form):
         validators=[wtforms.validators.InputRequired()])
 
     file_checksum = wtforms.StringField(
-        label="MD5 Checksum")
+        label="MD5 Checksum",
+        validators=[wtforms.validators.InputRequired()])
 
     def validate_file_checksum(form, field):
         if form.file_size_bytes.data > 0:
