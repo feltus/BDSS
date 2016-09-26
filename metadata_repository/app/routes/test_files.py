@@ -16,7 +16,6 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-import sys
 import traceback
 
 from flask import abort, Blueprint, flash, jsonify, redirect, render_template, request, url_for
@@ -70,8 +69,6 @@ def add_test_file(source_id):
                 flash("Failed to save test file", "danger")
                 traceback.print_exc()
         else:
-            # FIXME: This should be a log
-            print("Test file URL does not match data source", file=sys.stderr)
             flash("Test file URL does not match data source", "danger")
 
     return render_template("test_files/new.html.jinja", data_source=data_source, form=form)
@@ -112,8 +109,6 @@ def edit_test_file(source_id, file_id):
                 flash("Failed to update test file", "danger")
                 traceback.print_exc()
         else:
-            # FIXME: This should be a log
-            print("Test file URL does not match data source", file=sys.stderr)
             flash("Test file URL does not match data source", "danger")
 
     return render_template("test_files/edit.html.jinja", test_file=test_file, form=form)
