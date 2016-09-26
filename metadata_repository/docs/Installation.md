@@ -85,7 +85,7 @@ The instructions below are for an Ubuntu system. Commands may vary for other dis
    in the last step.
    ```Shell
    cd /path/to/metadata_repository
-   ./scripts/with_dotenv ./scripts/run_migrations
+   ./scripts/with_dotenv ./scripts/migrate
    ```
 
 1. Disable default Apache site.

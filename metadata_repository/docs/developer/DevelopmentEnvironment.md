@@ -51,7 +51,7 @@ To manually set up a development environment, follow these steps:
    To migrate your database to the latest version, run:
 
    ```Shell
-   ./scripts/with_dotenv ./scripts/run_migrations
+   ./scripts/with_dotenv ./scripts/migrate
    ```
 
    Alternatively, you can create a database with the current schema by running:
