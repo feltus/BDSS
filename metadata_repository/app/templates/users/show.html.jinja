@@ -6,9 +6,10 @@
 
 <a href="mailto:{{ user.email }}">{{ user.email }}</a>
 
+{% if user.user_id != current_user.user_id %}
 <br>
-
 <a href="{{ url_for('users.edit_user_permissions', user_id=user.user_id) }}">{%- if not user.is_admin -%}Grant{%- else -%}Revoke{%- endif %} Admin Permissions</a>
+{% endif %}
 
 <hr>
 
