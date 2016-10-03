@@ -76,7 +76,7 @@ def unauthorized():
         response.status_code = 401
         return response
     else:
-        return redirect(url_for("auth.login"), code=401)
+        return redirect(url_for("auth.login"))
 
 
 app.register_blueprint(auth_routes)

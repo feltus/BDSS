@@ -52,7 +52,7 @@ class BaseAuthorizationTestMixin():
     def okEndpoints(self):
         raise NotImplementedError
 
-    def redirectToLoginEndpoints(self):
+    def unauthorizedEndpoints(self):
         raise NotImplementedError
 
     def testEndpointAuthorization(self):
@@ -80,11 +80,14 @@ class BaseAuthorizationTestMixin():
                         elif p in ok_endpoints:
                             self.assertNotIn(r.status_code, (401, 403))
                         elif p in unauthorized_endpoints:
-                            self.assertEqual(r.status_code, 401)
-                            redirect_location = r.headers.get("Location")
-                            relative_location = re.sub(r"^https?://[^/]*", "", redirect_location)
-                            self.assertIsNotNone(redirect_location)
-                            self.assertEqual(relative_location, url_for("auth.login"))
+                            # Some endpoints (those requested by the client) will return 401
+                            # Web endpoints should redirect to login page
+                            self.assertIn(r.status_code, (302, 401))
+                            if r.status_code == 302:
+                                redirect_location = r.headers.get("Location")
+                                relative_location = re.sub(r"^https?://[^/]*", "", redirect_location)
+                                self.assertIsNotNone(redirect_location)
+                                self.assertEqual(relative_location, url_for("auth.login"))
                         else:
                             self.fail("%s to %s not covered in test" % (method, rule.endpoint))
 
