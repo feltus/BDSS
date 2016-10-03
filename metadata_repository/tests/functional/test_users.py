@@ -63,3 +63,13 @@ class TestUsers(BaseTestCase):
             u = User.query.filter(User.user_id == 2).first()
             self.assertTrue(b"Permissions updated" in r.data)
             self.assertTrue(u.is_admin)
+
+    def test_prevent_toggling_own_permissions(self):
+        with self.client as client:
+            self.loginTestUser()
+
+            r = client.post("/users/1/edit_permissions", follow_redirects=True)
+
+            u = User.query.filter(User.user_id == 1).first()
+            self.assertTrue(b"Failed to update permissions" in r.data)
+            self.assertTrue(u.is_admin)
