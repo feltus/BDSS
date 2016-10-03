@@ -20,7 +20,7 @@ import math
 import traceback
 
 from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from .auth import admin_required
 from ..forms import ToggleUserPermissionsForm
@@ -70,14 +70,17 @@ def edit_user_permissions(user_id):
     form = ToggleUserPermissionsForm(request.form)
 
     if request.method == "POST" and form.validate():
-        user.is_admin = not user.is_admin
-        try:
-            db_session.commit()
-            flash("Permissions updated", "success")
-            return redirect(url_for("users.show_user", user_id=user.user_id))
-        except:
-            db_session.rollback()
-            flash("Failed to update permissions", "danger")
-            traceback.print_exc()
+        if user.user_id == current_user.user_id:
+            flash("Unable to change your own permissions", "danger")
+        else:
+            user.is_admin = not user.is_admin
+            try:
+                db_session.commit()
+                flash("Permissions updated", "success")
+                return redirect(url_for("users.show_user", user_id=user.user_id))
+            except:
+                db_session.rollback()
+                flash("Failed to update permissions", "danger")
+                traceback.print_exc()
 
     return render_template("users/edit_permissions.html.jinja", form=form, user=user)
