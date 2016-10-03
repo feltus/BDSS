@@ -71,5 +71,5 @@ class TestUsers(BaseTestCase):
             r = client.post("/users/1/edit_permissions", follow_redirects=True)
 
             u = User.query.filter(User.user_id == 1).first()
-            self.assertTrue(b"Failed to update permissions" in r.data)
+            self.assertTrue(b"Unable to change your own permissions" in r.data)
             self.assertTrue(u.is_admin)
