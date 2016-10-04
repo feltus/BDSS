@@ -1,6 +1,6 @@
 # Configuration
 
-The client reads configuration from three different locations.
+The client reads configuration from four different locations.
 
 * `defaults.cfg` (bundled in client package)
 * `/etc/bdss.cfg`
