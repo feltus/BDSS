@@ -4,7 +4,6 @@ See [Python Packaging User Guide](https://packaging.python.org/distributing) for
 
 ## Requirements
 
-* Install [Pandoc](http://pandoc.org/) and [PyPandoc](https://pypi.python.org/pypi/pypandoc/)
 * Configure [`$HOME/~.pypirc`](https://docs.python.org/3/distutils/packageindex.html#pypirc)
 * Install [twine](https://pypi.python.org/pypi/twine)
 

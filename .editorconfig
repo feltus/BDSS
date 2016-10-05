@@ -14,6 +14,9 @@ trim_trailing_whitespace = true
 indent_size = 3
 trim_trailing_whitespace = false
 
+[*.rst]
+indent_size = 3
+
 [*.json]
 indent_size = 2
 

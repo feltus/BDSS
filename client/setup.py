@@ -35,8 +35,7 @@ if not version:
 
 # Load README from file. Convert from Markdown to RST
 try:
-    import pypandoc
-    readme = pypandoc.convert_file("../README.md", "rst")
+    readme = open("../README.rst", "r").read()
 except:
     raise RuntimeError("Unable to read and convert ../README.md")
 
