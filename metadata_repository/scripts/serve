@@ -4,14 +4,11 @@ import os
 import sys
 
 
-project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+project_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "../"))
 sys.path.insert(0, project_dir)
 
 
 from app import app as application
-
-from app.config import database_url
-from app.models import BaseModel, db_engine
 
 
 if __name__ == "__main__":
