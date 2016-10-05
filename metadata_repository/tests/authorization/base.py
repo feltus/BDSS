@@ -118,7 +118,7 @@ class BaseAuthorizationTestMixin():
 
         with self.client as c:
             self.loginAdmin()
-            test_conf_path = os.path.join(os.path.dirname(__file__), "test_config.json")
+            test_conf_path = os.path.join(os.path.dirname(__file__), "../test_config.json")
             test_conf = open(test_conf_path).read()
             load_configuration(test_conf)
             c.get("/logout")

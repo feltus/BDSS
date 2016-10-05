@@ -2,7 +2,7 @@
   "data_sources": [
     {
       "description": "",
-      "label": "Source 1",
+      "label": "Example FTP",
       "test_files": [
         "ftp://example.com/file.txt"
       ],
@@ -16,7 +16,7 @@
           "options": {
             "new_host": "example.net"
           },
-          "target": "Source 3",
+          "target": "Another HTTP",
           "type": "change_host"
         },
         {
@@ -25,7 +25,7 @@
             "new_host": "example.org",
             "new_scheme": "http"
           },
-          "target": "Source 2",
+          "target": "Example HTTP",
           "type": "change_scheme_and_host"
         }
       ],
@@ -41,7 +41,7 @@
     },
     {
       "description": "",
-      "label": "Source 2",
+      "label": "Example HTTP",
       "test_files": [
         "http://example.org/file.txt"
       ],
@@ -62,7 +62,7 @@
     },
     {
       "description": "",
-      "label": "Source 3",
+      "label": "Another HTTP",
       "test_files": [
         "http://example.net/file.txt"
       ],
