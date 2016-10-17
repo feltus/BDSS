@@ -33,9 +33,13 @@
     {% block header %}
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{{ url_for('core.index') }}">BDSS</a>
-                </div>
+                {% if current_user and current_user.is_authenticated %}
+                    {% include "authenticated_header.html.jinja" %}
+                {% else %}
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="{{ url_for('core.index') }}">BDSS</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     {% endblock %}
