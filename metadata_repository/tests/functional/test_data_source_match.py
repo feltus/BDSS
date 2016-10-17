@@ -44,7 +44,6 @@ class TestDataSourceMatch(BaseTestCase):
 
     def test_get_form(self):
         with self.client as c:
-            self.loginTestUser()
             r = c.get("/data_sources/%d/test_match" % self.ftp_source_id)
             self.assertEqual(r.status_code, 200)
             self.assertIn(b"Test URL Match", r.data)
@@ -52,7 +51,6 @@ class TestDataSourceMatch(BaseTestCase):
 
     def test_source_has_no_matchers(self):
         with self.client as c:
-            self.loginTestUser()
             r = c.get("/data_sources/4/test_match")
             self.assertEqual(r.status_code, 200)
             self.assertIn(b"Test URL Match", r.data)
@@ -61,7 +59,6 @@ class TestDataSourceMatch(BaseTestCase):
 
     def test_matching_url(self):
         with self.client as c:
-            self.loginTestUser()
             r = c.post("/data_sources/%d/test_match" % self.ftp_source_id,
                        data=dict(url="ftp://example.com/file.txt"))
             self.assertEqual(r.status_code, 200)
@@ -69,7 +66,6 @@ class TestDataSourceMatch(BaseTestCase):
 
     def test_nonmatching_urls(self):
         with self.client as c:
-            self.loginTestUser()
             r = c.post("/data_sources/%d/test_match" % self.ftp_source_id,
                        data=dict(url="http://example.com/file.txt"))
             self.assertEqual(r.status_code, 200)
