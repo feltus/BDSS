@@ -48,7 +48,7 @@ class TestDataSourceMatch(BaseTestCase):
             r = c.get("/data_sources/%d/test_match" % self.ftp_source_id)
             self.assertEqual(r.status_code, 200)
             self.assertIn(b"Test URL Match", r.data)
-            self.assertRegex(r.get_data(as_text=True), r"<form.*?action=\"\/data_sources\/1\/test_match\".*?>")
+            self.assertRegex(r.get_data(as_text=True), r"<form.*?action=\"\/data_sources\/%d\/test_match\".*?>" % self.ftp_source_id)
 
     def test_source_has_no_matchers(self):
         with self.client as c:
