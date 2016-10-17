@@ -37,7 +37,6 @@ routes = Blueprint("data_sources", __name__)
 
 
 @routes.route("/data_sources")
-@login_required
 def list_data_sources():
     """
     List all data sources in database.
@@ -88,7 +87,6 @@ def create_data_source():
 
 
 @routes.route("/data_sources/<source_id>")
-@login_required
 def show_data_source(source_id):
     """
     Show information about a specific data source.
@@ -100,7 +98,6 @@ def show_data_source(source_id):
 
 
 @routes.route("/data_sources/<source_id>/test_match", methods=["GET", "POST"])
-@login_required
 def test_data_source_url_match(source_id):
     """
     Test whether or not a URL matches a data source.
@@ -188,7 +185,6 @@ def show_transfer_mechanism_options_form():
 
 
 @routes.route("/data_sources/relations")
-@login_required
 def data_source_relations():
     data_sources = DataSource.query.all()
     nodes = []

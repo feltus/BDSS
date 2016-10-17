@@ -139,13 +139,11 @@ def load_configuration(conf):
 
 
 @routes.route("/configuration")
-@login_required
 def index():
     return render_template("configuration/index.html.jinja")
 
 
 @routes.route("/configuration/export")
-@login_required
 def export_configuration():
     """Export configuration of data sources, matchers, destinations, and transforms to a file."""
     return jsonify(**serialize_configuration())

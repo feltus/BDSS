@@ -33,6 +33,7 @@ class TestStandardAuthorization(BaseAuthorizationTestMixin, unittest.TestCase):
 
             ("data_sources.create_data_source", "GET"),
             ("data_sources.create_data_source", "POST"),
+
             ("data_sources.delete_data_source", "GET"),
             ("data_sources.delete_data_source", "POST"),
             ("data_sources.edit_data_source", "GET"),
@@ -63,6 +64,9 @@ class TestStandardAuthorization(BaseAuthorizationTestMixin, unittest.TestCase):
 
             ("transfer_reports.delete_transfer_report", "GET"),
             ("transfer_reports.delete_transfer_report", "POST"),
+            ("transfer_reports.list_transfer_reports", "GET"),
+            ("transfer_reports.show_transfer_report", "GET"),
+            ("transfer_reports.transfer_reports_graph", "GET"),
 
             ("transforms.add_transform", "GET"),
             ("transforms.add_transform", "POST"),
@@ -83,9 +87,9 @@ class TestStandardAuthorization(BaseAuthorizationTestMixin, unittest.TestCase):
         return [
             ("auth.login", "GET"),
             ("auth.login", "POST"),
+            ("auth.logout", "GET"),
             ("auth.register", "GET"),
             ("auth.register", "POST"),
-            ("auth.logout", "GET"),
 
             ("configuration.export_configuration", "GET"),
             ("configuration.index", "GET"),
@@ -112,10 +116,7 @@ class TestStandardAuthorization(BaseAuthorizationTestMixin, unittest.TestCase):
             ("test_files.list_test_files", "GET"),
             ("test_files.show_test_file", "GET"),
 
-            ("transfer_reports.list_transfer_reports", "GET"),
             ("transfer_reports.report_transfer", "POST"),
-            ("transfer_reports.show_transfer_report", "GET"),
-            ("transfer_reports.transfer_reports_graph", "GET"),
 
             ("transforms.show_transform", "GET"),
         ]

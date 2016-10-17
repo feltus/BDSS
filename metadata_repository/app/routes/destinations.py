@@ -78,7 +78,6 @@ def create_destination():
 
 
 @routes.route("/destinations/<destination_id>")
-@login_required
 def show_destination(destination_id):
     """
     Show information about a specific destination.

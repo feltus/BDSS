@@ -98,4 +98,4 @@ def logout():
     Logout of the application.
     """
     logout_user()
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("core.index"))

@@ -32,7 +32,6 @@ routes = Blueprint("matchers", __name__)
 
 
 @routes.route("/data_sources/<source_id>/matchers")
-@login_required
 def list_url_matchers(source_id):
     """
     List matcher descriptions for a data source.
@@ -84,7 +83,6 @@ def add_url_matcher(source_id):
 
 
 @routes.route("/data_sources/<source_id>/matchers/<matcher_id>")
-@login_required
 def show_url_matcher(source_id, matcher_id):
     """
     Show information about a specific matcher.

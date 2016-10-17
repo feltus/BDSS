@@ -78,6 +78,7 @@ def report_transfer():
 
 @routes.route("/data_sources/<source_id>/transfer_reports")
 @login_required
+@admin_required
 def list_transfer_reports(source_id):
     """
     Show reports of transfers from a data source.
@@ -98,6 +99,7 @@ def list_transfer_reports(source_id):
 
 @routes.route("/data_sources/<source_id>/transfer_reports/graph")
 @login_required
+@admin_required
 def transfer_reports_graph(source_id):
     reports = TransferReport.query.filter((TransferReport.data_source_id == source_id) & (TransferReport.is_success == True)).all()  # noqa
     graph_data = [[r.created_at.timestamp(), r.transfer_rate] for r in reports]
@@ -106,6 +108,7 @@ def transfer_reports_graph(source_id):
 
 @routes.route("/data_sources/<source_id>/transfer_reports/<report_id>")
 @login_required
+@admin_required
 def show_transfer_report(source_id, report_id):
     """
     Show information about a specific transfer report.

@@ -75,7 +75,6 @@ def add_test_file(source_id):
 
 
 @routes.route("/data_sources/<source_id>/test_files/<file_id>")
-@login_required
 def show_test_file(source_id, file_id):
     """
     Show information about a specific test file.

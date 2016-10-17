@@ -91,7 +91,6 @@ def add_transform(source_id):
 
 
 @routes.route("/data_sources/<source_id>/transforms/<transform_id>")
-@login_required
 def show_transform(source_id, transform_id):
     """
     Show information about a specific transform.

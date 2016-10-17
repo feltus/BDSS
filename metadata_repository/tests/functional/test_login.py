@@ -31,6 +31,8 @@ class TestLogin(BaseTestCase):
 
         r = self.client.get("/logout", follow_redirects=True)
 
+        # Try to load an authenticated route
+        r = self.client.get("/users", follow_redirects=True)
         self.assertTrue(b"Login" in r.data)
 
     def test_login_with_wrong_password_fails(self):
