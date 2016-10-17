@@ -5,6 +5,8 @@
 
 {% block content %}
 
+<p class="alert alert-warning">Registration is only required for data curators. Most functionality of this application can be accessed anonymously.</p>
+
 {{ form_macros.render_form(form, action_url=url_for("auth.register"), btn_class="btn btn-primary") }}
 
 <hr>
