@@ -68,7 +68,7 @@ def transfers():
             error_message = "Validation error"
             error_details = form.errors
 
-        if request.headers.get("Accept") == "application/json":
+        if "application/json" in request.headers.getlist("Accept"):
             return jsonify(transfers=results, error=dict(message=error_message, details=error_details))
         elif error_message:
             flash(error_message, "danger")
