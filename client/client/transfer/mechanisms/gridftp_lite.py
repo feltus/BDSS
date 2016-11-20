@@ -45,19 +45,19 @@ class GridFTPLiteMechanism(SimpleSubprocessMechanism):
 
         try:
             if self.parallelism:
-                args.extend(["-p", int(self.parallelism)])
+                args.extend(["-p", str(self.parallelism)])
         except KeyError:
             pass
 
         try:
             if self.block_size:
-                args.extend(["-block-size", int(self.block_size)])
+                args.extend(["-block-size", str(self.block_size)])
         except KeyError:
             pass
 
         try:
             if self.tcp_buffer_size:
-                args.extend(["-tcp-buffer-size", int(self.tcp_buffer_size)])
+                args.extend(["-tcp-buffer-size", str(self.tcp_buffer_size)])
         except KeyError:
             pass
 
