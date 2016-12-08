@@ -29,3 +29,8 @@ class TestSchemeAndHostMatcher(unittest.TestCase):
         self.assertTrue(scheme_and_host.matches_url(opts, "http://example.com:8000/file.txt"))
         self.assertFalse(scheme_and_host.matches_url(opts, "http://example.org/file.txt"))
         self.assertFalse(scheme_and_host.matches_url(opts, "ftp://example.com/file.txt"))
+
+        self.assertTrue(scheme_and_host.matches_url(
+            dict(scheme="HTTP", host="EXAMPLE.COM"),
+            "http://EXAMPLE.com/file.txt"
+        ))

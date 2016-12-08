@@ -30,7 +30,7 @@ description = "Match URLs with a specific scheme and hostname"
 
 def matches_url(options, url):
     parsed = urlparse(url)
-    if parsed.scheme == options["scheme"] and parsed.hostname == options["host"]:
+    if parsed.scheme.lower() == options["scheme"].lower() and parsed.hostname.lower() == options["host"].lower():
         return True
     else:
         return False
