@@ -20,10 +20,55 @@ import configparser
 import os
 from pkg_resources import resource_string
 
+
 config = configparser.ConfigParser()
 config.read_string(resource_string(__name__, "defaults.cfg").decode("utf-8"))
 config.read(["/etc/bdss.cfg", os.path.expanduser("~/.bdss.cfg"), "bdss.cfg"])
 
-metadata_repository_url = config.get("metadata_repository", "url").rstrip("/")
 
-client_destination = config.get("client", "location", fallback=None)
+CONFIGURABLE_OPTIONS = [
+    "metadata_repository.url",
+    "client.location"
+]
+
+
+def get_config(key):
+    if key not in CONFIGURABLE_OPTIONS:
+        raise Exception("\"%s\" is not a configuration key" % key)
+
+    [section, option] = key.split(".")
+
+    return config.get(section, option, fallback=None)
+
+
+def set_config(key, value):
+    if key not in CONFIGURABLE_OPTIONS:
+        raise Exception("\"%s\" is not a configuration key" % key)
+
+    [section, option] = key.split(".")
+    if not config.has_section(section):
+        config.add_section(section)
+
+    config.set(section, option, str(value))
+
+    with open(os.path.expanduser("~/.bdss.cfg"), "w") as f:
+        config.write(f)
+
+
+def clear_config(key):
+    if key not in CONFIGURABLE_OPTIONS:
+        raise Exception("\"%s\" is not a configuration key" % key)
+
+    [section, option] = key.split(".")
+    if not config.has_section(section):
+        config.add_section(section)
+
+    config.remove_option(section, option)
+
+    with open(os.path.expanduser("~/.bdss.cfg"), "w") as f:
+        config.write(f)
+
+
+metadata_repository_url = get_config("metadata_repository.url").rstrip("/")
+
+client_destination = get_config("client.location")

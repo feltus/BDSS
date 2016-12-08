@@ -19,17 +19,44 @@
 import logging
 import requests
 
+from ..config import CONFIGURABLE_OPTIONS, get_config, set_config, clear_config
 from ..config import client_destination, metadata_repository_url
 
 
-cli_help = "Check client configuration."
+cli_help = "Client configuration."
 
 
 logger = logging.getLogger("bdss")
 
 
 def configure_parser(parser):
-    pass
+    config_group = parser.add_mutually_exclusive_group(required=True)
+
+    config_group.add_argument("--check",
+                              action="store_true",
+                              required=False,
+                              help="Check validity of client configuration")
+
+    config_group.add_argument("--list", "-l",
+                              action="store_true",
+                              required=False,
+                              help="List configuration")
+
+    config_group.add_argument("--get",
+                              metavar="KEY",
+                              required=False,
+                              help="Read configuration value")
+
+    config_group.add_argument("--set",
+                              metavar=("KEY", "VALUE"),
+                              nargs=2,
+                              required=False,
+                              help="Write configuration value")
+
+    config_group.add_argument("--clear", "-c",
+                              metavar="KEY",
+                              required=False,
+                              help="Clear configuration value")
 
 
 def ping_metadata_repository():
@@ -52,7 +79,7 @@ def get_destinations():
         response.raise_for_status()
 
 
-def handle_action(args, parser):
+def check_configuration():
     if ping_metadata_repository():
         logger.info("Metadata repository URL OK")
     else:
@@ -70,3 +97,21 @@ def handle_action(args, parser):
                 logger.info("Client location OK")
             else:
                 logger.error("%s is not a recognized destination", client_destination)
+
+
+def handle_action(args, parser):
+    if args.check:
+        check_configuration()
+
+    if args.list:
+        for key in CONFIGURABLE_OPTIONS:
+            print(key, "=", get_config(key))
+
+    if args.get:
+        print(get_config(args.get))
+
+    if args.set:
+        set_config(*args.set)
+
+    if args.clear:
+        clear_config(args.clear)
