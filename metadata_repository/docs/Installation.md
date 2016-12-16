@@ -106,7 +106,7 @@ For more information, see [mod_wsgi's documentation](https://modwsgi.readthedocs
 
 The metadata repository can be also be deployed using [Docker](https://www.docker.com/products/docker).
 
-The repository includes a [sample configuration file](/metadata_repository/docker-compose-tiered.yml) for
-[Docker Compose](https://docs.docker.com/compose/install/) to set up multiple app containers running
+The repository includes a [sample configuration file](/metadata_repository/deploy/docker/docker-compose-tiered.yml)
+for [Docker Compose](https://docs.docker.com/compose/install/) to set up multiple app containers running
 the metadata repository using [gunicorn](http://gunicorn.org/) behind an [nginx](https://www.nginx.com/) proxy
 and backed by a [PostgreSQL](https://www.postgresql.org) database.

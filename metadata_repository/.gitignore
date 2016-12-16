@@ -3,6 +3,6 @@ __pycache__
 .env
 
 *.sqlite
-pgdata
 
-.vagrant
+deploy/docker/pgdata
+deploy/vagrant/.vagrant

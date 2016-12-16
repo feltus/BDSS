@@ -81,11 +81,11 @@ Install [Docker](https://www.docker.com/products/docker) and [Docker Compose](ht
    ./scripts/generate_flask_key
    ```
 
-   Save the key in the `SESSION_KEY` environment variable in `docker-compose.yml`.
+   Save the key in the `SESSION_KEY` environment variable in `deploy/docker/docker-compose.yml`.
 
 1. Start services
    ```
-   cd /path/to/metadata_repository
+   cd /path/to/metadata_repository/deploy/docker
    docker-compose up
    ```
 
@@ -122,7 +122,7 @@ configured to use [PostgreSQL](http://www.postgresql.org/) for the database and
 1. Launch VM
 
    ```Shell
-   cd /path/to/bdss/metadata_repository
+   cd /path/to/bdss/metadata_repository/deploy/vagrant
    vagrant up
    ```
 

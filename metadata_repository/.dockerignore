@@ -4,9 +4,16 @@ README.md
 .git
 .gitignore
 
+__pycache__
+*.py[cod]
+
 app.wsgi
 
-requirements-to-freeze.txt
-tox.ini
+.env
+deploy
 
-Vagrantfile
+requirements-to-freeze.txt
+
+tests
+test-requirements.txt
+tox.ini

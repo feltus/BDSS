@@ -1,7 +1,7 @@
 version: '2'
 services:
   db:
-    image: postgres:9.5.3
+    image: postgres:9
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_DB: bdss
@@ -10,7 +10,8 @@ services:
     volumes:
       - ./pgdata:/var/lib/postgresql/data/pgdata
   app:
-    build: .
+    build: ../..
+    image: bdss_metadata_repository
     environment:
       DATABASE_URL: postgresql+psycopg2://bdss:topsecret@db/bdss
       SESSION_KEY:

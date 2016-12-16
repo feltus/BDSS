@@ -1,4 +1,4 @@
-FROM python:3.5.1
+FROM python:3.5
 
 RUN pip install --no-cache-dir gunicorn psycopg2
 
