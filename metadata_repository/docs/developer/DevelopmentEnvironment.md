@@ -131,3 +131,12 @@ configured to use [PostgreSQL](http://www.postgresql.org/) for the database and
    Port 8000 is forwarded to the VM's port 80.
 
 1. [Configure the client](/client/docs/Configuration.md) to point to your local metadata repository.
+
+# Tests
+
+To run automated tests for the metadata repository:
+1. Install testing libraries. `pip install -r test-requirements.txt`
+1. Run test suite: `./scripts/test`
+
+To run a specific test instead of the full suite, pass the path to a TestCase.
+Example: `./scripts/test tests.authorization.test_admin_authz.TestAdminAuthorization`
