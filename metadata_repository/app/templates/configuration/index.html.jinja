@@ -22,8 +22,8 @@
 {%- if current_user.is_admin -%}
     <hr>
     <h2 style="font-size:20px;">Import</h2>
-    <p>Import configuration from file.</p>
-    <a class="btn btn-primary" href="{{ url_for('configuration.import_configuration') }}">Upload Configuration</a>
+    <p>Import configuration from file or URL.</p>
+    <a class="btn btn-primary" href="{{ url_for('configuration.import_configuration') }}">Import Configuration</a>
 {%- endif -%}
 
 <hr>

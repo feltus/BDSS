@@ -18,6 +18,7 @@
 
 import json
 
+import requests
 import sqlalchemy as sa
 from flask import Blueprint, flash, jsonify, render_template, request
 from flask_login import login_required
@@ -155,25 +156,40 @@ def export_configuration():
 def import_configuration():
     """Export configuration of data sources, matchers, destinations, and transforms from an uploaded file."""
 
-    error = None
+    upload_error = None
+    url_error = None
     status = 200
     if request.method == "POST":
-        if "conf_file" not in request.files:
-            error = "No configuration uploaded"
-        else:
-            uploaded_conf = request.files["conf_file"].read().decode("utf-8")
-            request.files["conf_file"].close()
+        import_url = request.form.get("from_url", None)
+        uploaded_file = request.files.get("conf_file", None)
+
+        if "conf_file" in request.files and uploaded_file:
+            uploaded_conf = uploaded_file.read().decode("utf-8")
+            uploaded_file.close()
             try:
                 load_configuration(uploaded_conf)
             except LoadConfigurationError as e:
-                error = str(e)
+                upload_error = str(e)
             except Exception as e:
-                error = "Unknown error"
+                upload_error = "Unknown error"
+        elif "from_url" in request.form and import_url:
+            try:
+                response = requests.get(import_url, timeout=10)
+                response.raise_for_status()
+                load_configuration(response.text)
+            except LoadConfigurationError as e:
+                url_error = str(e)
+            except requests.exceptions.RequestException:
+                url_error = "Unable to load configuration from %s" % import_url
+            except Exception as e:
+                url_error = "Unknown error"
+        else:
+            upload_error = url_error = "Configuration file or URL is required"
 
-        if error:
+        if upload_error or url_error:
             flash("Import failed", "danger")
             status = 400
         else:
             flash("Import successful", "success")
 
-    return (render_template("configuration/import.html.jinja", error=error), status)
+    return (render_template("configuration/import.html.jinja", upload_error=upload_error, url_error=url_error), status)

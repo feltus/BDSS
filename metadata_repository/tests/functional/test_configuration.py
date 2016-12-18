@@ -18,6 +18,7 @@
 
 import io
 import json
+import requests_mock
 from flask import url_for
 
 from .base import BaseTestCase
@@ -196,6 +197,51 @@ class TestImportConfiguration(BaseTestCase):
             self.assertEqual(data_source.transforms[0].transform_options["new_host"], "example.org")
             self.assertEqual(data_source.transforms[1].for_destinations[0].label, "Test Destination")
 
+    @requests_mock.mock()
+    def test_import_configuration_from_url(self, mock):
+        """Verify importing configuration from another site populates database correctly."""
+        with self.client:
+            self.loginTestUser()
+
+            import_conf = json.dumps(dict(
+                data_sources=self.serialized_sample_data_sources,
+                destinations=self.serialized_sample_destinations
+            ))
+
+            mock.get("http://example.com/md/configuration/export", text=import_conf)
+
+            response = self.client.post(
+                "/configuration/import",
+                data=dict(from_url="http://example.com/md/configuration/export"),
+                follow_redirects=True)
+
+            self.assertEqual(response.status_code, 200)
+
+            self.assertEqual(DataSource.query.count(), 3)
+            self.assertEqual(Destination.query.count(), 1)
+
+            data_source = DataSource.query.filter(DataSource.label == "Test Source").first()
+            self.assertEqual(data_source.url_matchers[0].matcher_options["host"], "example.com")
+
+            self.assertEqual(len(data_source.transforms), 2)
+            self.assertEqual(data_source.transforms[0].transform_options["new_host"], "example.org")
+            self.assertEqual(data_source.transforms[1].for_destinations[0].label, "Test Destination")
+
+    def test_import_from_invalid_url(self):
+        """Throw error if URL doesn't respond."""
+        with self.client:
+            self.loginTestUser()
+
+            response = self.client.post(
+                "/configuration/import",
+                data=dict(from_url="http://example.com/md.json"),
+                follow_redirects=True)
+
+            self.assertEqual(response.status_code, 400)
+            response_data = response.get_data(as_text=True)
+            self.assertIn("Import failed", response_data)
+            self.assertIn("Unable to load configuration from http://example.com/md.json", response_data)
+
     def test_anonymous_import(self):
         """Importing configuration requires authenticated admin user."""
         import_conf = json.dumps(dict(
@@ -224,7 +270,7 @@ class TestImportConfiguration(BaseTestCase):
             self.assertEqual(response.status_code, 400)
             response_data = response.get_data(as_text=True)
             self.assertIn("Import failed", response_data)
-            self.assertIn("No configuration uploaded", response_data)
+            self.assertIn("Configuration file or URL is required", response_data)
 
     def test_import_colliding_configuration(self):
         """

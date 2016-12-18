@@ -21,6 +21,7 @@ pycparser==2.14
 pyflakes==1.2.3
 python-dotenv==0.5.1
 python-editor==1.0.1
+requests==2.12.4
 simplejson==3.8.2
 six==1.10.0
 SQLAlchemy==1.0.14
