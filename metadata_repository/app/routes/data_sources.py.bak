@@ -46,7 +46,7 @@ def list_data_sources():
     data_sources = DataSource.query.limit(num_sources_per_page).offset((page_num - 1) * num_sources_per_page).all()
     total_num_sources = DataSource.query.count()
     total_num_pages = math.ceil(total_num_sources / num_sources_per_page)
-    page_range = list(range(max(1, page_num - 3), min(total_num_pages, page_num + 3) + 1))
+    page_range = range(max(1, page_num - 3), min(total_num_pages, page_num + 3) + 1)
     return render_template("data_sources/index.html.jinja", data_sources=data_sources, page_num=page_num,
                            page_range=page_range, total_num_pages=total_num_pages)
 
@@ -68,7 +68,7 @@ def create_data_source():
             description=form.description.data,
             transfer_mechanism_type=form.transfer_mechanism_type.data
         )
-        if "transfer_mechanism_options" in list(form._fields.keys()) and form._fields["transfer_mechanism_options"]:
+        if "transfer_mechanism_options" in form._fields.keys() and form._fields["transfer_mechanism_options"]:
             source.transfer_mechanism_options = form._fields["transfer_mechanism_options"].data
         else:
             source.transfer_mechanism_options = {}
@@ -135,7 +135,7 @@ def edit_data_source(source_id):
         data_source.label = form.label.data
         data_source.description = form.description.data
         data_source.transfer_mechanism_type = form.transfer_mechanism_type.data
-        if "transfer_mechanism_options" in list(form._fields.keys()) and form._fields["transfer_mechanism_options"]:
+        if "transfer_mechanism_options" in form._fields.keys() and form._fields["transfer_mechanism_options"]:
             data_source.transfer_mechanism_options = form._fields["transfer_mechanism_options"].data
         else:
             data_source.transfer_mechanism_options = {}

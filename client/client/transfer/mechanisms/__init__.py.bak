@@ -40,7 +40,7 @@ def available_mechanisms():
     """
     Names of all available transfer mechanisms.
     """
-    return [name for name, module in list(all_mechanisms.items()) if module.is_available()]
+    return [name for name, module in all_mechanisms.items() if module.is_available()]
 
 
 def default_mechanism(url):

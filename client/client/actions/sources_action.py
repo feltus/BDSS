@@ -39,4 +39,4 @@ def get_matching_data_sources(query):
 def handle_action(args, parser):
     data_sources = get_matching_data_sources(args.query)
     for source in data_sources:
-        print(source["id"], source["label"])
+        print((source["id"], source["label"]))

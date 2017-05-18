@@ -64,7 +64,7 @@ class TestUrlMatchers(BaseTestCase):
 
             added_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == 1) & (UrlMatcher.matcher_id != 1)).first()
             self.assertEqual(added_matcher.matcher_type, "scheme_and_host")
-            self.assertEqual(len(list(added_matcher.matcher_options.items())), 2)
+            self.assertEqual(len(added_matcher.matcher_options.items()), 2)
             self.assertEqual(added_matcher.matcher_options["scheme"], "ftp")
             self.assertEqual(added_matcher.matcher_options["host"], "example.com")
 
@@ -84,5 +84,5 @@ class TestUrlMatchers(BaseTestCase):
 
             edited_matcher = UrlMatcher.query.filter((UrlMatcher.data_source_id == 1) & (UrlMatcher.matcher_id == 1)).first()
             self.assertEqual(edited_matcher.matcher_type, "regular_expression")
-            self.assertEqual(len(list(edited_matcher.matcher_options.items())), 1)
+            self.assertEqual(len(edited_matcher.matcher_options.items()), 1)
             self.assertEqual(edited_matcher.matcher_options["pattern"], "^ftp:\/\/example.com")

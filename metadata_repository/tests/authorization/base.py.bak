@@ -100,7 +100,7 @@ class BaseAuthorizationTestMixin():
                         authorization_errors[(rule.endpoint, method)] = exc
 
         if authorization_errors:
-            errored_endpoints = list(authorization_errors.keys())
+            errored_endpoints = authorization_errors.keys()
             errored_endpoints = sorted(errored_endpoints, key=lambda e: " ".join(e))
             error_list = ["%s %s: %s" % (e[0], e[1], authorization_errors[e]) for e in errored_endpoints]
             self.fail("\n" + "\n".join(error_list))

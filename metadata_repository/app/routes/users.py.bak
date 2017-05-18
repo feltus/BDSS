@@ -43,7 +43,7 @@ def list_users():
         .limit(num_users_per_page).offset((page_num - 1) * num_users_per_page).all()
     total_num_users = User.query.count()
     total_num_pages = math.ceil(total_num_users / num_users_per_page)
-    page_range = list(range(max(1, page_num - 3), min(total_num_pages, page_num + 3) + 1))
+    page_range = range(max(1, page_num - 3), min(total_num_pages, page_num + 3) + 1)
     return render_template("users/index.html.jinja", users=users, page_num=page_num, page_range=page_range,
                            total_num_pages=total_num_pages)
 

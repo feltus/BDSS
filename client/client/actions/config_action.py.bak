@@ -105,10 +105,10 @@ def handle_action(args, parser):
 
     if args.list:
         for key in CONFIGURABLE_OPTIONS:
-            print((key, "=", get_config(key)))
+            print(key, "=", get_config(key))
 
     if args.get:
-        print((get_config(args.get)))
+        print(get_config(args.get))
 
     if args.set:
         set_config(*args.set)
