@@ -35,9 +35,9 @@ if not version:
 
 # Load README from file. Convert from Markdown to RST
 try:
-    readme = open("../README.rst", "r").read()
+    readme = open("README.rst", "r").read()
 except:
-    raise RuntimeError("Unable to read and convert ../README.md")
+    raise RuntimeError("Unable to read README.rst")
 
 setup(name="bdss_client",
       version=version,

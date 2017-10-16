@@ -10,6 +10,7 @@ See [Python Packaging User Guide](https://packaging.python.org/distributing) for
 ## Steps to publish
 
 * cd to client directory. `cd /path/to/bdss/client`
+* Create symlink to project README. `ln -s ../README.rst README.rst`
 * Update version in `client/version.py`
    * http://semver.org/
    * https://packaging.python.org/distributing/#semantic-versioning-preferred
