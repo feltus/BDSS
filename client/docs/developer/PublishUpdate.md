@@ -9,19 +9,19 @@ See [Python Packaging User Guide](https://packaging.python.org/distributing) for
 
 ## Steps to publish
 
+* cd to client directory. `cd /path/to/bdss/client`
 * Update version in `client/version.py`
    * http://semver.org/
    * https://packaging.python.org/distributing/#semantic-versioning-preferred
 * Create Git tag. `git tag client-v<version>`
-* cd to client directory. `cd /path/to/bdss/client`
 * Remove any old builds. `rm -r ./dist`
 * Build source and wheel distributions. `python setup.py sdist bdist_wheel`
 * Upload using twine. `twine upload dist/*`
 
 ## Test published package
 
-* Create an account on [Test PyPI](https://testpypi.python.org/pypi).
-* Configure `$HOME/.pypirc` with the Test PyPI index:
+* Create an account on [TestPyPI](https://test.pypi.org/).
+* Configure `$HOME/.pypirc` with the TestPyPI index:
   ```
   [distutils]
   index-servers =
@@ -29,18 +29,18 @@ See [Python Packaging User Guide](https://packaging.python.org/distributing) for
       testpypi
 
   [pypi]
-  repository = https://pypi.python.org/pypi
+  repository = https://upload.pypi.org/legacy/
   username = $USERNAME
 
   [testpypi]
-  repository = https://testpypi.python.org/pypi
+  repository = https://test.pypi.org/legacy/
   username = $USERNAME
   ```
-  Replace `$USERNAME` with your Test PyPI username.
+  Replace `$USERNAME` with your TestPyPI username.
 * Follow normal steps to publish except when uploading with Twine, run `twine upload --repository testpypi`
-* Install package from Test PyPI (in another virtualenv).
+* Install package from TestPyPI (in another virtualenv).
   ```
-  pip install --index-url https://testpypi.python.org/simple --extra-index-url https://pypi.python.org/simple bdss-client
+  pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple bdss-client
   ```
   The extra index URL pointing to production PyPI is necessary for installing dependencies of BDSS.
 * Check that `bdss` is installed and working. `bdss -h`
