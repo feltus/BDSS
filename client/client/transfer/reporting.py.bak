@@ -71,7 +71,7 @@ class TransferReport():
                 """ % (
             self.url,
             self.mechanism_name,
-            "\n".join(["   %s: %s" % (k, v) for k, v in list(self.mechanism_options.items())]) if self.mechanism_options else "   No options",
+            "\n".join(["   %s: %s" % (k, v) for k, v in self.mechanism_options.items()]) if self.mechanism_options else "   No options",
             "succeeded" if self.success else "failed",
             self.size,
             self.duration,

@@ -42,11 +42,11 @@ class UserInputOption():
                 if self.hide_input:
                     value = getpass(self.prompt)
                 else:
-                    value = eval(input(self.prompt))
+                    value = input(self.prompt)
                 validate({"value": value})
                 value_valid = True
             except Invalid as e:
-                print(("Invalid input:", e.msg))
+                print("Invalid input:", e.msg)
 
         return value
 
@@ -126,7 +126,7 @@ class BaseMechanism():
         Parameters:
         opts - dict - Options. Keys and values will correspond to attribute names and values.
         """
-        for opt, val in list(opts.items()):
+        for opt, val in opts.items():
             if opt not in self.__class__.allowed_options():
                 raise AttributeError("%s does not support a '%s' option" % (self.__class__.__name__, opt))
             else:

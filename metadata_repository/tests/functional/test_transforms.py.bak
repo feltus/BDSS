@@ -75,7 +75,7 @@ class TestUrlTransforms(BaseTestCase):
             self.assertEqual(added_transform.to_data_source_id, 2)
             self.assertEqual(added_transform.preference_order, 2)
             self.assertEqual(added_transform.transform_type, "change_scheme")
-            self.assertEqual(len(list(added_transform.transform_options.items())), 1)
+            self.assertEqual(len(added_transform.transform_options.items()), 1)
             self.assertEqual(added_transform.transform_options["new_scheme"], "ftp")
 
     def test_add_transform_for_specific_destinations(self):
@@ -101,7 +101,7 @@ class TestUrlTransforms(BaseTestCase):
             self.assertEqual(len(added_transform.for_destinations), 2)
             self.assertEqual(added_transform.preference_order, 2)
             self.assertEqual(added_transform.transform_type, "change_scheme")
-            self.assertEqual(len(list(added_transform.transform_options.items())), 1)
+            self.assertEqual(len(added_transform.transform_options.items()), 1)
             self.assertEqual(added_transform.transform_options["new_scheme"], "ftp")
 
     def test_edit_transform(self):
@@ -127,7 +127,7 @@ class TestUrlTransforms(BaseTestCase):
             self.assertEqual(edited_transform.for_destinations[0].id, 2)
             self.assertEqual(edited_transform.preference_order, 1)
             self.assertEqual(edited_transform.transform_type, "change_host")
-            self.assertEqual(len(list(edited_transform.transform_options.items())), 1)
+            self.assertEqual(len(edited_transform.transform_options.items()), 1)
             self.assertEqual(edited_transform.transform_options["new_host"], "example.net")
 
     def test_edit_transform_and_remove_destinations(self):
@@ -152,7 +152,7 @@ class TestUrlTransforms(BaseTestCase):
             self.assertEqual(len(edited_transform.for_destinations), 0)
             self.assertEqual(edited_transform.preference_order, 1)
             self.assertEqual(edited_transform.transform_type, "change_host")
-            self.assertEqual(len(list(edited_transform.transform_options.items())), 1)
+            self.assertEqual(len(edited_transform.transform_options.items()), 1)
             self.assertEqual(edited_transform.transform_options["new_host"], "example.net")
 
 

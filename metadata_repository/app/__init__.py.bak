@@ -71,7 +71,7 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    if "content-type" in list(request.headers.keys()) and request.headers["content-type"] == "application/json":
+    if "content-type" in request.headers.keys() and request.headers["content-type"] == "application/json":
         response = jsonify(status="unauthorized")
         response.status_code = 401
         return response

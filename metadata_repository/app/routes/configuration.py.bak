@@ -85,7 +85,7 @@ def load_configuration(conf):
     else:
         destinations_conf = conf["destinations"]
         destinations = {d["label"]: Destination(**d) for d in destinations_conf}
-        for label, dest in list(destinations.items()):
+        for label, dest in destinations.items():
             db_session.add(dest)
 
         sources_conf = conf["data_sources"]
@@ -123,7 +123,7 @@ def load_configuration(conf):
                 )
                 source.transforms.append(transform)
 
-        for label, source in list(sources.items()):
+        for label, source in sources.items():
             db_session.add(source)
 
         try:
