@@ -115,14 +115,17 @@ def handle_dtn_action(args, parser, reports_file):
     conn_str = "%s@%s" %  (dtn_user, dtn_host)
     logger.info("Initiating transfer with DTN: %s", conn_str)
 
-    # Download the files using the DTN
-    if args.urls:
-        bdss_cmd = " ".join(['bdss', 'transfer', '--urls', " ".join(args.urls), '--destination', dest_dir])
-        cmd = ["ssh", conn_str, bdss_cmd]
-        run_subprocess(cmd)
+    # Download the files using the DTN by calling BDSS on that server instead.
+    bdss_cmd = " ".join(['bdss', 'transfer', '--urls', " ".join(args.urls), '--destination', dest_dir])
+    run_subprocess(["ssh", conn_str, bdss_cmd])
 
     # Move the files to where they should be.
-    logger.info("Done.")
+    logger.info("Copying files from DTN...")
+    run_subprocess(["scp", "-r", "%s:%s/*" % (conn_str, dest_dir), args.destination_directory])
+
+    # Finally delete the files on the remote server
+    logger.info("Removing from from DTN...")
+    run_subprocess(["ssh", conn_str, "rm -rf %s" % dest_dir])
 
 def handle_local_action(args, parser, reports_file):
     for url in args.urls:
