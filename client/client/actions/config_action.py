@@ -20,7 +20,7 @@ import logging
 import requests
 
 from ..config import CONFIGURABLE_OPTIONS, get_config, set_config, clear_config
-from ..config import client_destination, metadata_repository_url
+from ..config import client_destination, metadata_repository_url, dtn_host, dtn_user, dtn_path
 
 
 cli_help = "Client configuration."

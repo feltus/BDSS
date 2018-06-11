@@ -20,14 +20,16 @@ import argparse
 import logging
 import os
 import traceback
+import tempfile
 
 import requests
 
-from ..config import client_destination, metadata_repository_url
+from ..config import client_destination, metadata_repository_url, dtn_host, dtn_user, dtn_path
 from ..transfer.base import Transfer
 from ..transfer.data import run_data_transfer
 from ..transfer.mechanisms import available_mechanisms
 from ..transfer.reporting import ReportsFile, send_report
+from ..util import run_subprocess
 
 
 cli_help = "Download data file(s)."
@@ -105,14 +107,27 @@ def get_transfers(url, mechanisms):
 
     return transfers
 
+def handle_dtn_action(args, parser, reports_file):
+    # We want to download into a temporary file.
+    tf = tempfile.NamedTemporaryFile()
+    dest_dir = "".join([dtn_path, '/', tf.name])
 
-def handle_action(args, parser):
-    if args.manifest_file:
-        args.urls = [line.strip() for line in args.manifest_file if line.strip()]
+    conn_str = "%s@%s" %  (dtn_user, dtn_host)
+    logger.info("Initiating transfer with DTN: %s", conn_str)
 
-    os.makedirs(args.destination_directory, exist_ok=True)
-    reports_file = ReportsFile(args.report_file) if args.report_file else None
+    # Download the files using the DTN by calling BDSS on that server instead.
+    bdss_cmd = " ".join(['bdss', 'transfer', '--urls', " ".join(args.urls), '--destination', dest_dir])
+    run_subprocess(["ssh", conn_str, bdss_cmd])
 
+    # Move the files to where they should be.
+    logger.info("Copying files from DTN...")
+    run_subprocess(["scp", "-r", "%s:%s/*" % (conn_str, dest_dir), args.destination_directory])
+
+    # Finally delete the files on the remote server
+    logger.info("Removing from from DTN...")
+    run_subprocess(["ssh", conn_str, "rm -rf %s" % dest_dir])
+
+def handle_local_action(args, parser, reports_file):
     for url in args.urls:
         output_path = os.path.abspath(os.path.join(args.destination_directory, output_file_name(url)))
         if os.path.isfile(output_path):
@@ -147,3 +162,15 @@ def handle_action(args, parser):
 
         if not transfer_success:
             logger.error("Failed to transfer file")
+
+def handle_action(args, parser):
+    if args.manifest_file:
+        args.urls = [line.strip() for line in args.manifest_file if line.strip()]
+
+    os.makedirs(args.destination_directory, exist_ok=True)
+    reports_file = ReportsFile(args.report_file) if args.report_file else None
+
+    if dtn_host:
+        handle_dtn_action(args, parser, reports_file)
+    else:
+        handle_local_action(args, parser, reports_file)
