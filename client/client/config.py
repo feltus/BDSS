@@ -28,7 +28,10 @@ config.read(["/etc/bdss.cfg", os.path.expanduser("~/.bdss.cfg"), "bdss.cfg"])
 
 CONFIGURABLE_OPTIONS = [
     "metadata_repository.url",
-    "client.location"
+    "client.location",
+    "dtn.host",
+    "dtn.user",
+    "dtn.path"
 ]
 
 
@@ -72,3 +75,7 @@ def clear_config(key):
 metadata_repository_url = get_config("metadata_repository.url").rstrip("/")
 
 client_destination = get_config("client.location")
+
+dtn_host = get_config("dtn.host")
+dtn_path = get_config("dtn.path")
+dtn_user = get_config("dtn.user")

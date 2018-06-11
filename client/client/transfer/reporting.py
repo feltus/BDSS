@@ -20,7 +20,7 @@ import requests
 import textwrap
 
 from .mechanisms import default_mechanism
-from ..config import client_destination, metadata_repository_url
+from ..config import client_destination, metadata_repository_url, dtn_host, dtn_path, dtn_user
 
 
 class TransferReport():
