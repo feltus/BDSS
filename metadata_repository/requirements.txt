@@ -25,5 +25,5 @@ requests==2.12.4
 simplejson==3.8.2
 six==1.10.0
 SQLAlchemy==1.0.14
-Werkzeug==0.11.10
+Werkzeug==0.15.3
 WTForms==2.1
