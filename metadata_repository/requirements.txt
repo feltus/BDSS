@@ -10,7 +10,7 @@ flask-jsontools==0.1.1.post0
 Flask-Login==0.3.2
 html5lib==0.9999999
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2==2.11.3
 Mako==1.0.4
 MarkupSafe==0.23
 mccabe==0.5.0
